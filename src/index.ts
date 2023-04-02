@@ -16,8 +16,8 @@ type TVideo = {
 
 let videos: TVideo[] = []
 
-let errors: any = []
-let valueAvailableResolutions = [ "P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160", null ]
+
+const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 
 // get all videos
 app.get('/videos', (req: Request, res: Response) => {
@@ -29,6 +29,7 @@ app.post('/videos', (req: Request, res: Response) => {
     const title = req.body.title
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
+    const errors = []
 
     if (!title || typeof title !== 'string' || !title.trim() || title.length > 40) {
         errors.push({
@@ -37,14 +38,14 @@ app.post('/videos', (req: Request, res: Response) => {
         })
     }
 
-    if (!author || typeof author !== 'string' || !author.trim() || author.length > 20 ) {
+    if (!author || typeof author !== 'string' || !author.trim() || author.length > 20) {
         errors.push({
             message: "invalid title",
             field: "author"
         })
     }
 
-    if (!valueAvailableResolutions.includes(availableResolutions)) {
+    if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length || !valueAvailableResolutions.includes(availableResolutions)) {
         errors.push({
             message: "invalid title",
             field: "availableResolutions"
@@ -54,7 +55,8 @@ app.post('/videos', (req: Request, res: Response) => {
     }
 
     if (errors.length > 0) {
-        return res.status(400).send({errorsMessages: errors})
+        res.status(400).send({errorsMessages: errors})
+        return
     }
 
 
@@ -89,7 +91,6 @@ app.put('/videos', (req: Request, res: Response) => {
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
     const errors = []
-    const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160", null]
     // const publicationDate = req.body.publicationDate
     // const canBeDownloaded = req.body.canBeDownloaded
 
@@ -110,7 +111,7 @@ app.put('/videos', (req: Request, res: Response) => {
 
     }
 
-    if (!valueAvailableResolutions.includes(availableResolutions)) {
+    if (availableResolutions || availableResolutions.length > valueAvailableResolutions.length || !valueAvailableResolutions.includes(availableResolutions)) {
         errors.push({
             message: "invalid title",
             field: "availableResolutions"
@@ -142,19 +143,19 @@ app.put('/videos', (req: Request, res: Response) => {
 })
 
 app.delete('/videos/:id', (req: Request, res: Response) => {
-        const id = +req.body.id
-        const newVideos = videos.filter(v => v.id !== id)
-        if (newVideos.length < videos.length) {
-            videos = newVideos
-            res.status(204)
-        } else {
-            res.status(404)
-        }
-    })
+    const id = +req.body.id
+    const newVideos = videos.filter(v => v.id !== id)
+    if (newVideos.length < videos.length) {
+        videos = newVideos
+        res.status(204)
+    } else {
+        res.status(404)
+    }
+})
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
     videos = []
-        res.sendStatus(204)
+    res.sendStatus(204)
 })
 
 app.listen(port, () => {
