@@ -23,6 +23,7 @@ app.get('/videos', (req: Request, res: Response) => {
 
 //create new video
 app.post('/videos', (req: Request, res: Response) => {
+    console.log(req.body.title, req.body.author, req.body.availableResolutions)
     const title = req.body.title
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
