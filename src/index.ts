@@ -16,6 +16,9 @@ type TVideo = {
 
 let videos: TVideo[] = []
 
+let errors: any = []
+let valueAvailableResolutions = [ "P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160", null ]
+
 // get all videos
 app.get('/videos', (req: Request, res: Response) => {
     res.status(200).send(videos)
@@ -23,12 +26,9 @@ app.get('/videos', (req: Request, res: Response) => {
 
 //create new video
 app.post('/videos', (req: Request, res: Response) => {
-    console.log(req.body.title, req.body.author, req.body.availableResolutions)
     const title = req.body.title
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
-    const errors = []
-    const valueAvailableResolutions = [ "P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160", null ]
 
     if (!title || typeof title !== 'string' || !title.trim() || title.length > 40) {
         errors.push({
