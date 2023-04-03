@@ -45,7 +45,7 @@ app.post('/videos', (req: Request, res: Response) => {
         })
     }
 
-    if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length || !valueAvailableResolutions.includes(availableResolutions)) {
+    if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length) {
         errors.push({
             message: "invalid title",
             field: "availableResolutions"
@@ -54,6 +54,20 @@ app.post('/videos', (req: Request, res: Response) => {
 
     }
 
+    if (availableResolutions !== undefined && availableResolutions !== null) {
+        const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"];
+        for (let i = 0; i < availableResolutions.length; i++) {
+            if (!valueAvailableResolutions.includes(availableResolutions[i])) {
+                errors.push({
+                    message: "invalid title",
+                    field: "availableResolutions"
+
+                });
+                break;
+
+            }
+        }
+    }
     if (errors.length > 0) {
         res.status(400).send({errorsMessages: errors})
         return
@@ -111,7 +125,7 @@ app.put('/videos', (req: Request, res: Response) => {
 
     }
 
-    if (availableResolutions || availableResolutions.length > valueAvailableResolutions.length || !valueAvailableResolutions.includes(availableResolutions)) {
+    if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length) {
         errors.push({
             message: "invalid title",
             field: "availableResolutions"
@@ -119,15 +133,24 @@ app.put('/videos', (req: Request, res: Response) => {
         })
 
     }
+    if (availableResolutions !== undefined && availableResolutions !== null) {
+        const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"];
+        for (let i = 0; i < availableResolutions.length; i++) {
+            if (!valueAvailableResolutions.includes(availableResolutions[i])) {
+                errors.push({
+                    message: "invalid title",
+                    field: "availableResolutions"
 
-    // if (publicationDate !== "2023-04-02T08:29:48.926Z" ) {
-    // errors.push({
-    // message: "invalid title",
-    // field: "publicationDate"
+                });
+                break;
 
-    // })
+            }
+        }
+    }
 
-    // }
+
+
+
     if (errors.length > 0) {
         return res.status(400).send({errorsMessages: errors})
 
