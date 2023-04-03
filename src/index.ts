@@ -157,13 +157,12 @@ app.put('/videos', (req: Request, res: Response) => {
 
     }
     const id = +req.body.id
-    const videoIndex = videos.findIndex(v => v.id === id);
+    const video = videos.find(v => v.id ===id)
+    if (video) {
 
-    if (videoIndex !== -1) {
-        videos[videoIndex].title = req.body.title;
-        videos[videoIndex].author = req.body.author;
-        videos[videoIndex].availableResolutions = req.body.availableResolutions;
-        res.status(200).send(videos)
+        video.title = req.body.title
+        video.author = req.body.author
+        res.status(204).send(video)
     } else {
         res.status(404)
     }
