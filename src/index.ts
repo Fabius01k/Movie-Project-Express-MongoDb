@@ -41,14 +41,14 @@ app.post('/videos', (req: Request, res: Response) => {
 
     if (!author || typeof author !== 'string' || !author.trim() || author.length > 20) {
         errors.push({
-            message: "invalid title",
+            message: "invalid author",
             field: "author"
         })
     }
 
     if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length) {
         errors.push({
-            message: "invalid title",
+            message: "invalid availableResolutions",
             field: "availableResolutions"
 
         })
@@ -120,7 +120,7 @@ app.put('/videos', (req: Request, res: Response) => {
 
     if (!author || typeof author !== 'string' || !author.trim() || author.length > 20) {
         errors.push({
-            message: "invalid title",
+            message: "invalid author",
             field: "author"
         })
 
@@ -128,7 +128,7 @@ app.put('/videos', (req: Request, res: Response) => {
 
     if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length) {
         errors.push({
-            message: "invalid title",
+            message: "invalid availableResolutions",
             field: "availableResolutions"
 
         })
@@ -163,7 +163,7 @@ app.put('/videos', (req: Request, res: Response) => {
         videos[videoIndex].title = req.body.title;
         videos[videoIndex].author = req.body.author;
         videos[videoIndex].availableResolutions = req.body.availableResolutions;
-        res.status(204).send(videos)
+        res.status(200).send(videos)
     } else {
         res.status(404)
     }
