@@ -163,6 +163,8 @@ app.put('/videos', (req: Request, res: Response) => {
         video.title = req.body.title
         video.author = req.body.author
         res.status(204).send(video)
+    } else {
+        res.status(404)
     }
 })
 
