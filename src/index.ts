@@ -91,7 +91,7 @@ app.post('/videos', (req: Request, res: Response) => {
 })
 
 app.get('/videos/:id', (req: Request, res: Response) => {
-    const id = +req.body.id
+    const id = +req.params.id
     const video = videos.find(v => v.id === id)
 
     if (video) {
