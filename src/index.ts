@@ -2,6 +2,7 @@ import express, {Request, Response} from 'express'
 
 export const app = express()
 const port = 3000
+app.use(express.json())
 
 type TVideo = {
     id: number
@@ -16,8 +17,8 @@ type TVideo = {
 
 let videos: TVideo[] = []
 
-
 const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
+
 
 // get all videos
 app.get('/videos', (req: Request, res: Response) => {
