@@ -160,19 +160,22 @@ app.put('/videos', (req: Request, res: Response) => {
         })
     }
 
-    if (!Number.isInteger(minAgeRestriction)) {
-        errors.push({
-            message: "minAgeRestriction must be an integer",
-            field: "minAgeRestriction"
-        })
+    if(typeof minAgeRestriction !== "undefined"){
+        if (!Number.isInteger(minAgeRestriction)) {
+            errors.push({
+                message: "minAgeRestriction must be an integer",
+                field: "minAgeRestriction"
+            })
 
-    }
+            return;
+        }
 
-    if(minAgeRestriction < 1 || minAgeRestriction >= 18) {
-        errors.push({
-            message: "minAgeRestriction must be greater than 1 and less than or equal to 18",
-            field: "minAgeRestriction"
-        })
+        if(minAgeRestriction < 1 || minAgeRestriction > 18) {
+            errors.push({
+                message: "minAgeRestriction must be greater than 1 and less than or equal to 18",
+                field: "minAgeRestriction"
+            })
+        }
     }
 
     if(!valuePublicationDate.test(publicationDate)) {
