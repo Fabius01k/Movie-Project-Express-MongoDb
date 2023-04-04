@@ -113,7 +113,6 @@ app.put('/videos', (req: Request, res: Response) => {
     const errors = []
 
 
-
     if (!title || typeof title !== 'string' || !title.trim() || title.length > 40) {
         errors.push({
             message: "invalid title",
@@ -209,7 +208,7 @@ app.put('/videos', (req: Request, res: Response) => {
 })
 
 app.delete('/videos/:id', (req: Request, res: Response) => {
-    const id = +req.body.id
+    const id = +req.params.id
     const newVideos = videos.filter(v => v.id !== id)
     if (newVideos.length < videos.length) {
         videos = newVideos
