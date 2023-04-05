@@ -103,7 +103,7 @@ app.get('/videos/:id', (req: Request, res: Response) => {
     }
 })
 
-app.put('/videos', (req: Request, res: Response) => {
+app.put('/videos/:id', (req: Request, res: Response) => {
     const title = req.body.title
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
@@ -191,7 +191,7 @@ app.put('/videos', (req: Request, res: Response) => {
         return res.status(400).send({errorsMessages: errors})
 
     }
-    const id = +req.body.id
+    const id = +req.params.id
     const video = videos.find(v => v.id ===id)
     if (video) {
 
