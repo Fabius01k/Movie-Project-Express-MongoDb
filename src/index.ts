@@ -129,7 +129,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
     }
 
-    if (!availableResolutions || availableResolutions.length > valueAvailableResolutions.length) {
+    if (!availableResolutions) {
         errors.push({
             message: "invalid availableResolutions",
             field: "availableResolutions"
@@ -182,9 +182,6 @@ app.put('/videos/:id', (req: Request, res: Response) => {
             field: "publicationDate"
         })
     }
-
-
-
 
     if (errors.length > 0) {
         return res.status(400).send({errorsMessages: errors})
