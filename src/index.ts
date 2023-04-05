@@ -99,7 +99,7 @@ app.get('/videos/:id', (req: Request, res: Response) => {
     if (video) {
         res.status(200).send(video)
     } else {
-        res.status(404)
+        res.sendStatus(404)
     }
 })
 
@@ -147,7 +147,6 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
                 });
                 break;
-
             }
         }
     }
@@ -203,7 +202,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         video.publicationDate = req.body.publicationDate
         res.status(204).send(video)
     } else {
-        res.status(404)
+        res.sendStatus(404)
     }
 })
 
@@ -212,9 +211,9 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
     const newVideos = videos.filter(v => v.id !== id)
     if (newVideos.length < videos.length) {
         videos = newVideos
-        res.status(204)
+        res.sendStatus(204)
     } else {
-        res.status(404)
+        res.sendStatus(404)
     }
 })
 
