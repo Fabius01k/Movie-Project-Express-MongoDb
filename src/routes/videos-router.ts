@@ -7,8 +7,8 @@ const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\
 
 export const videosRouter = Router ({})
 videosRouter.get('/', (req: Request, res: Response) => {
-    const foundVideos = videosRepository.findVideos(req.query.title?.toString())
-    res.status(200).send(foundVideos)
+    const videos = videosRepository.findVideos(req.query.title?.toString())
+    res.status(200).send(videos)
 })
 
 videosRouter.post('/', (req: Request, res: Response) => {
