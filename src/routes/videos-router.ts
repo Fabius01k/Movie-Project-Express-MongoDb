@@ -2,12 +2,13 @@ import {Request, Response, Router} from "express";
 import {app} from "../index";
 import {videosRepository} from "../repositories/videos-repository";
 import {videos} from "../repositories/videos-repository";
+
 const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
 
 export const videosRouter = Router ({})
 videosRouter.get('/', (req: Request, res: Response) => {
-    const videos = videosRepository.findVideos(req.query.title?.toString())
+    const videos = videosRepository.findVideos()
     res.status(200).send(videos)
 })
 
@@ -184,8 +185,7 @@ videosRouter.delete('/:id', (req: Request, res: Response) => {
     const newVideos = videosRepository.deleteVideo(+req.params.id)
 
 
-    if (newVideos.length < videos.length) {
-
+    if (newVideos) {
         res.sendStatus(204)
     } else {
         res.sendStatus(404)

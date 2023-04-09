@@ -18,11 +18,8 @@ const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\
 export const videosRepository = {
 
 
-    findVideos(title: string | null | undefined) {
-        if (title) {
+    findVideos() {
             return videos
-
-        }
     },
 
     createVideo(title: string, author: string, availableResolutions: string[]) {
@@ -71,9 +68,13 @@ export const videosRepository = {
     },
 
     deleteVideo(id: number) {
-        const newVideos = videos.filter(v => v.id !== id)
-
-        return newVideos
+        for (let i = 0; i < videos.length; i++) {
+            if (videos[i].id === id) {
+                videos.splice(i, 1)
+                return true
+            }
+        }
+        return false
     }
 
 
