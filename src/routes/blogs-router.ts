@@ -3,11 +3,7 @@ import {Request, Response, Router} from "express";
 import {videosRepository} from "../repositories/videos-repository";
 import {blogs, blogsRepository} from "../repositories/blogs-repository";
 import {app} from "../index";
-import {body, check, validationResult} from "express-validator";
-
-const valueWebsiteUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
-
-
+import {body, check, header, validationResult} from "express-validator";
 
 
 export const blogsRouter = Router({})
@@ -19,6 +15,7 @@ blogsRouter.get('/',(req: Request, res: Response) => {
 })
 
 blogsRouter.post('/',
+
     body('name').isString().notEmpty().
     trim().isLength({min:1,max:15}).withMessage('name is not correct'),
 
@@ -111,7 +108,7 @@ blogsRouter.delete('/:id',(req: Request, res: Response) => {
             res.sendStatus(404)
         }
 
-        })
+})
 
 
 

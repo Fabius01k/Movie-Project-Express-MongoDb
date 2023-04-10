@@ -9,7 +9,7 @@ type TVblogs = {
     websiteUrl: string
 }
 const valueWebsiteUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
- export let blogs: TVblogs[] = []
+export let blogs: TVblogs[] = []
 
 
 
@@ -51,6 +51,8 @@ export const blogsRepository = {
             blog.websiteUrl = websiteUrl
             return blog
         }
+
+        return null
     },
 
     deleteBlog(id: string) {
