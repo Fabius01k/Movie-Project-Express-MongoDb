@@ -3,6 +3,8 @@ import {postsRepository} from "../repositories/posts-repository";
 import {body, validationResult} from "express-validator";
 
 import {blogs} from "../repositories/blogs-repository";
+import {postCreateValidators, postUpdateValodators} from "../validadation/post-validation";
+import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 export const postsRouter = Router({})
 postsRouter.get('/',(req: Request, res: Response) => {
     const posts = postsRepository.findPosts()
@@ -10,44 +12,14 @@ postsRouter.get('/',(req: Request, res: Response) => {
 
 })
 
-const postCreateValidators = [
-    body('blogId').isString().notEmpty().custom((value: string) => {
-    const blog = blogs.find(blog => blog.id === value)
-    if (!blog) {
-        throw new Error('Blog ID is not valid');
-    }
-    return true }),
-    body('title').isString().notEmpty().
-    trim().isLength({min:1,max:30}).
-    withMessage('title is not correct'),
 
-    body('shortDescription').isString().notEmpty().
-    trim().isLength({min:1,max:100}).
-    withMessage('shortDescription is not correct'),
 
-    body('content').isString().notEmpty().
-    trim().isLength({min:1,max:1000}).
-    withMessage('content is not correct'),
-]
-
-postsRouter.post('/', postCreateValidators,
+postsRouter.post('/', postCreateValidators,basicAuthGuardMiddleware,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({errors: errors.array()});
         }
-
-        // const presentBlogs = blogsRepository.findBlogs()
-        // if (!blogId || !presentBlogs.filter(x => x.id === blogId)) {
-
-       // }
-
-
-        const title = req.body.title
-        const shortDescription = req.body.shortDescription
-        const content = req.body.content
-        const blogId = req.body.blogId
-
 
         const newPost = postsRepository.createPost(req.body.title,
             req.body.shortDescription,
@@ -61,8 +33,8 @@ postsRouter.post('/', postCreateValidators,
     })
 
 
-postsRouter.get('/:id',(req: Request, res: Response) => {
-    const id = req.params.id
+postsRouter.get('/:id',
+    (req: Request, res: Response) => {
     const post = postsRepository.getPostById(req.params.id)
 
     if(post) {
@@ -72,31 +44,12 @@ postsRouter.get('/:id',(req: Request, res: Response) => {
     }
 })
 
-postsRouter.put('/id',
-    body('title').isString().notEmpty().
-    trim().isLength({min:1,max:30}).
-    withMessage('title is not correct'),
-
-    body('shortDescription').isString().notEmpty().
-    trim().isLength({min:1,max:100}).
-    withMessage('shortDescription is not correct'),
-
-    body('content').isString().notEmpty().
-    trim().isLength({min:1,max:1000}).
-    withMessage('content is not correct'),
-
+postsRouter.put('/id',postUpdateValodators,basicAuthGuardMiddleware,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({errors: errors.array()});
         }
-
-        const title = req.body.title
-        const shortDescription = req.body.shortDescription
-        const content = req.body.content
-        const blogId = req.body.blogId
-        const blogName = req.body.blogName
-        const id = req.params.id
 
         const post = postsRepository.updatePost(
             req.params.id,
@@ -113,8 +66,8 @@ postsRouter.put('/id',
 })
 
 
-postsRouter.delete('/:id',(req: Request, res: Response)  => {
-    const id = req.params.id
+postsRouter.delete('/:id',basicAuthGuardMiddleware,
+    (req: Request, res: Response)  => {
     const newPosts = postsRepository.deletePost(req.params.id)
 
     if (newPosts) {

@@ -4,6 +4,8 @@ import {videosRepository} from "../repositories/videos-repository";
 import {blogs, blogsRepository} from "../repositories/blogs-repository";
 import {app} from "../index";
 import {body, check, header, validationResult} from "express-validator";
+import {blogCreateValidators, blogUpdateValidators} from "../validadation/blog-validation";
+import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 
 
 export const blogsRouter = Router({})
@@ -14,29 +16,12 @@ blogsRouter.get('/',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.post('/',
-
-    body('name').isString().notEmpty().
-    trim().isLength({min:1,max:15}).withMessage('name is not correct'),
-
-    body('description').isString().trim().notEmpty().isLength({min:1,max:500}).
-    withMessage('description is not correct'),
-
-
-    body('websiteUrl').isString().trim().notEmpty().isLength({min:1,max:100}).
-    matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/).
-    withMessage('websiteUrl is not correct'),
-
+blogsRouter.post('/',blogCreateValidators,basicAuthGuardMiddleware,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-
-    const name = req.body.name
-    const description = req.body.description
-    const websiteUrl = req.body.websiteUrl
-
 
         const newBlog = blogsRepository.createBlog(req.body.name,
             req.body.description,
@@ -46,7 +31,6 @@ blogsRouter.post('/',
 })
 
 blogsRouter.get('/:id',(req: Request, res: Response) => {
-    const id = req.params.id
     const blog = blogsRepository.getBlogById(req.params.id)
 
     if(blog) {
@@ -57,31 +41,13 @@ blogsRouter.get('/:id',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.put('/id',
-    body('name').isString().notEmpty().
-    trim().isLength({min:1,max:15}).withMessage('name is not correct'),
-
-    body('description').isString().trim().notEmpty().isLength({min:1,max:500}).
-    withMessage('description is not correct'),
-
-
-    body('websiteUrl').isString().trim().notEmpty().isLength({min:1,max:100}).
-    matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/).
-    withMessage('websiteUrl is not correct'),
-
-
+blogsRouter.put('/id',blogUpdateValidators,basicAuthGuardMiddleware,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const name = req.body.name
-        const description = req.body.description
-        const websiteUrl = req.body.websiteUrl
-
-
-        const id = req.params.id
         const blog = blogsRepository.updateBlog(
 
             req.params.id,
@@ -97,7 +63,8 @@ blogsRouter.put('/id',
 
 })
 
-blogsRouter.delete('/:id',(req: Request, res: Response) => {
+blogsRouter.delete('/:id',basicAuthGuardMiddleware,
+    (req: Request, res: Response) => {
         const id = req.params.id
         const newBlogs = blogsRepository.deleteBlog(req.params.id)
 
