@@ -16,7 +16,7 @@ blogsRouter.get('/',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.post('/',blogCreateValidators,basicAuthGuardMiddleware,
+blogsRouter.post('/',basicAuthGuardMiddleware, blogCreateValidators,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -41,7 +41,7 @@ blogsRouter.get('/:id',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.put('/id',blogUpdateValidators,basicAuthGuardMiddleware,
+blogsRouter.put('/id',basicAuthGuardMiddleware, blogUpdateValidators,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

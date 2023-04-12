@@ -14,7 +14,7 @@ postsRouter.get('/',(req: Request, res: Response) => {
 
 
 
-postsRouter.post('/', postCreateValidators,basicAuthGuardMiddleware,
+postsRouter.post('/',basicAuthGuardMiddleware,postCreateValidators,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -44,7 +44,7 @@ postsRouter.get('/:id',
     }
 })
 
-postsRouter.put('/id',postUpdateValodators,basicAuthGuardMiddleware,
+postsRouter.put('/id',basicAuthGuardMiddleware, postUpdateValodators,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
