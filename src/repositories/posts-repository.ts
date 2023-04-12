@@ -21,11 +21,11 @@ export const postsRepository = {
     createPost(title: string, shortDescription: string, content: string,
                 blogId: string) {
 
-        const dateNow = new Date()
+        const dateNow = new Date().getTime().toString()
         const blog = blogs.find(blog => blog.id === blogId)
 
         const newPost: TVposts = {
-            id:dateNow.toString(),
+            id:dateNow,
             title: title,
             shortDescription: shortDescription,
             content: content,

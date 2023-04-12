@@ -22,9 +22,9 @@ export const blogsRepository = {
 
     createBlog(name: string, description: string, websiteUrl: string) {
 
-        const dateNow = new Date()
+        const dateNow = new Date().getTime().toString()
         const newBlog: TVblogs = {
-            id: dateNow.toString(),
+            id: dateNow,
             name: name,
             description: description,
             websiteUrl: websiteUrl
