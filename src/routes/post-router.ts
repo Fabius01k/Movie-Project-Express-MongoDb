@@ -44,7 +44,7 @@ postsRouter.get('/:id',
     }
 })
 
-postsRouter.put('/id',basicAuthGuardMiddleware, postUpdateValodators,
+postsRouter.put('/:id',basicAuthGuardMiddleware, postUpdateValodators,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
