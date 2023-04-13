@@ -24,6 +24,10 @@ export const postsRepository = {
         const dateNow = new Date().getTime().toString()
         const blog = blogs.find(blog => blog.id === blogId)
 
+        if (!blog) {
+            return null
+        }
+
         const newPost: TVposts = {
             id:dateNow,
             title: title,
