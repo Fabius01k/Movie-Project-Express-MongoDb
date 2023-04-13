@@ -1,9 +1,6 @@
 import {Request, Response, Router} from "express";
-
-import {videosRepository} from "../repositories/videos-repository";
-import {blogs, blogsRepository} from "../repositories/blogs-repository";
-import {app} from "../index";
-import {body, check, header, validationResult} from "express-validator";
+import {blogsRepository} from "../repositories/blogs-repository";
+import {validationResult} from "express-validator";
 import {blogCreateValidators, blogUpdateValidators} from "../validadation/blog-validation";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 
@@ -41,7 +38,7 @@ blogsRouter.get('/:id',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.put('/id',basicAuthGuardMiddleware, blogUpdateValidators,
+blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators,
     (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -56,8 +53,8 @@ blogsRouter.put('/id',basicAuthGuardMiddleware, blogUpdateValidators,
             req.body.websiteUrl)
 
             if(blog) {
-                res.status(204).send(blog) }
-            else {
+                res.sendStatus(204)
+            } else {
                 res.sendStatus(404)
             }
 
@@ -65,13 +62,14 @@ blogsRouter.put('/id',basicAuthGuardMiddleware, blogUpdateValidators,
 
 blogsRouter.delete('/:id',basicAuthGuardMiddleware,
     (req: Request, res: Response) => {
-        const id = req.params.id
+
         const newBlogs = blogsRepository.deleteBlog(req.params.id)
 
-
         if (newBlogs) {
+
             res.sendStatus(204)
         } else {
+
             res.sendStatus(404)
         }
 
