@@ -18,7 +18,7 @@ postsRouter.get('/',(req: Request, res: Response) => {
 postsRouter.post('/',basicAuthGuardMiddleware,postCreateValidators,inputValidationMiddleware,
     (req: Request, res: Response) => {
 
-            const newPost = postsRepository.createPost(req.body.title,
+    const newPost = postsRepository.createPost(req.body.title,
             req.body.shortDescription,
             req.body.content,
             req.body.blogId
