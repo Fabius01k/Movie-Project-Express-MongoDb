@@ -59,8 +59,8 @@ postsRouter.put('/:id',basicAuthGuardMiddleware, postUpdateValodators,
             req.body.blogName)
 
         if(post) {
-            res.status(204).send(post) }
-        else {
+            res.sendStatus(204)
+        } else {
             res.sendStatus(404)
         }
 })
