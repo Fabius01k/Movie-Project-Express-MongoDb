@@ -3,6 +3,7 @@ import {blogsRepository} from "../repositories/blogs-repository";
 import {validationResult} from "express-validator";
 import {blogCreateValidators, blogUpdateValidators} from "../validadation/blog-validation";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
+import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
 
 
 export const blogsRouter = Router({})
@@ -13,17 +14,13 @@ blogsRouter.get('/',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.post('/',basicAuthGuardMiddleware, blogCreateValidators,
+blogsRouter.post('/',basicAuthGuardMiddleware, blogCreateValidators,inputValidationMiddleware,
     (req: Request, res: Response) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
 
-        const newBlog = blogsRepository.createBlog(req.body.name,
+            const newBlog = blogsRepository.createBlog(req.body.name,
             req.body.description,
             req.body.websiteUrl)
-        res.status(201).send(newBlog)
+            res.status(201).send(newBlog)
 
 })
 
@@ -38,14 +35,9 @@ blogsRouter.get('/:id',(req: Request, res: Response) => {
 
 })
 
-blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators,
+blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators,inputValidationMiddleware,
     (req: Request, res: Response) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const blog = blogsRepository.updateBlog(
+            const blog = blogsRepository.updateBlog(
 
             req.params.id,
             req.body.name,
