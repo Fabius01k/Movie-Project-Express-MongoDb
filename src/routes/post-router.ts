@@ -49,12 +49,12 @@ postsRouter.get('/:id',
 postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputValidationMiddleware,
     (req: Request, res: Response) => {
 
+
         const post = postsRepository.updatePost(
             req.params.id,
             req.body.title,
             req.body.shortDescription,
-            req.body.blogId,
-            req.body.blogName)
+            req.body.blogId)
 
         if (post) {
             res.sendStatus(204)
