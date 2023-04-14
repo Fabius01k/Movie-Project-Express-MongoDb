@@ -19,7 +19,7 @@ export const postsRepository = {
 
 
     createPost(title: string, shortDescription: string, content: string,
-                blogId: string) {
+               blogId: string) {
 
         const dateNow = new Date().getTime().toString()
         const blog = blogs.find(blog => blog.id === blogId)
@@ -28,13 +28,14 @@ export const postsRepository = {
             return null
         }
 
+
         const newPost: TVposts = {
-            id:dateNow,
+            id: dateNow,
             title: title,
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: blog!.name
+            blogName: blog.name
 
 
         }
@@ -50,7 +51,7 @@ export const postsRepository = {
 
 
     updatePost(id: string, title: string, shortDescription: string,
-               blogId: string, blogName: string ) {
+               blogId: string, blogName: string) {
         const post = posts.find(p => p.id === id)
         if (post) {
 
@@ -61,18 +62,18 @@ export const postsRepository = {
             return post
         }
 
-        return  null
+        return null
     },
 
-deletePost(id: string) {
-    for (let i = 0; i < posts.length; i++) {
-        if (posts[i].id === id) {
-            posts.splice(i, 1)
-            return true
+    deletePost(id: string) {
+        for (let i = 0; i < posts.length; i++) {
+            if (posts[i].id === id) {
+                posts.splice(i, 1)
+                return true
+            }
         }
-    }
-    return false
+        return false
 
-}
+    }
 
 }
