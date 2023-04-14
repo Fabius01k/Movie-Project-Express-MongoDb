@@ -54,6 +54,7 @@ postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputVal
             req.params.id,
             req.body.title,
             req.body.shortDescription,
+            req.body.content,
             req.body.blogId)
 
         if (post) {

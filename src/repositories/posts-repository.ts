@@ -51,7 +51,7 @@ export const postsRepository = {
     },
 
 
-    updatePost(id: string, title: string, shortDescription: string,
+    updatePost(id: string, title: string, shortDescription: string, content: string,
                blogId: string) {
         const blog = blogs.find(blog => blog.id === blogId)
 
@@ -63,6 +63,7 @@ export const postsRepository = {
 
             post.title = title
             post.shortDescription = shortDescription
+            post.content = content
             post.blogId = blogId
             post.blogName = blog.name
             return post
