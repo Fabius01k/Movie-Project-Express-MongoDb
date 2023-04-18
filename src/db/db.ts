@@ -14,4 +14,3 @@ let postst: TVposts[] = []
 let blogs: TVblogs[] = []
 
 
-//todo add type

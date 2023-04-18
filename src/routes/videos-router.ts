@@ -7,12 +7,12 @@ const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P108
 const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
 
 export const videosRouter = Router ({})
-videosRouter.get('/', (req: Request, res: Response) => {
-    const videos = videosRepository.findVideos()
+videosRouter.get('/', async (req: Request, res: Response) => {
+    const videos = await videosRepository.findVideos()
     res.status(200).send(videos)
 })
 
-videosRouter.post('/', (req: Request, res: Response) => {
+videosRouter.post('/', async (req: Request, res: Response) => {
     const title = req.body.title
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
@@ -61,15 +61,15 @@ videosRouter.post('/', (req: Request, res: Response) => {
     }
 
 
-    const newVideo = videosRepository.createVideo(req.body.title, req.body.author, req.body.availableResolutions )
+    const newVideo = await videosRepository.createVideo(req.body.title, req.body.author, req.body.availableResolutions )
     res.status(201).send(newVideo)
 })
 
 
 
-videosRouter.get('/:id', (req: Request, res: Response) => {
+videosRouter.get('/:id', async (req: Request, res: Response) => {
     const id = +req.params.id
-    const video = videosRepository.getVideoById(+req.params.id)
+    const video = await videosRepository.getVideoById(+req.params.id)
 
     if (video) {
         res.status(200).send(video)
@@ -79,7 +79,7 @@ videosRouter.get('/:id', (req: Request, res: Response) => {
 })
 
 
-videosRouter.put('/:id', (req: Request, res: Response) => {
+videosRouter.put('/:id', async (req: Request, res: Response) => {
     const title = req.body.title
     const author = req.body.author
     const availableResolutions = req.body.availableResolutions
@@ -164,7 +164,7 @@ videosRouter.put('/:id', (req: Request, res: Response) => {
 
     }
     const id = +req.params.id
-    const video = videosRepository.updateVideo(
+    const video = await videosRepository.updateVideo(
         +req.params.id,
         req.body.title,
         req.body.author,
@@ -180,9 +180,9 @@ videosRouter.put('/:id', (req: Request, res: Response) => {
     }
 })
 
-videosRouter.delete('/:id', (req: Request, res: Response) => {
+videosRouter.delete('/:id', async (req: Request, res: Response) => {
     const id = +req.params.id
-    const newVideos = videosRepository.deleteVideo(+req.params.id)
+    const newVideos = await videosRepository.deleteVideo(+req.params.id)
 
 
     if (newVideos) {

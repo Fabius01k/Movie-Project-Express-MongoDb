@@ -18,11 +18,11 @@ const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\
 export const videosRepository = {
 
 
-    findVideos() {
-            return videos
+    async findVideos() {
+            return Promise.resolve(videos)
     },
 
-    createVideo(title: string, author: string, availableResolutions: string[]) {
+    async createVideo(title: string, author: string, availableResolutions: string[]) {
 
 
         const dateNow = new Date()
@@ -37,16 +37,16 @@ export const videosRepository = {
             availableResolutions: availableResolutions
         }
         videos.push(newVideo)
-        return newVideo
+        return Promise.resolve(newVideo)
 
     },
 
-    getVideoById(id: number) {
+    async getVideoById(id: number) {
         const video = videos.find(v => v.id === id)
-        return video
+        return Promise.resolve(video)
     },
 
-    updateVideo(id: number, title: string, author: string,
+    async updateVideo(id: number, title: string, author: string,
                 availableResolutions: string[], canBeDownloaded: boolean,
                 minAgeRestriction: number | null,
                 publicationDate: string) {
@@ -61,23 +61,24 @@ export const videosRepository = {
             video.canBeDownloaded = canBeDownloaded
             video.minAgeRestriction = minAgeRestriction
             video.publicationDate = publicationDate
-            return video
+            return Promise.resolve(video)
 
 
         }
     },
 
-    deleteVideo(id: number) {
+    async deleteVideo(id: number) {
+        return new Promise((resolve, reject) => {
         for (let i = 0; i < videos.length; i++) {
             if (videos[i].id === id) {
                 videos.splice(i, 1)
-                return true
+                resolve(true)
             }
         }
-        return false
+            resolve(false)
+    })
+
     }
-
-
 }
 
 
