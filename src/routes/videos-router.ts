@@ -1,7 +1,10 @@
 import {Request, Response, Router} from "express";
 import {app} from "../index";
-import {videosRepository} from "../repositories/videos-repository";
-import {videos} from "../repositories/videos-repository";
+// import {videosRepository} from "../repositories-in-memory/videos-repository";
+import {videosRepository} from "../repositories-db/videos-repositories-db";
+
+import {videos} from "../repositories-in-memory/videos-repository";
+
 
 const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
@@ -59,8 +62,6 @@ videosRouter.post('/', async (req: Request, res: Response) => {
         res.status(400).send({errorsMessages: errors})
         return
     }
-
-
     const newVideo = await videosRepository.createVideo(req.body.title, req.body.author, req.body.availableResolutions )
     res.status(201).send(newVideo)
 })

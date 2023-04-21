@@ -13,12 +13,14 @@ type TVposts = {
 export let posts: TVposts[] = []
 
 export const postsRepository = {
-    findPosts() {
-        return posts
+
+
+    async findPosts() {
+        return Promise.resolve(posts)
     },
 
 
-    createPost(title: string, shortDescription: string, content: string,
+    async createPost(title: string, shortDescription: string, content: string,
                blogId: string) {
 
         const dateNow = new Date().getTime().toString()
@@ -41,17 +43,17 @@ export const postsRepository = {
         }
 
         posts.push(newPost)
-        return newPost
+        return Promise.resolve(newPost)
 
     },
 
-    getPostById(id: string) {
+    async getPostById(id: string) {
         const post = posts.find(p => p.id === id)
-        return post
+        return Promise.resolve(post)
     },
 
 
-    updatePost(id: string, title: string, shortDescription: string, content: string,
+    async updatePost(id: string, title: string, shortDescription: string, content: string,
                blogId: string) {
         const blog = blogs.find(blog => blog.id === blogId)
 
@@ -66,21 +68,23 @@ export const postsRepository = {
             post.content = content
             post.blogId = blogId
             post.blogName = blog.name
-            return post
+            return Promise.resolve(post)
         }
 
         return null
     },
 
-    deletePost(id: string) {
-        for (let i = 0; i < posts.length; i++) {
-            if (posts[i].id === id) {
-                posts.splice(i, 1)
-                return true
+    async deletePost(id: string) {
+        return new Promise((resolve, reject) => {
+            for (let i = 0; i < posts.length; i++) {
+                if (posts[i].id === id) {
+                    posts.splice(i, 1)
+                    resolve(true)
+                }
             }
-        }
-        return false
+            resolve(false)
 
+        })
     }
 
 }

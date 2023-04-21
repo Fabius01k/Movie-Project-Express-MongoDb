@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {blogs} from "../repositories/blogs-repository";
+import {blogs} from "../repositories-in-memory/blogs-repository";
 
 export const postCreateValidators = [
     body('blogId').isString().notEmpty().custom((value: string) => {

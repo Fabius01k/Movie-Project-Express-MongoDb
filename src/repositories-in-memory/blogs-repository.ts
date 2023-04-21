@@ -15,12 +15,11 @@ export let blogs: TVblogs[] = []
 
 export const blogsRepository = {
 
-    findBlogs() {
-        return blogs
+    async findBlogs() {
+        return Promise.resolve(blogs)
     },
 
-
-    createBlog(name: string, description: string, websiteUrl: string) {
+    async createBlog(name: string, description: string, websiteUrl: string) {
 
         const dateNow = new Date().getTime().toString()
         const newBlog: TVblogs = {
@@ -31,17 +30,16 @@ export const blogsRepository = {
 
         }
         blogs.push(newBlog)
-        return newBlog
+        return Promise.resolve(newBlog)
 
     },
 
-    getBlogById(id: string) {
+    async getBlogById(id: string) {
         const blog = blogs.find(b => b.id === id)
-        return blog
+        return Promise.resolve(blog)
     },
 
-
-    updateBlog(id: string, name: string, description: string, websiteUrl: string ) {
+    async updateBlog(id: string, name: string, description: string, websiteUrl: string ) {
 
         const blog = blogs.find(b => b.id === id)
         if (blog) {
@@ -49,30 +47,23 @@ export const blogsRepository = {
             blog.name = name
             blog.description = description
             blog.websiteUrl = websiteUrl
-            return blog
+            return Promise.resolve(blog)
         }
 
         return null
     },
 
-    deleteBlog(id: string) {
-        for (let i = 0; i < blogs.length; i++) {
-            if (blogs[i].id === id) {
-                blogs.splice(i, 1)
-                return true
+    async deleteBlog(id: string) {
+        return new Promise((resolve, reject) => {
+            for (let i = 0; i < blogs.length; i++) {
+                if (blogs[i].id === id) {
+                    blogs.splice(i, 1)
+                    resolve(true)
+                }
             }
-        }
-        return false
-
+            resolve(false)
+        })
 
     }
-
-
-
-
-
-
-
-
 
 }

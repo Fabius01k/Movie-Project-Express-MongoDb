@@ -1,24 +1,25 @@
 import {Request, Response, Router} from "express";
-import {postsRepository} from "../repositories/posts-repository";
+// import {postsRepository} from "../repositories-in-memory/posts-repository";
 import {body, validationResult} from "express-validator";
 
-import {blogs} from "../repositories/blogs-repository";
+import {blogs} from "../repositories-in-memory/blogs-repository";
 import {postCreateValidators, postUpdateValodators} from "../validadation/post-validation";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
+import {postsRepository} from "../repositories-db/post-repostory-db";
 
 export const postsRouter = Router({})
-postsRouter.get('/', (req: Request, res: Response) => {
-    const posts = postsRepository.findPosts()
+postsRouter.get('/', async (req: Request, res: Response) => {
+    const posts = await postsRepository.findPosts()
     res.status(200).send(posts)
 
 })
 
 
 postsRouter.post('/', basicAuthGuardMiddleware, postCreateValidators, inputValidationMiddleware,
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
 
-        const newPost = postsRepository.createPost(req.body.title,
+        const newPost = await postsRepository.createPost(req.body.title,
             req.body.shortDescription,
             req.body.content,
             req.body.blogId
@@ -35,9 +36,8 @@ postsRouter.post('/', basicAuthGuardMiddleware, postCreateValidators, inputValid
     })
 
 
-postsRouter.get('/:id',
-    (req: Request, res: Response) => {
-        const post = postsRepository.getPostById(req.params.id)
+postsRouter.get('/:id', async (req: Request, res: Response) => {
+        const post = await postsRepository.getPostById(req.params.id)
 
         if (post) {
             res.status(200).send(post)
@@ -47,10 +47,10 @@ postsRouter.get('/:id',
     })
 
 postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputValidationMiddleware,
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
 
 
-        const post = postsRepository.updatePost(
+        const post = await postsRepository.updatePost(
             req.params.id,
             req.body.title,
             req.body.shortDescription,
@@ -66,8 +66,8 @@ postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputVal
 
 
 postsRouter.delete('/:id', basicAuthGuardMiddleware,
-    (req: Request, res: Response) => {
-        const newPosts = postsRepository.deletePost(req.params.id)
+    async (req: Request, res: Response) => {
+        const newPosts = await postsRepository.deletePost(req.params.id)
 
         if (newPosts) {
             res.sendStatus(204)
