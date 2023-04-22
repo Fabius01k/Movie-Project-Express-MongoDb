@@ -1,5 +1,7 @@
 import {blogs} from "./blogs-repository-db";
-import {client, postsCollection} from "../db/db";
+import {blogsCollection, client, postsCollection} from "../db/db";
+import {TPostDb, TPostView} from "../models/posts/posts-type";
+import {ObjectId} from "mongodb";
 
 
 type TVposts = {
@@ -14,50 +16,65 @@ type TVposts = {
 
 export let posts: TVposts[] = []
 
+const mapPostFromDbView = (post: TPostDb): TPostView => {
+    return {
+        id: post.id,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt
+    }
+}
+
 export const postsRepository = {
 
-    async findPosts() {
-        const posts = await postsCollection.find().toArray()
+    async findPosts(): Promise<TPostView[]> {
+        const posts: TPostDb[] = await postsCollection.find().toArray()
 
-        return posts
+        return posts.map(p => mapPostFromDbView(p))
     },
 
     async createPost(title: string, shortDescription: string, content: string,
-                     blogId: string) {
+                     blogId: string): Promise<TPostView | null> {
 
         const dateNow = new Date().getTime().toString()
-        const blog = blogs.find(blog => blog.id === blogId)
+        const blog = await blogsCollection.findOne({id: blogId})
 
         if (!blog) {
             return null
         }
 
-        const newPost: TVposts = {
+        const newPost: TPostDb = {
+            _id: new ObjectId(),
             id: dateNow,
             title: title,
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: blog.name
-
+            blogName: blog.name,
+            createdAt: new Date().toISOString(),
 
         }
-        const createdPostPromise = await postsCollection.insertOne(newPost)
+        await postsCollection.insertOne(newPost)
 
-        return createdPostPromise
+        return mapPostFromDbView(newPost)
 
 
     },
 
-    async getPostById(id: string) {
-        const post = await postsCollection.findOne({id: id})
-        return post
+    async getPostById(id: string): Promise<TPostView | null> {
+        const post: TPostDb | null = await postsCollection.findOne({id: id})
+        if(!post) return null
+
+        return mapPostFromDbView(post)
 
     },
 
     async updatePost(id: string, title: string, shortDescription: string, content: string,
-                     blogId: string) {
-        const blog = blogs.find(blog => blog.id === blogId)
+                     blogId: string): Promise<boolean | null> {
+        const blog = await blogsCollection.findOne({id: blogId})
 
         if (!blog) {
             return null
@@ -76,7 +93,7 @@ export const postsRepository = {
         return post
     },
 
-    async deletePost(id: string) {
+    async deletePost(id: string): Promise<boolean> {
         const deletePostPromise = await postsCollection.
         deleteOne({id: id})
 

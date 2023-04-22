@@ -1,9 +1,9 @@
 import express, {Request, Response} from 'express'
 import {videosRouter} from "./routes/videos-router";
 import {blogsRouter} from "./routes/blogs-router";
-import {db, runDb} from "./db/db";
+import {collections, db, runDb} from "./db/db";
 import {postsRouter} from "./routes/post-router";
-import {log} from "util";
+
 
 
 export const app = express()
@@ -11,10 +11,9 @@ const port = 3000
 app.use(express.json())
 
 
-app.delete('/testing/all-data', (req: Request, res: Response) => {
-    db.videos = []
-    db.blogs = []
-    db.posts = []
+app.delete('/testing/all-data', async(req: Request, res: Response) => {
+    const promises = collections.map(c => c.deleteMany())
+    await Promise.all(promises)
     res.sendStatus(204)
 })
 
@@ -23,14 +22,12 @@ app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 
 const startApp = async () => {
+    await runDb()
     app.listen(port, () => {
         console.log(`Example app listening on port ${port}`)
     })
-    runDb()
-
-
-
 }
+
 startApp()
 
 

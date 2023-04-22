@@ -1,4 +1,6 @@
 import {client, videosCollection} from "../db/db";
+import {TVideoDb, TVideoView} from "../models/videos/videos-type";
+import {ObjectId} from "mongodb";
 
 type TVideo = {
     id: number
@@ -15,12 +17,25 @@ const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\
 
 export let videos: TVideo[] = []
 
+const mapVideoFromDbToView = (video:TVideoDb): TVideoView => {
+    return {
+        id: video.id,
+        title: video.title,
+        author: video.author,
+        canBeDownloaded: video.canBeDownloaded,
+        minAgeRestriction: video.minAgeRestriction,
+        createdAt: video.createdAt,
+        publicationDate: video.publicationDate,
+        availableResolutions: video.availableResolutions
+    }
+}
+
 
 export const videosRepository = {
 
-    async findVideos() {
-        const videos = await videosCollection.find().toArray();
-        return videos
+    async findVideos(): Promise<TVideoView[]> {
+        const videos: TVideoDb[] = await videosCollection.find().toArray();
+        return videos.map(v => mapVideoFromDbToView(v))
     },
 
     // async findVideos(): Promise<TVideo[]>  {
@@ -29,11 +44,11 @@ export const videosRepository = {
     //     return videos
     // },
 
-    async createVideo(title: string, author: string, availableResolutions: string[]) {
+    async createVideo(title: string, author: string, availableResolutions: string[]): Promise<TVideoView> {
 
-        console.log('createVideo');
         const dateNow = new Date()
-        const newVideo: TVideo = {
+        const newVideo: TVideoDb = {
+            _id: new ObjectId(),
             id: +dateNow,
             title: title,
             author: author,
@@ -44,24 +59,25 @@ export const videosRepository = {
             availableResolutions: availableResolutions
         }
 
-        const createdVideoPromise = await videosCollection.insertOne(newVideo);
+        await videosCollection.insertOne(newVideo);
 
-        return createdVideoPromise;
+        return mapVideoFromDbToView(newVideo);
 
     },
 
-    async getVideoById(id: number) {
-        const video = await videosCollection.findOne({id: id})
+    async getVideoById(id: number): Promise<TVideoView | null> {
+        const video: TVideoDb | null = await videosCollection.findOne({id: id})
+        if (!video) return null
 
-        return video
+        return mapVideoFromDbToView(video)
     },
 
     async updateVideo(id: number, title: string, author: string,
                       availableResolutions: string[], canBeDownloaded: boolean,
                       minAgeRestriction: number | null,
-                      publicationDate: string) {
+                      publicationDate: string): Promise<boolean> {
 
-        const updateVideoPromise = await videosCollection.
+        const updateVideo = await videosCollection.
         updateOne({id: id}, {
             $set: {
                 title: title,
@@ -73,15 +89,15 @@ export const videosRepository = {
             },
         })
 
-        const video = updateVideoPromise.matchedCount === 1
+        const video = updateVideo.matchedCount === 1
         return video
     },
 
-    async deleteVideo(id: number) {
-        const deleteVideoPromise = await videosCollection.
+    async deleteVideo(id: number): Promise<boolean> {
+        const deleteVideo = await videosCollection.
         deleteOne({id: id})
 
-        return deleteVideoPromise.deletedCount === 1
+        return deleteVideo.deletedCount === 1
     }
 }
 

@@ -7,29 +7,28 @@ import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin
 import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
 
 
-
 export const blogsRouter = Router({})
 
-blogsRouter.get('/',async (req: Request, res: Response) => {
+blogsRouter.get('/', async (req: Request, res: Response) => {
     const blogs = await blogsRepository.findBlogs()
     res.status(200).send(blogs)
 
 })
 
-blogsRouter.post('/',basicAuthGuardMiddleware, blogCreateValidators,inputValidationMiddleware,
+blogsRouter.post('/', basicAuthGuardMiddleware, blogCreateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-            const newBlog = await blogsRepository.createBlog(req.body.name,
+        const newBlog = await blogsRepository.createBlog(req.body.name,
             req.body.description,
             req.body.websiteUrl)
-            res.status(201).send(newBlog)
+        res.status(201).send(newBlog)
 
-})
+    })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
     const blog = await blogsRepository.getBlogById(req.params.id)
 
-    if(blog) {
+    if (blog) {
         res.status(200).send(blog)
     } else {
         res.sendStatus(404)
@@ -37,24 +36,23 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 
 })
 
-blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators,inputValidationMiddleware,
+blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
-            const blog = await blogsRepository.updateBlog(
-
+        const blog = await blogsRepository.updateBlog(
             req.params.id,
             req.body.name,
             req.body.description,
             req.body.websiteUrl)
 
-            if(blog) {
-                res.sendStatus(204)
-            } else {
-                res.sendStatus(404)
-            }
+        if (blog) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
 
-})
+    })
 
-blogsRouter.delete('/:id',basicAuthGuardMiddleware,
+blogsRouter.delete('/:id', basicAuthGuardMiddleware,
     async (req: Request, res: Response) => {
 
         const newBlogs = await blogsRepository.deleteBlog(req.params.id)
@@ -67,7 +65,7 @@ blogsRouter.delete('/:id',basicAuthGuardMiddleware,
             res.sendStatus(404)
         }
 
-})
+    })
 
 
 
