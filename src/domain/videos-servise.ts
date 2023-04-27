@@ -1,6 +1,8 @@
-import {client, videosCollection} from "../db/db";
 import {TVideoDb, TVideoView} from "../models/videos/videos-type";
+import {videosCollection} from "../db/db";
 import {ObjectId} from "mongodb";
+import {videosRepository} from "../repositories-db/videos-repositories-db";
+
 
 type TVideo = {
     id: number
@@ -31,53 +33,46 @@ const mapVideoFromDbToView = (video:TVideoDb): TVideoView => {
 }
 
 
-export const videosRepository = {
+export const videosService = {
 
     async findVideos(): Promise<TVideoView[]> {
-        const videos: TVideoDb[] = await videosCollection.find().toArray();
-        return videos.map(v => mapVideoFromDbToView(v))
+        return videosRepository.findVideos()
     },
 
-    async createVideo(newVideo: TVideoDb): Promise<TVideoView> {
-        await videosCollection.insertOne(newVideo);
+    async createVideo(title: string, author: string, availableResolutions: string[]): Promise<TVideoView> {
 
-        return mapVideoFromDbToView(newVideo);
+        const dateNow = new Date()
+        const newVideo: TVideoDb = {
+            _id: new ObjectId(),
+            id: +dateNow,
+            title: title,
+            author: author,
+            canBeDownloaded: false,
+            minAgeRestriction: null,
+            createdAt: dateNow.toISOString(),
+            publicationDate: new Date(+dateNow + (1000 * 60 * 60 * 24)).toISOString(),
+            availableResolutions: availableResolutions
+        }
+
+        const createdVideoService = await videosRepository.createVideo(newVideo)
+
+        return createdVideoService;
 
     },
 
     async getVideoById(id: number): Promise<TVideoView | null> {
-        const video: TVideoDb | null = await videosCollection.findOne({id: id})
-        if (!video) return null
-
-        return mapVideoFromDbToView(video)
+        return videosRepository.getVideoById(id)
     },
 
     async updateVideo(id: number, title: string, author: string,
                       availableResolutions: string[], canBeDownloaded: boolean,
                       minAgeRestriction: number | null,
                       publicationDate: string): Promise<boolean> {
-
-        const updateVideo = await videosCollection.
-        updateOne({id: id}, {
-            $set: {
-                title: title,
-                author: author,
-                availableResolutions: availableResolutions,
-                canBeDownloaded: canBeDownloaded,
-                minAgeRestriction: minAgeRestriction,
-                publicationDate: publicationDate,
-            },
-        })
-
-        const video = updateVideo.matchedCount === 1
-        return video
+        return await videosRepository.updateVideo(id,title,author,availableResolutions,
+            canBeDownloaded,minAgeRestriction,publicationDate)
     },
 
     async deleteVideo(id: number): Promise<boolean> {
-        const deleteVideo = await videosCollection.
-        deleteOne({id: id})
-
-        return deleteVideo.deletedCount === 1
+        return await videosRepository.deleteVideo(id)
     }
 }
-

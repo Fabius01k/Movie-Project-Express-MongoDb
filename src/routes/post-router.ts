@@ -7,10 +7,11 @@ import {postCreateValidators, postUpdateValodators} from "../validadation/post-v
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
 import {postsRepository} from "../repositories-db/post-repostory-db";
+import {postsServise} from "../domain/posts-servise";
 
 export const postsRouter = Router({})
 postsRouter.get('/', async (req: Request, res: Response) => {
-    const posts = await postsRepository.findPosts()
+    const posts = await postsServise.findPosts()
     res.status(200).send(posts)
 
 })
@@ -19,7 +20,7 @@ postsRouter.get('/', async (req: Request, res: Response) => {
 postsRouter.post('/', basicAuthGuardMiddleware, postCreateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-        const newPost = await postsRepository.createPost(req.body.title,
+        const newPost = await postsServise.createPost(req.body.title,
             req.body.shortDescription,
             req.body.content,
             req.body.blogId
@@ -37,7 +38,7 @@ postsRouter.post('/', basicAuthGuardMiddleware, postCreateValidators, inputValid
 
 
 postsRouter.get('/:id', async (req: Request, res: Response) => {
-        const post = await postsRepository.getPostById(req.params.id)
+        const post = await postsServise.getPostById(req.params.id)
 
         if (post) {
             res.status(200).send(post)
@@ -50,7 +51,7 @@ postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputVal
     async (req: Request, res: Response) => {
 
 
-        const post = await postsRepository.updatePost(
+        const post = await postsServise.updatePost(
             req.params.id,
             req.body.title,
             req.body.shortDescription,
@@ -67,7 +68,7 @@ postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputVal
 
 postsRouter.delete('/:id', basicAuthGuardMiddleware,
     async (req: Request, res: Response) => {
-        const newPosts = await postsRepository.deletePost(req.params.id)
+        const newPosts = await postsServise.deletePost(req.params.id)
 
         if (newPosts) {
             res.sendStatus(204)

@@ -36,27 +36,8 @@ export const postsRepository = {
         return posts.map(p => mapPostFromDbView(p))
     },
 
-    async createPost(title: string, shortDescription: string, content: string,
-                     blogId: string): Promise<TPostView | null> {
+    async createPost(newPost: TPostDb): Promise<TPostView | null> {
 
-        const dateNow = new Date().getTime().toString()
-        const blog = await blogsCollection.findOne({id: blogId})
-
-        if (!blog) {
-            return null
-        }
-
-        const newPost: TPostDb = {
-            _id: new ObjectId(),
-            id: dateNow,
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blog.name,
-            createdAt: new Date().toISOString(),
-
-        }
         await postsCollection.insertOne(newPost)
 
         return mapPostFromDbView(newPost)

@@ -5,12 +5,13 @@ import {validationResult} from "express-validator";
 import {blogCreateValidators, blogUpdateValidators} from "../validadation/blog-validation";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
+import {blogsService} from "../domain/blogs-service";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/', async (req: Request, res: Response) => {
-    const blogs = await blogsRepository.findBlogs()
+    const blogs = await blogsService.findBlogs()
     res.status(200).send(blogs)
 
 })
@@ -18,7 +19,7 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
 blogsRouter.post('/', basicAuthGuardMiddleware, blogCreateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-        const newBlog = await blogsRepository.createBlog(req.body.name,
+        const newBlog = await blogsService.createBlog(req.body.name,
             req.body.description,
             req.body.websiteUrl)
         res.status(201).send(newBlog)
@@ -26,7 +27,7 @@ blogsRouter.post('/', basicAuthGuardMiddleware, blogCreateValidators, inputValid
     })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
-    const blog = await blogsRepository.getBlogById(req.params.id)
+    const blog = await blogsService.getBlogById(req.params.id)
 
     if (blog) {
         res.status(200).send(blog)
@@ -38,7 +39,7 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 
 blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
-        const blog = await blogsRepository.updateBlog(
+        const blog = await blogsService.updateBlog(
             req.params.id,
             req.body.name,
             req.body.description,
@@ -55,7 +56,7 @@ blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators, inputVal
 blogsRouter.delete('/:id', basicAuthGuardMiddleware,
     async (req: Request, res: Response) => {
 
-        const newBlogs = await blogsRepository.deleteBlog(req.params.id)
+        const newBlogs = await blogsService.deleteBlog(req.params.id)
 
         if (newBlogs) {
 

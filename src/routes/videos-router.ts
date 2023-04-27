@@ -1,9 +1,10 @@
 import {Request, Response, Router} from "express";
 import {app} from "../index";
 // import {videosRepository} from "../repositories-in-memory/videos-repository";
-import {videosRepository} from "../repositories-db/videos-repositories-db";
+// import {videosRepository} from "../repositories-db/videos-repositories-db";
 
 import {videos} from "../repositories-in-memory/videos-repository";
+import {videosService} from "../domain/videos-servise";
 
 
 const valueAvailableResolutions = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
@@ -11,7 +12,7 @@ const valuePublicationDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\
 
 export const videosRouter = Router ({})
 videosRouter.get('/', async (req: Request, res: Response) => {
-    const videos = await videosRepository.findVideos()
+    const videos = await videosService.findVideos()
     res.status(200).send(videos)
 })
 
@@ -62,7 +63,7 @@ videosRouter.post('/', async (req: Request, res: Response) => {
         res.status(400).send({errorsMessages: errors})
         return
     }
-    const newVideo = await videosRepository.createVideo(req.body.title, req.body.author, req.body.availableResolutions )
+    const newVideo = await videosService.createVideo(req.body.title, req.body.author, req.body.availableResolutions )
     res.status(201).send(newVideo)
 })
 
@@ -70,7 +71,7 @@ videosRouter.post('/', async (req: Request, res: Response) => {
 
 videosRouter.get('/:id', async (req: Request, res: Response) => {
     const id = +req.params.id
-    const video = await videosRepository.getVideoById(+req.params.id)
+    const video = await videosService.getVideoById(+req.params.id)
 
     if (video) {
         res.status(200).send(video)
@@ -165,7 +166,7 @@ videosRouter.put('/:id', async (req: Request, res: Response) => {
 
     }
     const id = +req.params.id
-    const video = await videosRepository.updateVideo(
+    const video = await videosService.updateVideo(
         +req.params.id,
         req.body.title,
         req.body.author,
@@ -183,7 +184,7 @@ videosRouter.put('/:id', async (req: Request, res: Response) => {
 
 videosRouter.delete('/:id', async (req: Request, res: Response) => {
     const id = +req.params.id
-    const newVideos = await videosRepository.deleteVideo(+req.params.id)
+    const newVideos = await videosService.deleteVideo(+req.params.id)
 
 
     if (newVideos) {
