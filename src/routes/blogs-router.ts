@@ -6,12 +6,42 @@ import {blogCreateValidators, blogUpdateValidators} from "../validadation/blog-v
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
 import {blogsService} from "../domain/blogs-service";
+import any = jasmine.any;
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/', async (req: Request, res: Response) => {
-    const blogs = await blogsService.findBlogs()
+    let searchNameTerm: string | null = req.query.searchNameTerm as any
+    if(!searchNameTerm) {
+        searchNameTerm = null
+    }
+
+    let sortBy: string = req.query.sortBy as any
+    if(!sortBy) {
+        sortBy = 'createdAt'
+    }
+
+    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as any
+    if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
+        sortDirection = 'desc'
+    }
+
+    let pageSize: number = req.query.pageSize as any
+    const checkPagSize = +pageSize
+
+    if(!pageSize || !Number.isInteger(checkPagSize) || checkPagSize <= 0) {
+        pageSize = 10
+    }
+
+    let pageNumber: number = req.query.pageNumber as any
+    const checkPageNumber = +pageNumber
+
+    if (!checkPageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
+        pageNumber = 1
+    }
+
+    const blogs = await blogsService.findBlogs(sortBy,sortDirection,pageSize,pageNumber,searchNameTerm)
     res.status(200).send(blogs)
 
 })
@@ -35,6 +65,10 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
         res.sendStatus(404)
     }
 
+})
+
+blogsRouter.post('/:blogId/posts', async (req: Request, res: Response) => {
+   //crate new post
 })
 
 blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators, inputValidationMiddleware,

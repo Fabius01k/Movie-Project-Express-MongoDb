@@ -31,8 +31,11 @@ const mapPostFromDbView = (post: TPostDb): TPostView => {
 
 export const postsServise = {
 
-    async findPosts(): Promise<TPostView[]> {
-        return postsRepository.findPosts()
+    async findPosts(sortBy: string,sortDirection: 'asc' | 'desc',
+                    pageSize: number,pageNumber: number) {
+        return postsRepository.findPosts(
+            sortBy,sortDirection,pageSize,pageNumber
+        )
     },
 
     async createPost(title: string, shortDescription: string, content: string,

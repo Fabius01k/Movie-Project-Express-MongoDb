@@ -30,10 +30,24 @@ const mapPostFromDbView = (post: TPostDb): TPostView => {
 
 export const postsRepository = {
 
-    async findPosts(): Promise<TPostView[]> {
-        const posts: TPostDb[] = await postsCollection.find().toArray()
+    async findPosts(sortBy: string,sortDirection: 'asc' | 'desc',
+                    pageSize: number,pageNumber: number) {
+        const posts: TPostDb[] = await postsCollection.find().
+        sort(sortBy,sortDirection).
+        skip((pageNumber-1)*pageSize).
+        limit(pageSize).
+        toArray()
 
-        return posts.map(p => mapPostFromDbView(p))
+        const items = posts.map(p => mapPostFromDbView(p))
+        const totalCount = await blogsCollection.countDocuments()
+
+        return {
+            pagesCount: Math.ceil(totalCount/pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: items
+        }
     },
 
     async createPost(newPost: TPostDb): Promise<TPostView | null> {

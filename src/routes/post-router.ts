@@ -11,7 +11,31 @@ import {postsServise} from "../domain/posts-servise";
 
 export const postsRouter = Router({})
 postsRouter.get('/', async (req: Request, res: Response) => {
-    const posts = await postsServise.findPosts()
+    let sortBy: string = req.query.sortBy as any
+    if(!sortBy) {
+        sortBy = 'createdAt'
+    }
+
+    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as any
+    if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
+        sortDirection = 'desc'
+    }
+
+    let pageSize: number = req.query.pageSize as any
+    const checkPagSize = +pageSize
+
+    if(!pageSize || !Number.isInteger(checkPagSize) || checkPagSize <= 0) {
+        pageSize = 10
+    }
+
+    let pageNumber: number = req.query.pageNumber as any
+    const checkPageNumber = +pageNumber
+
+    if (!checkPageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
+        pageNumber = 1
+    }
+
+    const posts = await postsServise.findPosts(sortBy,sortDirection,pageSize,pageNumber)
     res.status(200).send(posts)
 
 })

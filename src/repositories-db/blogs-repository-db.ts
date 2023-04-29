@@ -25,9 +25,33 @@ const mapBlogFromDbToView = (blog: TBlogDb): TBlogView => {
 
 export const blogsRepository = {
 
-    async findBlogs(): Promise<TBlogView[]> {
-        const blogs: TBlogDb[] = await blogsCollection.find().toArray();
-        return blogs.map(b => mapBlogFromDbToView(b))
+    async findBlogs(sortBy: string,sortDirection: 'asc' | 'desc',
+                    pageSize: number,pageNumber: number,searchNameTerm: string | null){
+
+        const filter = !searchNameTerm
+            ? {}
+            : {
+            name: new RegExp(searchNameTerm, 'gi')
+        }
+
+        const blogs: TBlogDb[] = await blogsCollection.
+        find(filter).
+        sort(sortBy,sortDirection).
+        skip((pageNumber-1)*pageSize).
+        limit(pageSize).
+        toArray()
+
+
+        const items = blogs.map(b => mapBlogFromDbToView(b))
+        const totalCount = await blogsCollection.countDocuments(filter)
+
+        return {
+            pagesCount: Math.ceil(totalCount/pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: items
+        }
     },
 
     async createBlog(newBlog: TBlogDb): Promise<TBlogView> {

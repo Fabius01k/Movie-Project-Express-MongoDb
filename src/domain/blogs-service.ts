@@ -26,8 +26,11 @@ const mapBlogFromDbToView = (blog: TBlogDb): TBlogView => {
 
 export const blogsService = {
 
-    async findBlogs(): Promise<TBlogView[]> {
-        return blogsRepository.findBlogs()
+    async findBlogs(sortBy: string,sortDirection: 'asc' | 'desc',
+                    pageSize: number,pageNumber: number,searchNameTerm: string | null) {
+        return blogsRepository.findBlogs(
+            sortBy,sortDirection,pageSize,pageNumber,searchNameTerm
+        )
     },
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<TBlogView> {
