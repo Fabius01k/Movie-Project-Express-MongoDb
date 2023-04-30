@@ -44,7 +44,8 @@ postsRouter.get('/', async (req: Request, res: Response) => {
 postsRouter.post('/', basicAuthGuardMiddleware, postCreateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-        const newPost = await postsServise.createPost(req.body.title,
+        const newPost = await postsServise.createPost(
+            req.body.title,
             req.body.shortDescription,
             req.body.content,
             req.body.blogId

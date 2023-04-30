@@ -1,6 +1,8 @@
-import {blogsCollection, client} from "../db/db";
+import {blogsCollection, client, postsCollection} from "../db/db";
 import {TBlogDb, TBlogView} from "../models/blogs/blogs-type";
 import {ObjectId} from "mongodb";
+import {TPostDb, TPostView} from "../models/posts/posts-type";
+import {mapPostFromDbView} from "./post-repostory-db";
 
 
 type TVblogs = {
@@ -58,6 +60,13 @@ export const blogsRepository = {
         await blogsCollection.insertOne(newBlog)
 
         return mapBlogFromDbToView(newBlog)
+    },
+
+    async createPostById(newPost: TPostDb): Promise<TPostView | null> {
+
+        await postsCollection.insertOne(newPost)
+
+        return mapPostFromDbView(newPost)
     },
 
     async getBlogById(id: string): Promise<TBlogView | null> {

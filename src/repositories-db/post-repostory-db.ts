@@ -16,7 +16,7 @@ type TVposts = {
 
 export let posts: TVposts[] = []
 
-const mapPostFromDbView = (post: TPostDb): TPostView => {
+ export const mapPostFromDbView = (post: TPostDb): TPostView => {
     return {
         id: post.id,
         title: post.title,

@@ -7,6 +7,8 @@ import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin
 import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
 import {blogsService} from "../domain/blogs-service";
 import any = jasmine.any;
+import {postsServise} from "../domain/posts-servise";
+import {postCreateValidators} from "../validadation/post-validation";
 
 
 export const blogsRouter = Router({})
@@ -67,8 +69,22 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 
 })
 
-blogsRouter.post('/:blogId/posts', async (req: Request, res: Response) => {
-   //crate new post
+blogsRouter.post('/:blogId/posts', basicAuthGuardMiddleware, postCreateValidators,
+    inputValidationMiddleware,
+    async (req: Request, res: Response) => {
+    const newPost = await postsServise.createPost(
+        req.body.title,
+        req.body.shortDescription,
+        req.body.content,
+        req.params.blogId
+    )
+        if (newPost) {
+            res.status(201).send(newPost)
+
+        } else {
+            res.sendStatus(404)
+        }
+
 })
 
 blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators, inputValidationMiddleware,
