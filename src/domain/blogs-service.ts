@@ -35,6 +35,13 @@ export const blogsService = {
         )
     },
 
+    async findPostByBlogID(sortBy: string,sortDirection: 'asc' | 'desc',
+                           pageSize: number,pageNumber: number,blogId: string) {
+        return postsRepository.findPostsByBlogId(sortBy,sortDirection,pageSize,pageNumber,blogId
+        )
+
+    },
+
     async createBlog(name: string, description: string, websiteUrl: string): Promise<TBlogView> {
 
         const dateNow = new Date().getTime().toString()
@@ -53,7 +60,7 @@ export const blogsService = {
         return createdBlogService
     },
 
-    async createPostByID(title: string, shortDescription: string, content: string,
+    async createPostByBlogID(title: string, shortDescription: string, content: string,
                          blogId: string): Promise<TPostView | null> {
         const dateNow = new Date().getTime().toString()
         const blog = await blogsCollection.findOne({id: blogId})
@@ -72,7 +79,7 @@ export const blogsService = {
             createdAt: new Date().toISOString(),
 
         }
-        const createdPostService = await postsRepository.createPost(newPost)
+        const createdPostService = await postsRepository.createPostByBlogId(newPost)
 
         return createdPostService
 

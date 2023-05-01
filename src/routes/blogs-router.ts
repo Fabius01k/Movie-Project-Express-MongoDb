@@ -48,6 +48,40 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
 
 })
 
+blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
+    let sortBy: string = req.query.sortBy as any
+    if(!sortBy) {
+        sortBy = 'createdAt'
+    }
+
+    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as any
+    if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
+        sortDirection = 'desc'
+    }
+
+    let pageSize: number = req.query.pageSize as any
+    const checkPagSize = +pageSize
+
+    if(!pageSize || !Number.isInteger(checkPagSize) || checkPagSize <= 0) {
+        pageSize = 10
+    }
+
+    let pageNumber: number = req.query.pageNumber as any
+    const checkPageNumber = +pageNumber
+
+    if (!checkPageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
+        pageNumber = 1
+    }
+
+    const blogId: string = req.params.blogId
+    // if (!blogId || typeof blogId !== 'string') {}
+
+
+    const blogs = await blogsService.findPostByBlogID(sortBy,sortDirection,pageSize,pageNumber,blogId)
+    res.status(200).send(blogs)
+
+})
+
 blogsRouter.post('/', basicAuthGuardMiddleware, blogCreateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
@@ -72,7 +106,7 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 blogsRouter.post('/:blogId/posts', basicAuthGuardMiddleware, postCreateValidators,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
-    const newPost = await postsServise.createPost(
+    const newPost = await blogsService.createPostByBlogID(
         req.body.title,
         req.body.shortDescription,
         req.body.content,

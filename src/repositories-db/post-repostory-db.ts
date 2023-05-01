@@ -59,6 +59,52 @@ export const postsRepository = {
 
     },
 
+    async createPostByBlogId(newPost: TPostDb): Promise<TPostView | null> {
+
+        await postsCollection.insertOne(newPost)
+
+        return mapPostFromDbView(newPost)
+
+
+    },
+
+
+    //async createPostByBlogId(id: string): Promise<TPostView | null> {
+        //const post: TPostDb | null = await postsCollection.findOne({id: id})
+        //if(!post) return null
+
+        //return mapPostFromDbView(post)
+
+    //},
+
+    async findPostsByBlogId(sortBy: string,sortDirection: 'asc' | 'desc',
+                            pageSize: number,pageNumber: number,blogId: string) {
+
+        const filter = !blogId
+            ? {}
+            : {
+                id: new RegExp(blogId,'gi')
+            }
+
+        const posts: TPostDb[] = await postsCollection.
+        find(filter).
+        sort(sortBy,sortDirection).
+        skip((pageNumber-1)*pageSize).
+        limit(pageSize).
+        toArray()
+
+        const items = posts.map(p => mapPostFromDbView(p))
+        const totalCount = await blogsCollection.countDocuments(filter)
+
+        return {
+            pagesCount: Math.ceil(totalCount/pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: items
+        }
+    },
+
     async getPostById(id: string): Promise<TPostView | null> {
         const post: TPostDb | null = await postsCollection.findOne({id: id})
         if(!post) return null
