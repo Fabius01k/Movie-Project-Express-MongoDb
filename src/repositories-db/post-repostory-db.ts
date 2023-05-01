@@ -39,7 +39,7 @@ export const postsRepository = {
         toArray()
 
         const items = posts.map(p => mapPostFromDbView(p))
-        const totalCount = await blogsCollection.countDocuments()
+        const totalCount = await postsCollection.countDocuments()
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
