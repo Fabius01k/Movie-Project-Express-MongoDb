@@ -24,7 +24,7 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
         sortBy = 'createdAt'
     }
 
-    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as any
+    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as 'asc' | 'desc'
     if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
         sortDirection = 'desc'
     }
@@ -39,7 +39,7 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
     let pageNumber: number = req.query.pageNumber as any
     const checkPageNumber = +pageNumber
 
-    if (!checkPageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
+    if (!pageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
         pageNumber = 1
     }
 
@@ -54,7 +54,7 @@ blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
         sortBy = 'createdAt'
     }
 
-    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as any
+    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as 'asc' | 'desc'
     if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
         sortDirection = 'desc'
     }
@@ -69,12 +69,14 @@ blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
     let pageNumber: number = req.query.pageNumber as any
     const checkPageNumber = +pageNumber
 
-    if (!checkPageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
+    if (!pageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
         pageNumber = 1
     }
 
-    const blogId: string = req.params.blogId
-    // if (!blogId || typeof blogId !== 'string') {}
+    const blogId: string = req.params.blogId as string
+    if (!blogId || typeof blogId !== 'string' || !/^\d+$/.test(blogId)) {
+        res.sendStatus(404);
+    }
 
 
     const blogs = await blogsService.findPostByBlogID(sortBy,sortDirection,pageSize,pageNumber,blogId)
