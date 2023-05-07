@@ -24,7 +24,7 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
         sortBy = 'createdAt'
     }
 
-    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as 'asc' | 'desc'
+    let sortDirection: 'asc' | 'desc' | undefined = req.query.sortDirection as 'asc' | 'desc' | undefined
     if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
         sortDirection = 'desc'
     }
@@ -54,7 +54,7 @@ blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
         sortBy = 'createdAt'
     }
 
-    let sortDirection: 'asc' | 'desc' = req.query.sortDirection as 'asc' | 'desc'
+    let sortDirection: 'asc' | 'desc' | undefined = req.query.sortDirection as 'asc' | 'desc' | undefined
     if(!sortDirection || sortDirection.toLowerCase() !== 'asc') {
         sortDirection = 'desc'
     }
