@@ -73,13 +73,14 @@ blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
         pageNumber = 1
     }
 
-    const blogId: string = req.params.blogId as string
-    if (!blogId || typeof blogId !== 'string' || !/^\d+$/.test(blogId)) {
+    const result = await blogsService.getBlogById(req.params.blogId)
+    if (!result) {
         res.sendStatus(404);
+        return
     }
 
 
-    const blogs = await blogsService.findPostByBlogID(sortBy,sortDirection,pageSize,pageNumber,blogId)
+    const blogs = await blogsService.findPostByBlogID(sortBy,sortDirection,pageSize,pageNumber, result!.id)
     res.status(200).send(blogs)
 
 })
