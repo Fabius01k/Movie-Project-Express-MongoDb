@@ -23,7 +23,7 @@ export const postCreateValidators = [
     body('content').isString().notEmpty().trim().isLength({min: 1, max: 1000}).withMessage('content is not correct'),
 ]
 
-export const postCreateByBlog = [
+export const postCreateByBlogValidator = [
     body('title').isString().notEmpty().trim().isLength({min: 1, max: 30}).withMessage('title is not correct'),
 
     body('shortDescription').isString().notEmpty().trim().isLength({
