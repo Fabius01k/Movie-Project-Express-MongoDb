@@ -43,8 +43,8 @@ export const postsRepository = {
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: +pageNumber,
+            pageSize: +pageSize,
             totalCount: totalCount,
             items: items
         }
@@ -98,8 +98,8 @@ export const postsRepository = {
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: +pageNumber,
+            pageSize: +pageSize,
             totalCount: totalCount,
             items: items
         }
