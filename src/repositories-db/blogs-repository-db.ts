@@ -36,12 +36,13 @@ export const blogsRepository = {
             name: new RegExp(searchNameTerm, 'gi')
         }
 
-        const blogs: TBlogDb[] = await blogsCollection.
-        find(filter).
-        sort(sortBy,sortDirection).
-        skip((pageNumber-1)*pageSize).
-        limit(pageSize).
-        toArray()
+
+        const blogs: TBlogDb[] = await blogsCollection
+            .find(filter)
+            .sort(sortBy,sortDirection)
+            .skip((pageNumber - 1) * pageSize)
+            .limit(+pageSize)
+            .toArray()
 
 
         const items = blogs.map(b => mapBlogFromDbToView(b))

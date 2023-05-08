@@ -4,7 +4,7 @@ import {blogsCollection} from "../db/db";
 // import {blogs} from "../repositories-in-memory/blogs-repository";
 
 export const postCreateValidators = [
-    body('blogId').isString().notEmpty().custom(async (value: string) => {
+    body('blogId').isString().notEmpty(),/*.custom(async (value: string) => {
         const blog = await blogsCollection.findOne({id: value})
 
         if (!blog) {
@@ -12,7 +12,7 @@ export const postCreateValidators = [
             throw new Error(' 1 Blog ID is not valid');
         }
         return true
-    }),
+    }),*/
     body('title').isString().notEmpty().trim().isLength({min: 1, max: 30}).withMessage('title is not correct'),
 
     body('shortDescription').isString().notEmpty().trim().isLength({
