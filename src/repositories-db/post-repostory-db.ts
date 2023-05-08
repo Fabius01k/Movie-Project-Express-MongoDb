@@ -35,7 +35,7 @@ export const postsRepository = {
         const posts: TPostDb[] = await postsCollection.find().
         sort(sortBy,sortDirection).
         skip((pageNumber-1)*pageSize).
-        limit(pageSize).
+        limit(+pageSize).
         toArray()
 
         const items = posts.map(p => mapPostFromDbView(p))
@@ -90,7 +90,7 @@ export const postsRepository = {
         find(filter).
         sort(sortBy,sortDirection).
         skip((pageNumber-1)*pageSize).
-        limit(pageSize).
+        limit(+pageSize).
         toArray()
 
         const items = posts.map(p => mapPostFromDbView(p))
