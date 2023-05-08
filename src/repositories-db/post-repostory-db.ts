@@ -80,21 +80,21 @@ export const postsRepository = {
     async findPostsByBlogId(sortBy: string,sortDirection: 'asc' | 'desc',
                             pageSize: number,pageNumber: number,blogId: string) {
 
-        const filter = !blogId
+        /*const filter = !blogId
             ? {}
             : {
                 id: new RegExp(blogId,'gi')
             }
-
+*/
         const posts: TPostDb[] = await postsCollection.
-        find(filter).
+        find({blogId: blogId}).
         sort(sortBy,sortDirection).
         skip((pageNumber-1)*pageSize).
         limit(+pageSize).
         toArray()
 
         const items = posts.map(p => mapPostFromDbView(p))
-        const totalCount = await blogsCollection.countDocuments(filter)
+        const totalCount = await postsCollection.countDocuments({blogId: blogId})
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
