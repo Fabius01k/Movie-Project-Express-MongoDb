@@ -3,6 +3,7 @@ import {videosRouter} from "./routes/videos-router";
 import {blogsRouter} from "./routes/blogs-router";
 import {collections, db, runDb} from "./db/db";
 import {postsRouter} from "./routes/post-router";
+import {usersRouter} from "./routes/users-router";
 
 
 
@@ -20,6 +21,7 @@ app.delete('/testing/all-data', async(req: Request, res: Response) => {
 app.use('/videos', videosRouter)
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
+app.use('/users', usersRouter)
 
 const startApp = async () => {
     await runDb()

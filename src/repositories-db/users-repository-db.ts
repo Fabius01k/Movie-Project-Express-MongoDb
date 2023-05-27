@@ -60,5 +60,11 @@ export const usersRepository = {
             .deleteOne({id: id})
 
         return deleteUser.deletedCount === 1
+    },
+
+    async findByLoginEmail(loginOrEmail: string) {
+
+        const user = await usersCollection.findOne({ $or: [{ email:loginOrEmail}, {userName: loginOrEmail} ]})
+        return user
     }
 }

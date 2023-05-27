@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import {TBlogDb} from "../models/blogs/blogs-type";
 import {TVideoDb} from "../models/videos/videos-type";
 import {TPostDb} from "../models/posts/posts-type";
-import {TUserDb} from "../models/users/users-type";
+import {TUserDb} from "../models/users/userrrs-type";
 
 dotenv.config()
 const mongoURI = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
