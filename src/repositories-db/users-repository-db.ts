@@ -19,9 +19,8 @@ export const usersRepository = {
                     searchLoginTerm: string | null,
                     searchEmailTerm: string | null) {
 
-        const filter = !searchLoginTerm && !searchEmailTerm
-            ? {}
-            : {
+
+        const filter = {
                 $or: [
                     { login: { $regex: searchLoginTerm ?? '', $options: 'i' } },
                     { email: { $regex: searchEmailTerm ?? '', $options: 'i' } },
@@ -32,10 +31,12 @@ export const usersRepository = {
                     .find(filter)
                     .sort(sortBy,sortDirection)
                     .skip((pageNumber - 1) * pageSize)
-                    .limit(+pageSize)
+                    .limit(pageSize)
                     .toArray()
 
+        console.log(users)
         const items = users.map(u => mapUserFromDbView(u))
+        console.log(items)
         const totalCount = await usersCollection.countDocuments(filter)
 
         return {

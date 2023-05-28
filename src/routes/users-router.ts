@@ -43,8 +43,8 @@ usersRouter.get('/',basicAuthGuardMiddleware,
             pageNumber = 1
         }
 
-        const users = await usersService.findUsers(sortBy,sortDirection,pageNumber,pageSize,
-            searchEmailTerm,searchLoginTerm)
+        const users = await usersService.findUsers(sortBy,sortDirection,pageSize, pageNumber,
+            searchLoginTerm, searchEmailTerm)
         res.status(200).send(users)
 
 })
