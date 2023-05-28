@@ -4,6 +4,7 @@ import {blogsRouter} from "./routes/blogs-router";
 import {collections, db, runDb} from "./db/db";
 import {postsRouter} from "./routes/post-router";
 import {usersRouter} from "./routes/users-router";
+import {authRouter} from "./routes/auth-router";
 
 
 
@@ -22,6 +23,7 @@ app.use('/videos', videosRouter)
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
+app.use('/auth',authRouter)
 
 const startApp = async () => {
     await runDb()
