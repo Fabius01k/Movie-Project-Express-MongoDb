@@ -54,16 +54,10 @@ export const usersService = {
     },
 
     async checkCredentials(loginOrEmail: string, password: string) {
-
         const user = await usersRepository.findByLoginEmail(loginOrEmail)
         if(!user) return false
-        const passwordHash = await this._generateHash(password, user.passwordSalt)
-        if(user.passwordHash !== passwordHash) {
-            return false
-        }
-
-        return true
+       // const passwordHash = await this._generateHash(password, user.passwordSalt)
+        return bcrypt.compare(password,user.passwordHash)
     }
-
 }
 

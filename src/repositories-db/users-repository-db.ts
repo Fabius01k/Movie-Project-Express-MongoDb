@@ -25,8 +25,6 @@ export const usersRepository = {
                     { login: { $regex: searchLoginTerm ?? '', $options: 'i' } },
                     { email: { $regex: searchEmailTerm ?? '', $options: 'i' } },
                 ]}
-        console.log(pageNumber);
-        console.log(pageSize);
 
 
         const users: TUserDb[] = await usersCollection
