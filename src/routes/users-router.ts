@@ -42,8 +42,9 @@ usersRouter.get('/',basicAuthGuardMiddleware,
         if (!pageNumber || !Number.isInteger(checkPageNumber) || checkPageNumber <= 0 ) {
             pageNumber = 1
         }
+      //  const adc = isNaN(Number(req.query.pageNumber)) ? 10 : Number(req.query.pageNumber)
 
-        const users = await usersService.findUsers(sortBy,sortDirection,pageSize, pageNumber,
+            const users = await usersService.findUsers(sortBy,sortDirection,+pageSize, +pageNumber,
             searchLoginTerm, searchEmailTerm)
         res.status(200).send(users)
 
@@ -52,10 +53,16 @@ usersRouter.get('/',basicAuthGuardMiddleware,
 usersRouter.post('/',basicAuthGuardMiddleware,userCreateValidators,inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-    const newUser = await usersService.createUser(req.body.login,
-        req.body.password,
-        req.body.email)
+    try {
+
+        const newUser = await usersService.createUser(req.body.login,
+            req.body.password,
+            req.body.email)
         res.status(201).send(newUser)
+    }
+    catch (error) {
+        console.error(error)
+    }
     })
 
 usersRouter.delete('/:id',basicAuthGuardMiddleware,

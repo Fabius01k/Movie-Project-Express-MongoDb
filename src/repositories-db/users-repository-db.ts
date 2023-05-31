@@ -25,6 +25,8 @@ export const usersRepository = {
                     { login: { $regex: searchLoginTerm ?? '', $options: 'i' } },
                     { email: { $regex: searchEmailTerm ?? '', $options: 'i' } },
                 ]}
+        console.log(pageNumber);
+        console.log(pageSize);
 
 
         const users: TUserDb[] = await usersCollection
@@ -34,9 +36,8 @@ export const usersRepository = {
                     .limit(pageSize)
                     .toArray()
 
-        console.log(users)
+
         const items = users.map(u => mapUserFromDbView(u))
-        console.log(items)
         const totalCount = await usersCollection.countDocuments(filter)
 
         return {
