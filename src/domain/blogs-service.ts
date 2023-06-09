@@ -5,27 +5,7 @@ import {blogsRepository} from "../repositories-db/blogs-repository-db";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {postsRepository} from "../repositories-db/post-repostory-db";
 
-
-type TVblogs = {
-
-    id: string
-    name: string
-    description: string
-    websiteUrl: string
-}
-const valueWebsiteUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 export let blogs: TBlogDb[] = []
-const mapBlogFromDbToView = (blog: TBlogDb): TBlogView => {
-    return {
-        id: blog.id,
-        name: blog.name,
-        description: blog.description,
-        websiteUrl: blog.websiteUrl,
-        createdAt: blog.createdAt,
-        isMembership: blog.isMembership
-    }
-}
-
 export const blogsService = {
 
     async findBlogs(sortBy: string,sortDirection: 'asc' | 'desc',

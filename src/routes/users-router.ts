@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 import {usersService} from "../domain/users-service";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {userCreateValidators} from "../validadation/user-validatoin";
-import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
+import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 
 export const usersRouter = Router({})
 
@@ -49,6 +49,16 @@ usersRouter.get('/',basicAuthGuardMiddleware,
         res.status(200).send(users)
 
 })
+
+// usersRouter.get('/:id', async (req: Request, res: Response) => {
+//     const user = await usersService.getUserById(req.params.id)
+//
+//     if(user) {
+//         res.status(200).send(user)
+//     } else {
+//         res.sendStatus(404)
+//     }
+//     })
 
 usersRouter.post('/',basicAuthGuardMiddleware,userCreateValidators,inputValidationMiddleware,
     async (req: Request, res: Response) => {

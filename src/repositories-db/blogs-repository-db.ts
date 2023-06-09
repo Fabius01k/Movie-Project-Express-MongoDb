@@ -4,15 +4,6 @@ import {ObjectId} from "mongodb";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {mapPostFromDbView} from "./post-repostory-db";
 
-
-type TVblogs = {
-
-    id: string
-    name: string
-    description: string
-    websiteUrl: string
-}
-const valueWebsiteUrl = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
 export let blogs: TBlogDb[] = []
 const mapBlogFromDbToView = (blog: TBlogDb): TBlogView => {
     return {
@@ -35,7 +26,11 @@ export const blogsRepository = {
             : {
             name: new RegExp(searchNameTerm, 'gi')
         }
-
+        // const filter: FilterQuery<typeof Blogs> = {};
+        //
+        // if (pagination.searchNameTerm !== null) {
+        //     filter.name = { $regex: pagination.searchNameTerm, $options: "i" };
+        // }
 
         const blogs: TBlogDb[] = await blogsCollection
             .find(filter)

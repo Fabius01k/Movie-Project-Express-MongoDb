@@ -26,6 +26,29 @@ export const usersRepository = {
                     { email: { $regex: searchEmailTerm ?? '', $options: 'i' } },
                 ]}
 
+        /*const filters: FilterQuery<UserDatabaseType>[] = [];
+
+        if (pagination.searchEmailTerm) {
+            filters.push(
+                {
+                    email: { $regex: pagination.searchEmailTerm, $options: 'i' }
+                }
+            )
+        }
+
+        if (pagination.searchLoginTerm) {
+            filters.push(
+                {
+                    login: { $regex: pagination.searchLoginTerm, $options: 'i' }
+                }
+            )
+        }
+
+        const filter: FilterQuery<UserDatabaseType> = {};
+
+        if (filters.length > 0) {
+            filter.$or = filters;
+        }*/
 
         const users: TUserDb[] = await usersCollection
                     .find(filter)
@@ -47,6 +70,20 @@ export const usersRepository = {
         }
 
         },
+
+    async findAuthUser(id: string): Promise<TUserView | null> {
+        const authUser: TUserDb | null = await usersCollection.findOne({id: id})
+        if(!authUser) return null
+
+        return mapUserFromDbView(authUser)
+    },
+
+    async getUserById(id: string): Promise<TUserView | null> {
+        const user: TUserDb | null = await usersCollection.findOne({id: id})
+        if(!user) return null
+
+        return mapUserFromDbView(user)
+    },
 
     async createUser(newUser: TUserDb): Promise<TUserView | null> {
 

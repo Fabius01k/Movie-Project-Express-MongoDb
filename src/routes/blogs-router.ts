@@ -4,9 +4,9 @@ import {blogsRepository} from "../repositories-db/blogs-repository-db";
 import {validationResult} from "express-validator";
 import {blogCreateValidators, blogUpdateValidators} from "../validadation/blog-validation";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
-import {inputValidationMiddleware} from "../validadation/input-validation-middleware";
+import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {blogsService} from "../domain/blogs-service";
-import any = jasmine.any;
+
 import {postsServise} from "../domain/posts-servise";
 import {postCreateByBlogValidator, postCreateValidators} from "../validadation/post-validation";
 
@@ -109,6 +109,7 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 blogsRouter.post('/:blogId/posts', basicAuthGuardMiddleware, postCreateByBlogValidator,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
+
     const newPost = await blogsService.createPostByBlogID(
         req.body.title,
         req.body.shortDescription,
@@ -126,11 +127,13 @@ blogsRouter.post('/:blogId/posts', basicAuthGuardMiddleware, postCreateByBlogVal
 
 blogsRouter.put('/:id', basicAuthGuardMiddleware, blogUpdateValidators, inputValidationMiddleware,
     async (req: Request, res: Response) => {
-        const blog = await blogsService.updateBlog(
+
+    const blog = await blogsService.updateBlog(
             req.params.id,
             req.body.name,
             req.body.description,
-            req.body.websiteUrl)
+            req.body.websiteUrl
+    )
 
         if (blog) {
             res.sendStatus(204)

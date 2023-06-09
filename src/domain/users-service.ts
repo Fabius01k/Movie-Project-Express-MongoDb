@@ -22,6 +22,13 @@ export const usersService = {
         return usersRepository.findUsers(sortBy,sortDirection,pageSize,pageNumber,searchLoginTerm,searchEmailTerm)
     },
 
+    async findUserById(id: string): Promise<TUserView | null> {
+        return usersRepository.getUserById(id)
+    },
+
+    async findAuthUser(userId: string): Promise<TUserView | null> {
+        return usersRepository.findAuthUser(userId)
+    },
 
     async createUser(login: string, password: string, email: string): Promise<TUserView | null > {
 

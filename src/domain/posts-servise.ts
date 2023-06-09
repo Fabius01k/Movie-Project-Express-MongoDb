@@ -1,8 +1,14 @@
 // import {blogs} from "./blogs-repository-db";
-import {blogsCollection, client, postsCollection} from "../db/db";
+import {blogsCollection, client, postsCollection, usersCollection} from "../db/db";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
 import {postsRepository} from "../repositories-db/post-repostory-db";
+import {CommentsRepository} from "../repositories-db/comments-repository-db";
+import {TcommentDb, TcommentView} from "../models/comments/comments-type";
+import {jwtService} from "../application/jwt-service";
+import {settings} from "../application/settings";
+
+import {authMiddleware} from "../middlewares/auth-middleware";
 
 
 type TVposts = {
@@ -38,6 +44,13 @@ export const postsServise = {
         )
     },
 
+    async findCommentByPostID(sortBy: string,sortDirection: 'asc' | 'desc',
+                              pageSize: number,pageNumber: number, postId: string) {
+        return CommentsRepository.findCommentByPostID(sortBy,sortDirection,pageSize,pageNumber,postId
+        )
+
+    },
+
     async createPost(title: string, shortDescription: string, content: string,
                      blogId: string): Promise<TPostView | null> {
 
@@ -62,7 +75,37 @@ export const postsServise = {
         const createdPostService = await postsRepository.createPost(newPost)
 
         return createdPostService
+    },
 
+    async createCommentByPostId(content: string, postId: string,userId: string ): Promise<TcommentView | null> {
+
+        const dateNow = new Date().getTime().toString()
+
+        const post = await postsCollection.findOne({id: postId})
+        if(!post) {
+            return null
+        }
+
+        const user = await usersCollection.findOne({id: userId})
+        if(!user) {
+            return null
+        }
+
+
+
+        const newComment: TcommentDb = {
+            _id: new ObjectId(),
+            id: dateNow,
+            content: content,
+            commentatorInfo: {
+                userId: user.id,
+                userLogin: user.login
+            },
+            createdAt: new Date().toISOString(),
+        }
+        const createdCommentService = await CommentsRepository.createCommentByPostId(newComment)
+
+        return createdCommentService
 
     },
 
