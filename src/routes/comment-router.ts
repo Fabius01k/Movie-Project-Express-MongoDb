@@ -9,6 +9,8 @@ export const commentRouter = Router({})
 
 commentRouter.get('/:id',async (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id)
+    console.log(comment, "found by id comment")
+    console.log(req.params.id, "id of comment to find")
     if (comment) {
         res.status(200).send(comment)
     } else {

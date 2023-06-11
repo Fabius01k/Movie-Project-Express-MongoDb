@@ -5,6 +5,7 @@ import {collections, db, runDb} from "./db/db";
 import {postsRouter} from "./routes/post-router";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
+import {commentRouter} from "./routes/comment-router";
 
 
 
@@ -24,6 +25,7 @@ app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/users', usersRouter)
 app.use('/auth',authRouter)
+app.use('/comments',commentRouter)
 
 const startApp = async () => {
     await runDb()
