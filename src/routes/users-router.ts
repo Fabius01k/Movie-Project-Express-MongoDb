@@ -62,7 +62,7 @@ usersRouter.get('/',basicAuthGuardMiddleware,
 
 usersRouter.post('/',basicAuthGuardMiddleware,userCreateValidators,inputValidationMiddleware,
     async (req: Request, res: Response) => {
-
+        console.log("user creation")
     try {
 
         const newUser = await usersService.createUser(req.body.login,

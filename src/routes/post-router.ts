@@ -119,6 +119,7 @@ postsRouter.post('/:postId/comments', authMiddleware, commentCreateByPostValidat
         } else {
             res.sendStatus(404)
         }
+
     })
 
 

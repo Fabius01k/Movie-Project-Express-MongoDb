@@ -1,6 +1,6 @@
 import {TUserDb, TUserView} from "../models/users/users-type";
 import {usersRepository} from "../repositories-db/users-repository-db";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import bcrypt from "bcrypt";
 
 export let users: TUserDb[] = []
@@ -60,11 +60,11 @@ export const usersService = {
         return hash
     },
 
-    async checkCredentials(loginOrEmail: string, password: string) {
+    async checkCredentials(loginOrEmail: string, password: string) : Promise<WithId<TUserDb> | null> {
         const user = await usersRepository.findByLoginEmail(loginOrEmail)
-        if(!user) return false
+        if(!user || !bcrypt.compare(password,user.passwordHash)) return null
        // const passwordHash = await this._generateHash(password, user.passwordSalt)
-        return bcrypt.compare(password,user.passwordHash)
+        return user
     }
 }
 

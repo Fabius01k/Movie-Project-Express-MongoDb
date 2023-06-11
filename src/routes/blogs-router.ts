@@ -95,6 +95,7 @@ blogsRouter.post('/', basicAuthGuardMiddleware, blogCreateValidators, inputValid
 
     })
 
+
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
     const blog = await blogsService.getBlogById(req.params.id)
 
