@@ -105,6 +105,7 @@ export const postsServise = {
                 userLogin: user.login
             },
             createdAt: new Date().toISOString(),
+            postId:postId
         }
         const createdCommentService = await CommentsRepository.createCommentByPostId(newComment)
 
