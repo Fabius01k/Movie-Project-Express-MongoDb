@@ -19,7 +19,7 @@ commentRouter.get('/:id',async (req: Request, res: Response) => {
 
 })
 
-commentRouter.put('/:commentId ',authMiddleware,
+commentRouter.put('/:commentId',authMiddleware,
     commentUpdateValidation,inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
@@ -27,6 +27,7 @@ commentRouter.put('/:commentId ',authMiddleware,
         req.params.commentId,
         req.body.content
     )
+        console.log( req.params.commentId, "comment id in update")
 
         if(comment) {
             res.sendStatus(204)
