@@ -83,11 +83,14 @@ export const postsServise = {
 
         const post = await postsCollection.findOne({id: postId})
         if(!post) {
+            console.log("post not found")
             return null
         }
-
+        console.log(postId, "postId")
+        console.log(userId, "userId")
         const user = await usersCollection.findOne({id: userId})
         if(!user) {
+            console.log("user not found")
             return null
         }
 

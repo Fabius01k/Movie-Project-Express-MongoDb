@@ -106,7 +106,7 @@ postsRouter.post('/:postId/comments', authMiddleware, commentCreateByPostValidat
     async (req: Request, res: Response) => {
 
 
-
+        console.log("we are in router")
         const newComment = await postsServise.createCommentByPostId(
             req.body.content,
             req.params.postId,
@@ -114,9 +114,11 @@ postsRouter.post('/:postId/comments', authMiddleware, commentCreateByPostValidat
         )
 
         if (newComment) {
+            console.log("comment creation succeded")
             res.status(201).send(newComment)
 
         } else {
+            console.log("comment creation failed")
             res.sendStatus(404)
         }
 
