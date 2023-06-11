@@ -22,31 +22,32 @@ commentRouter.get('/:id',async (req: Request, res: Response) => {
 commentRouter.put('/:commentId',authMiddleware,
     commentUpdateValidation,inputValidationMiddleware,
     async (req: Request, res: Response) => {
+    const commentBeforeUpdating = await commentsService.getCommentById(req.params.commentId)
+        if(!commentBeforeUpdating)  return res.sendStatus(404);
+        const commentatorId = commentBeforeUpdating.commentatorInfo.userId
+        if (commentatorId !== req.userId) return res.sendStatus(403)
 
-    const comment = await commentsService.updateCommentByID(
+        const comment = await commentsService.updateCommentByID(
         req.params.commentId,
         req.body.content
     )
         console.log( req.params.commentId, "comment id in update")
 
-        if(comment) {
-            res.sendStatus(204)
-        } else {
-            res.sendStatus(404)
-        }
+        res.sendStatus(204)
+
 
 })
 
 commentRouter.delete('/:commentId',authMiddleware,
     async (req: Request, res: Response) => {
+        const commentBeforeDelete = await commentsService.getCommentById(req.params.commentId)
+        if(!commentBeforeDelete)  return res.sendStatus(404);
+        const commentatorId = commentBeforeDelete.commentatorInfo.userId
 
+        if (commentatorId !== req.userId) return res.sendStatus(403)
     const newComment = await commentsService.deleteComment(req.params.commentId)
 
-        if (newComment) {
-            res.sendStatus(204)
-        } else {
+        res.sendStatus(204)
 
-            res.sendStatus(404)
-        }
 
 })
