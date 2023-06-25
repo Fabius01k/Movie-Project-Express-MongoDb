@@ -7,13 +7,14 @@ import {WithId} from "mongodb";
 import {authService} from "../domain/auth-service";
 import {userAuthCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {TUserAccountDb} from "../models/user-account/user-account-types";
 
 
 export const authRouter = Router({})
 
 authRouter.post('/login',
     async (req: Request, res:Response) => {
-    const user : WithId<TUserDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
+    const user : WithId<TUserAccountDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
 
         if (user) {
             const accessToken = await jwtService.createJWT(user)
@@ -44,9 +45,17 @@ authRouter.post('/registration-confirmation',
         } else {
             res.sendStatus(400)
         }
+})
 
+authRouter.post('/registration-email-resending',
+    async (req: Request, res:Response) => {
 
-
+        const result = await authService.resendingCode(req.body.email)
+        if(result) {
+            res.status(204).send()
+        } else {
+            res.sendStatus(400)
+        }
 })
 
 authRouter.get('/me',authMiddleware,

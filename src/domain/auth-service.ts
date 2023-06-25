@@ -9,17 +9,20 @@ import {emailManager} from "../managers/email-manager";
 export const authService = {
     async createUserAuth(login: string, password: string, email: string): Promise<TUserAccountDb | null> {
 
+        const dateNow = new Date().getTime().toString()
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
         const userAccount: TUserAccountDb = {
 
             _id: new ObjectId(),
+            id: dateNow,
             accountData: {
                 userName: {
                     login: login,
                     email: email
                 },
                 passwordHash,
+                passwordSalt,
                 createdAt: new Date().toISOString(),
             },
             emailConfirmation: {
@@ -34,7 +37,7 @@ export const authService = {
         try {
             await emailManager.sendEmailconfirmationMessage(userAccount)
         } catch (error) {
-            console.log(error)
+
             return null
         }
         return createUserAuth
@@ -49,23 +52,36 @@ export const authService = {
         if (user.emailConfirmation.expirationDate < new Date()) return false
 
 
-            let result = await usersRepository.upateConfirmation(user._id)
+            let result = await usersRepository.updateConfirmation(user._id)
             return result
         },
-
-
-
-
-
-
 
 
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
     },
-}
 
+    async resendingCode(email: string): Promise<boolean | null> {
+
+        let user = await usersRepository.findByAuthLoginEmail(email)
+
+        if (!user) return false
+        if (user.emailConfirmation.isConfirmed) return false
+
+        const code = user.emailConfirmation.confirmationCode
+
+        try {
+            await emailManager.resendEmailconfirmationMessage(email, code)
+        } catch (error) {
+
+            return false
+        }
+        return true
+
+    }
+}
+// if (user.emailConfirmation.isConfirmed) return false
 
 
 

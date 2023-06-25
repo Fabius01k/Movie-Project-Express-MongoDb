@@ -2,15 +2,18 @@ import {TUserDb, TUserView} from "../models/users/users-type";
 import {usersRepository} from "../repositories-db/users-repository-db";
 import {ObjectId, WithId} from "mongodb";
 import bcrypt from "bcrypt";
+import {TUserAccountDb} from "../models/user-account/user-account-types";
+import {v4 as uuidv4} from "uuid";
+import add from "date-fns/add";
 
-export let users: TUserDb[] = []
+export let users: TUserAccountDb[] = []
 
-const mapUserFromDbView = (user: TUserDb): TUserView => {
+const mapUserFromDbView = (user: TUserAccountDb): TUserView => {
     return {
         id: user.id,
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt
+        login: user.accountData.userName.login,
+        email: user.accountData.userName.email,
+        createdAt: user.accountData.createdAt
     }
 }
 
@@ -36,14 +39,26 @@ export const usersService = {
         const passwordHash = await this._generateHash(password, passwordSalt)
 
         const dateNow = new Date().getTime().toString()
-        const newUser: TUserDb = {
+        const newUser: TUserAccountDb = {
             _id: new ObjectId(),
             id: dateNow,
-            login: login,
-            email: email,
-            passwordHash,
-            passwordSalt,
-            createdAt: new Date().toISOString(),
+            accountData: {
+                userName: {
+                    login: login,
+                    email: email
+                },
+                passwordHash,
+                passwordSalt,
+                createdAt: new Date().toISOString(),
+            },
+                emailConfirmation: {
+                    confirmationCode: uuidv4(),
+                    expirationDate: add(new Date(), {
+                        hours: 1
+                    }),
+                    isConfirmed: true
+                }
+
         }
 
         const createdUserService = await usersRepository.createUser(newUser)
@@ -60,13 +75,20 @@ export const usersService = {
         return hash
     },
 
-    async checkCredentials(loginOrEmail: string, password: string) : Promise<WithId<TUserDb> | null> {
+    async checkCredentials(loginOrEmail: string, password: string) : Promise<WithId<TUserAccountDb> | null> {
         const user = await usersRepository.findByLoginEmail(loginOrEmail)
 
-        if(user) console.log(await bcrypt.compare(password,user.passwordHash), "password validation");
-        if(user && await bcrypt.compare(password,user.passwordHash)) return user
+        if(!user) return null
+
+        if (!user.emailConfirmation.isConfirmed) {
+            return null
+        }
+
+        if(user && await bcrypt.compare(password,user.accountData.passwordHash)) return user
        // const passwordHash = await this._generateHash(password, user.passwordSalt)
         return null
-    }
+    },
+
+
 }
 

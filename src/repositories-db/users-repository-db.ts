@@ -4,13 +4,13 @@ import {TUserAccountDb} from "../models/user-account/user-account-types";
 import {ObjectId} from "mongodb";
 
 
-export let users: TUserDb[] = []
-const mapUserFromDbView = (user: TUserDb): TUserView => {
+export let users: TUserAccountDb[] = []
+const mapUserFromDbView = (user: TUserAccountDb): TUserView => {
     return {
         id: user.id,
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt
+        login: user.accountData.userName.login,
+        email: user.accountData.userName.email,
+        createdAt: user.accountData.createdAt
     }
 }
 
@@ -52,7 +52,7 @@ export const usersRepository = {
             filter.$or = filters;
         }*/
 
-        const users: TUserDb[] = await usersCollection
+        const users: TUserAccountDb[] = await usersAccountCollection
                     .find(filter)
                     .sort(sortBy,sortDirection)
                     .skip((pageNumber - 1) * pageSize)
@@ -61,7 +61,7 @@ export const usersRepository = {
 
 
         const items = users.map(u => mapUserFromDbView(u))
-        const totalCount = await usersCollection.countDocuments(filter)
+        const totalCount = await usersAccountCollection.countDocuments(filter)
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
@@ -74,22 +74,22 @@ export const usersRepository = {
         },
 
     async findAuthUser(id: string): Promise<TUserView | null> {
-        const authUser: TUserDb | null = await usersCollection.findOne({id: id})
+        const authUser: TUserAccountDb | null = await usersAccountCollection.findOne({id: id})
         if(!authUser) return null
 
         return mapUserFromDbView(authUser)
     },
 
     async getUserById(id: string): Promise<TUserView | null> {
-        const user: TUserDb | null = await usersCollection.findOne({id: id})
+        const user: TUserAccountDb | null = await usersAccountCollection.findOne({id: id})
         if(!user) return null
 
         return mapUserFromDbView(user)
     },
 
-    async createUser(newUser: TUserDb): Promise<TUserView | null> {
+    async createUser(newUser: TUserAccountDb): Promise<TUserView | null> {
 
-        await usersCollection.insertOne(newUser)
+        await usersAccountCollection.insertOne(newUser)
 
         return mapUserFromDbView(newUser)
     },
@@ -108,7 +108,7 @@ export const usersRepository = {
 
     async findByLoginEmail(loginOrEmail: string) {
 
-        const user = await usersCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
+        const user = await usersAccountCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
         return user
     },
 
@@ -118,7 +118,7 @@ export const usersRepository = {
         return user
     },
 
-    async upateConfirmation(_id: ObjectId) {
+    async updateConfirmation(_id: ObjectId) {
         let result = await usersAccountCollection
             .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1

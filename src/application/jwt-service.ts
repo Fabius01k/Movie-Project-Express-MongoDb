@@ -2,11 +2,12 @@ import {TUserDb} from "../models/users/users-type";
 import * as jwt from 'jsonwebtoken'
 import {settings} from "./settings";
 import {ObjectId} from "mongodb";
+import {TUserAccountDb} from "../models/user-account/user-account-types";
 
 
 export const jwtService = {
 
-    async createJWT(user: TUserDb) {
+    async createJWT(user: TUserAccountDb) {
         const token = jwt.sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '1h'})
         return token
     },

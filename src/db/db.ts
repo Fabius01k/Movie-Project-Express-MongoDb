@@ -21,12 +21,13 @@ export const postsCollection = db.collection<TPostDb>("posts")
 export const videosCollection = db.collection<TVideoDb>("videos")
 export const usersCollection = db.collection<TUserDb>("users")
 export const commentsCollection = db.collection<TcommentDb>("comments")
-export const usersAccountCollection = db.collection<TUserAccountDb>("registration")
+export const usersAccountCollection = db.collection<TUserAccountDb>("accountuser")
 
 
 
 
-export const collections = [blogsCollection, postsCollection, videosCollection,usersCollection,commentsCollection]
+export const collections = [blogsCollection, postsCollection, videosCollection,
+    usersCollection,commentsCollection,usersAccountCollection]
 
 export async function runDb() {
     try {
