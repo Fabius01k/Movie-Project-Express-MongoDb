@@ -30,7 +30,7 @@ authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddlewa
 
     const user = await authService.createUserAuth(req.body.login, req.body.password, req.body.email)
         if(user) {
-            res.status(200).send()
+            res.status(204).send()
         } else {
             res.sendStatus(400)
         }
@@ -41,7 +41,7 @@ authRouter.post('/registration-confirmation',
 
     const result = await authService.confirmEmail(req.body.code, req.body.email)
         if(result) {
-            res.status(200).send()
+            res.status(204).send()
         } else {
             res.sendStatus(400)
         }
