@@ -1,9 +1,4 @@
 import {Request, Response, Router} from "express";
-import {app} from "../index";
-// import {videosRepository} from "../repositories-in-memory/videos-repository";
-// import {videosRepository} from "../repositories-db/videos-repositories-db";
-
-import {videos} from "../repositories-in-memory/videos-repository";
 import {videosService} from "../domain/videos-servise";
 
 

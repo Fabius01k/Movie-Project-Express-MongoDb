@@ -3,6 +3,7 @@ import {usersService} from "../domain/users-service";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {userCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {body} from "express-validator";
 
 export const usersRouter = Router({})
 

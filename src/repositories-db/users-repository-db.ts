@@ -1,5 +1,7 @@
 import {TUserDb, TUserView} from "../models/users/users-type";
-import {usersCollection} from "../db/db";
+import {usersAccountCollection, usersCollection} from "../db/db";
+import {TUserAccountDb} from "../models/user-account/user-account-types";
+import {ObjectId} from "mongodb";
 
 
 export let users: TUserDb[] = []
@@ -92,6 +94,11 @@ export const usersRepository = {
         return mapUserFromDbView(newUser)
     },
 
+    async createUserAccount(userAccount: TUserAccountDb): Promise<TUserAccountDb | null> {
+        await usersAccountCollection.insertOne(userAccount)
+        return userAccount
+    },
+
     async deleteUser(id: string): Promise<boolean> {
         const deleteUser = await usersCollection
             .deleteOne({id: id})
@@ -103,5 +110,18 @@ export const usersRepository = {
 
         const user = await usersCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
         return user
+    },
+
+    async findByAuthLoginEmail(loginOrEmail: string) {
+
+        const user = await usersAccountCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
+        return user
+    },
+
+    async upateConfirmation(_id: ObjectId) {
+        let result = await usersAccountCollection
+            .updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
+        return result.modifiedCount === 1
     }
 }
+

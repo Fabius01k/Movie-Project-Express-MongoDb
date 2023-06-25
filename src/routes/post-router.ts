@@ -106,7 +106,6 @@ postsRouter.post('/:postId/comments', authMiddleware, commentCreateByPostValidat
     async (req: Request, res: Response) => {
 
 
-        console.log("we are in router")
         const newComment = await postsServise.createCommentByPostId(
             req.body.content,
             req.params.postId,
