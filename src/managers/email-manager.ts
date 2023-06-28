@@ -6,8 +6,9 @@ import {usersRepository} from "../repositories-db/users-repository-db";
 export const emailManager = {
 
     async sendEmailconfirmationMessage(userAccount: TUserAccountDb) {
-
+        console.log("we send email conf message")
         const userConfirmationCode = userAccount.emailConfirmation.confirmationCode
+        console.log(userConfirmationCode, "found code of user")
 
         const email = userAccount.accountData.userName.email
         const message = String.raw`

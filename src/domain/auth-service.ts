@@ -33,13 +33,13 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        const createUserAuth = usersRepository.createUserAccount(userAccount)
-        try {
-            await emailManager.sendEmailconfirmationMessage(userAccount)
-        } catch (error) {
+        console.log(userAccount, "userAccount final")
 
-            return null
-        }
+        const createUserAuth = usersRepository.createUserAccount(userAccount)
+        console.log(createUserAuth, "result of createUserAuth")
+
+        await emailManager.sendEmailconfirmationMessage(userAccount)
+
         return createUserAuth
     },
 

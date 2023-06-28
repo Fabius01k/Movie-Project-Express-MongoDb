@@ -16,7 +16,7 @@ authRouter.post('/login',
     async (req: Request, res:Response) => {
     const user : WithId<TUserAccountDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
 
-        console.log(user,"router")
+        // console.log(user,"router")
         if (user) {
             const accessToken = await jwtService.createJWT(user)
             res.status(200).send({accessToken})
@@ -28,6 +28,7 @@ authRouter.post('/login',
 
 authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res:Response) => {
+        console.log("start registration procedure")
 
     const user = await authService.createUserAuth(req.body.login, req.body.password, req.body.email)
         if(user) {

@@ -45,10 +45,33 @@ describe('post', () => {
 
     },10000)
 
-    
-
-
-
-
-
 })
+
+describe('registration', () => {
+
+    beforeAll(async () => {
+        // await runDb()
+        await request(app).delete('/testing/all-data').expect(204)
+    })
+
+    it('should send email and finish registration', async () => {
+        await request(app).delete('/testing/all-data').expect(204)
+
+        const createUser = await request(app)
+            .post("/auth/registration")
+            .send({
+                login: "login222",
+                password: "password222",
+                email: "simsbury65@gmail.com"
+            })
+            .expect(204)
+
+
+
+    },10000)
+})
+
+
+
+
+

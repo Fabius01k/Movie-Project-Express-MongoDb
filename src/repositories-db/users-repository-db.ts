@@ -95,7 +95,8 @@ export const usersRepository = {
     },
 
     async createUserAccount(userAccount: TUserAccountDb): Promise<TUserAccountDb | null> {
-        console.log()
+        console.log("start creation unconfirmed user")
+
         await usersAccountCollection.insertOne(userAccount)
         return userAccount
     },
