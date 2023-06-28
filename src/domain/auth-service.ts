@@ -52,7 +52,7 @@ export const authService = {
         if (user.emailConfirmation.expirationDate < new Date()) return false
 
 
-            let result = await usersRepository.updateConfirmation(user._id)
+            let result = await usersRepository.updateConfirmation(user.id)
             return result
         },
 
@@ -65,18 +65,22 @@ export const authService = {
     async resendingCode(email: string): Promise<boolean | null> {
 
         let user = await usersRepository.findByAuthLoginEmail(email)
+        console.log(user,"found user for resending - service")
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
 
+        const newConfirmationCode = uuidv4()
+        console.log(newConfirmationCode, "do new code - servce")
+
+        let result = await usersRepository.chengConfirmationCode(user.id,newConfirmationCode)
+        console.log("code was cheng")
+        // user.emailConfirmation.confirmationCode = newСonfirmationCode
+
         const code = user.emailConfirmation.confirmationCode
 
-        try {
-            await emailManager.resendEmailconfirmationMessage(email, code)
-        } catch (error) {
+        await emailManager.resendEmailconfirmationMessage(email, code)
 
-            return false
-        }
         return true
 
     }

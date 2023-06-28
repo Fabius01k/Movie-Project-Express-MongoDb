@@ -81,9 +81,9 @@ export const usersService = {
         console.log(user, "check")
         if(!user) return null
 
-        // if (!user.emailConfirmation.isConfirmed) {
-        //     return null
-        // }
+        if (!user.emailConfirmation.isConfirmed) {
+            return null
+        }
 
         if(user && await bcrypt.compare(password,user.accountData.passwordHash)) return user
        // const passwordHash = await this._generateHash(password, user.passwordSalt)

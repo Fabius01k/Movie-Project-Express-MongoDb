@@ -66,9 +66,21 @@ describe('registration', () => {
             })
             .expect(204)
 
+    },10000)
 
+    it('should send resend code to email and finish registration', async () => {
+        await request(app).delete('/testing/all-data').expect(204)
+
+        const createUser = await request(app)
+            .post("/auth/registration-email-resending")
+            .send({
+                email: "pav.murashckin@yandex.ru"
+            })
+            .expect(204)
 
     },10000)
+
+
 })
 
 

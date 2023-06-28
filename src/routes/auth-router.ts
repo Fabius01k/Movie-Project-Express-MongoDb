@@ -28,8 +28,6 @@ authRouter.post('/login',
 
 authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res:Response) => {
-        console.log("start registration procedure")
-
     const user = await authService.createUserAuth(req.body.login, req.body.password, req.body.email)
         if(user) {
             res.status(204).send()
@@ -51,6 +49,7 @@ authRouter.post('/registration-confirmation',
 
 authRouter.post('/registration-email-resending',
     async (req: Request, res:Response) => {
+        console.log("resending router")
 
         const result = await authService.resendingCode(req.body.email)
         if(result) {

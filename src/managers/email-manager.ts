@@ -24,13 +24,13 @@ export const emailManager = {
 
     async resendEmailconfirmationMessage(email: string, code: string) {
 
+
         const user = await usersRepository.findByAuthLoginEmail(email)
         const userConfirmationCode = code
 
-        const message = String.raw`
-            <h1>Thank for your registration</h1>
+        const message = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
-            <a href="https://somesite.com/confirm-email?code=${code}">complete registration</a>
+            <a href='https://project-nu-silk.vercel.app/registration-confirmation?code=${userConfirmationCode}'>complete registration</a>
         </p>`
         const subject = "Код подтверждения регистрации"
 
