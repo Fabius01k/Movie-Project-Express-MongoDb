@@ -18,7 +18,7 @@ export const emailManager = {
 
         const subject = "Код подтверждения регистрации"
 
-        await emailAdapter.sendEmail(email, message, subject)
+        await emailAdapter.sendEmail(email, subject, message)
 
     },
 
@@ -34,7 +34,7 @@ export const emailManager = {
         </p>`
         const subject = "Код подтверждения регистрации"
 
-        await emailAdapter.sendEmail(email, message, subject)
+        await emailAdapter.sendEmail(email, subject, message,)
 
 
 

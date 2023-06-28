@@ -62,7 +62,7 @@ describe('registration', () => {
             .send({
                 login: "login222",
                 password: "password222",
-                email: "simsbury65@gmail.com"
+                email: "pav.murashckin@yandex.ru"
             })
             .expect(204)
 
