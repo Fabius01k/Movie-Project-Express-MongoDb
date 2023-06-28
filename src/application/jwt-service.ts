@@ -9,6 +9,7 @@ export const jwtService = {
 
     async createJWT(user: TUserAccountDb) {
         const token = jwt.sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '1h'})
+        console.log(token, "jwt")
         return token
     },
 

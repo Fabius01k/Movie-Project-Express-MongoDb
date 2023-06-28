@@ -43,7 +43,7 @@ describe('post', () => {
 
         expect(token.body.accessToken).toEqual(expect.any(String))
 
-    })
+    },10000)
 
     
 

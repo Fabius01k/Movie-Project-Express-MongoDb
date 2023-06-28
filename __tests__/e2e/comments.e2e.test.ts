@@ -15,6 +15,8 @@ describe('get', () => {
 
     it('should return 200 and found comment', async () => {
 
+        await request(app).delete('/testing/all-data').expect(204)
+
         const createdBlog = await request(app).post("/blogs").set(auth, basic).send({
             name: "blogName",
             description: "blogDescription",

@@ -88,33 +88,35 @@ export const usersRepository = {
     },
 
     async createUser(newUser: TUserAccountDb): Promise<TUserView | null> {
-
+        console.log(newUser, "newUser in createUser")
         await usersAccountCollection.insertOne(newUser)
 
         return mapUserFromDbView(newUser)
     },
 
     async createUserAccount(userAccount: TUserAccountDb): Promise<TUserAccountDb | null> {
+        console.log()
         await usersAccountCollection.insertOne(userAccount)
         return userAccount
     },
 
     async deleteUser(id: string): Promise<boolean> {
-        const deleteUser = await usersCollection
+        const deleteUser = await usersAccountCollection
             .deleteOne({id: id})
 
         return deleteUser.deletedCount === 1
     },
 
-    async findByLoginEmail(loginOrEmail: string) {
-
-        const user = await usersAccountCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
-        return user
-    },
+    // async findByLoginEmail(loginOrEmail: string) {
+    //
+    //     const user = await usersAccountCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
+    //     return user
+    // },
 
     async findByAuthLoginEmail(loginOrEmail: string) {
 
-        const user = await usersAccountCollection.findOne({ $or: [{ email:loginOrEmail}, { login: loginOrEmail} ]})
+        const user = await usersAccountCollection.findOne({ $or: [{ "accountData.userName.email" :loginOrEmail}, { "accountData.userName.login": loginOrEmail} ]})
+        console.log(user, "findBy")
         return user
     },
 

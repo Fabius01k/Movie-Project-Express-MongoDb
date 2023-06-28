@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 import {usersService} from "../domain/users-service";
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
-import {userCreateValidators} from "../validadation/user-validatoin";
+import {userAuthCreateValidators, userCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {body} from "express-validator";
 
@@ -61,7 +61,7 @@ usersRouter.get('/',basicAuthGuardMiddleware,
 //     }
 //     })
 
-usersRouter.post('/',basicAuthGuardMiddleware,userCreateValidators,inputValidationMiddleware,
+usersRouter.post('/',basicAuthGuardMiddleware,userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res: Response) => {
         console.log("user creation")
     try {

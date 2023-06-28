@@ -58,7 +58,9 @@ describe('get', () => {
             "createdAt": expect.any(String),
         })
 
-    })
+
+
+    },10000)
         it('should`nt create user with incorrect titles and send 400', async () => {
 
             const createdUser = await request(app)

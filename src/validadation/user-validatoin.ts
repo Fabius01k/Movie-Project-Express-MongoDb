@@ -8,7 +8,7 @@ export const userCreateValidators = [
         .trim().isLength({min:3,max:10})
         .matches(/^[a-zA-Z0-9_-]*$/)
         .withMessage('login is not correct')
-        .custom(async v => {const user = await usersRepository.findByLoginEmail(v)
+        .custom(async v => {const user = await usersRepository.findByAuthLoginEmail(v)
 
             if (user) {throw new Error('Login already use')
             } else {
@@ -25,7 +25,7 @@ export const userCreateValidators = [
         .trim()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .withMessage('email is not correct')
-        .custom(async v => {const user = await usersRepository.findByLoginEmail(v)
+        .custom(async v => {const user = await usersRepository.findByAuthLoginEmail(v)
 
             if (user) {throw new Error('Email already use')
             } else {

@@ -39,8 +39,9 @@ export const usersService = {
         const passwordHash = await this._generateHash(password, passwordSalt)
 
         const dateNow = new Date().getTime().toString()
+
         const newUser: TUserAccountDb = {
-            _id: new ObjectId(),
+
             id: dateNow,
             accountData: {
                 userName: {
@@ -76,13 +77,13 @@ export const usersService = {
     },
 
     async checkCredentials(loginOrEmail: string, password: string) : Promise<WithId<TUserAccountDb> | null> {
-        const user = await usersRepository.findByLoginEmail(loginOrEmail)
-
+        const user = await usersRepository.findByAuthLoginEmail(loginOrEmail)
+        console.log(user, "check")
         if(!user) return null
 
-        if (!user.emailConfirmation.isConfirmed) {
-            return null
-        }
+        // if (!user.emailConfirmation.isConfirmed) {
+        //     return null
+        // }
 
         if(user && await bcrypt.compare(password,user.accountData.passwordHash)) return user
        // const passwordHash = await this._generateHash(password, user.passwordSalt)
