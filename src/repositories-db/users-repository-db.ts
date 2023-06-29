@@ -134,9 +134,9 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
 
-    async chengConfirmationCode(id: string,newConfirmationCode: string) {
+    async chengConfirmationCode(id: string,confirmationCode: string) {
         let result = await usersAccountCollection
-            .updateOne({id}, {$set: {'emailConfirmation.confirmationCode': newConfirmationCode}})
+            .updateOne({id}, {$set: {'emailConfirmation.confirmationCode': confirmationCode}})
         console.log(result, "code shanger - repository")
         return result.modifiedCount === 1
     }

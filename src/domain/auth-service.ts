@@ -33,10 +33,10 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        console.log(userAccount, "userAccount final")
+
 
         const createUserAuth = usersRepository.createUserAccount(userAccount)
-        console.log(createUserAuth, "result of createUserAuth")
+
 
         await emailManager.sendEmailconfirmationMessage(userAccount)
 
@@ -57,7 +57,6 @@ export const authService = {
             return result
         },
 
-
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
@@ -71,10 +70,10 @@ export const authService = {
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
 
-        const newConfirmationCode = uuidv4()
-        console.log(newConfirmationCode, "do new code - servce")
+        const confirmationCode = uuidv4()
+        console.log(confirmationCode, "do new code - servce")
 
-        let result = await usersRepository.chengConfirmationCode(user.id,newConfirmationCode)
+        let result = await usersRepository.chengConfirmationCode(user.id,confirmationCode)
         console.log("code was cheng")
         // user.emailConfirmation.confirmationCode = newСonfirmationCode
 
