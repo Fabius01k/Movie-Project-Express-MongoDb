@@ -39,7 +39,7 @@ authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddlewa
 authRouter.post('/registration-confirmation',
     async (req: Request, res:Response) => {
 
-    const result = await authService.confirmEmail(req.body.code, req.body.email)
+    const result = await authService.confirmEmail(req.body.code)
         if(result) {
             res.status(204).send()
         } else {
