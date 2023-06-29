@@ -105,8 +105,7 @@ postsRouter.post('/:postId/comments', authMiddleware, commentCreateByPostValidat
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-
-        const newComment = await postsServise.createCommentByPostId(
+    const newComment = await postsServise.createCommentByPostId(
             req.body.content,
             req.params.postId,
             req.userId!

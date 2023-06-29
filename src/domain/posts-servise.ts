@@ -1,5 +1,5 @@
 // import {blogs} from "./blogs-repository-db";
-import {blogsCollection, client, postsCollection, usersCollection} from "../db/db";
+import {blogsCollection, client, postsCollection, usersAccountCollection, usersCollection} from "../db/db";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
 import {postsRepository} from "../repositories-db/post-repostory-db";
@@ -86,11 +86,10 @@ export const postsServise = {
             console.log("post not found")
             return null
         }
-        console.log(postId, "postId")
-        console.log(userId, "userId")
-        const user = await usersCollection.findOne({id: userId})
+
+        const user = await usersAccountCollection.findOne({id: userId})
         if(!user) {
-            console.log("user not found")
+
             return null
         }
 
@@ -102,7 +101,7 @@ export const postsServise = {
             content: content,
             commentatorInfo: {
                 userId: user.id,
-                userLogin: user.login
+                userLogin: user.accountData.userName.login
             },
             createdAt: new Date().toISOString(),
             postId:postId

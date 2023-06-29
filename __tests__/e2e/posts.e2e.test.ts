@@ -372,6 +372,8 @@ describe('get \ getByID', () => {
         })
 
         it("should return code 201 and created comment by post id", async () => {
+            await request(app).delete('/testing/all-data').expect(204)
+
             const createdBlog = await request(app).post("/blogs").set(auth, basic).send({
                 name: "blogName",
                 description: "blogDescription",

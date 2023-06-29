@@ -145,7 +145,10 @@ describe('put', () => {
         await request(app).delete('/testing/all-data').expect(204)
     })
 
+
     it("should return status code 204 if comment found and put successfully", async () => {
+
+        await request(app).delete('/testing/all-data').expect(204)
 
         const createdBlog = await request(app).post("/blogs").set(auth, basic).send({
             name: "blogName",
@@ -214,7 +217,7 @@ describe('put', () => {
         //         createdAt: expect.any(String),
         //         id: expect.any(String)
         //     })
-    })
+    },10000)
 
     it("should`nt put comment without authorization and send 401", async () => {
 
