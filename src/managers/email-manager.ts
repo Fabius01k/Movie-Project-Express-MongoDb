@@ -20,7 +20,6 @@ export const emailManager = {
 
         await emailAdapter.sendEmail(email, subject, message)
 
-        return true
 
     },
 
