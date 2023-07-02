@@ -1,7 +1,6 @@
-import {TUserDb, TUserView} from "../models/users/users-type";
-import {usersAccountCollection, usersCollection} from "../db/db";
+import {TUserView} from "../models/users/users-type";
+import {usersAccountCollection} from "../db/db";
 import {TUserAccountDb} from "../models/user-account/user-account-types";
-import {ObjectId} from "mongodb";
 
 
 export let users: TUserAccountDb[] = []

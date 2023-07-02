@@ -19,7 +19,6 @@ export const db = client.db(dbName)
 export const blogsCollection = db.collection<TBlogDb>("blogs")
 export const postsCollection = db.collection<TPostDb>("posts")
 export const videosCollection = db.collection<TVideoDb>("videos")
-export const usersCollection = db.collection<TUserDb>("users")
 export const commentsCollection = db.collection<TcommentDb>("comments")
 export const usersAccountCollection = db.collection<TUserAccountDb>("accountuser")
 
@@ -27,7 +26,7 @@ export const usersAccountCollection = db.collection<TUserAccountDb>("accountuser
 
 
 export const collections = [blogsCollection, postsCollection, videosCollection,
-    usersCollection,commentsCollection,usersAccountCollection]
+   commentsCollection,usersAccountCollection]
 
 export async function runDb() {
     try {

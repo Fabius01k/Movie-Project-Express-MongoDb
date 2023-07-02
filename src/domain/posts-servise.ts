@@ -1,5 +1,5 @@
 // import {blogs} from "./blogs-repository-db";
-import {blogsCollection, client, postsCollection, usersAccountCollection, usersCollection} from "../db/db";
+import {blogsCollection, client, postsCollection, usersAccountCollection, } from "../db/db";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
 import {postsRepository} from "../repositories-db/post-repostory-db";
