@@ -8,6 +8,7 @@ import {authService} from "../domain/auth-service";
 import {userAuthCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {TUserAccountDb} from "../models/user-account/user-account-types";
+import {emailCodeResendingValidator, registrationCodeValidator} from "../validadation/registration-validation";
 
 
 export const authRouter = Router({})
@@ -36,7 +37,7 @@ authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddlewa
         }
 })
 
-authRouter.post('/registration-confirmation',
+authRouter.post('/registration-confirmation',registrationCodeValidator,inputValidationMiddleware,
     async (req: Request, res:Response) => {
 
         console.log("star confirmation - router")
@@ -49,7 +50,7 @@ authRouter.post('/registration-confirmation',
         }
 })
 
-authRouter.post('/registration-email-resending',
+authRouter.post('/registration-email-resending',emailCodeResendingValidator,inputValidationMiddleware,
     async (req: Request, res:Response) => {
         console.log("resending router")
 

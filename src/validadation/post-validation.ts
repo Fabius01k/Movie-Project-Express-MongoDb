@@ -6,7 +6,7 @@ import {blogsCollection} from "../db/db";
 export const postCreateValidators = [
     body('blogId').isString().notEmpty().custom(async (value: string) => {
         const blog = await blogsCollection.findOne({id: value})
-        console.log(blog)
+        
         if (!blog) {
             throw new Error(' 1 Blog ID is not valid');
         } else {
