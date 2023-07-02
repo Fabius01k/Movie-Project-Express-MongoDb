@@ -1,7 +1,6 @@
 import {TUserAccountDb} from "../models/user-account/user-account-types";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
-import {v4 as uuidv4} from 'uuid'
 import add from 'date-fns/add'
 import {usersRepository} from "../repositories-db/users-repository-db";
 import {emailManager} from "../managers/email-manager";
@@ -28,7 +27,7 @@ export const authService = {
                 createdAt: new Date().toISOString(),
             },
             emailConfirmation: {
-                confirmationCode: uuidv4(),
+                confirmationCode: randomUUID(),
                 expirationDate: add(new Date(), {
                     hours: 1
                 }),
@@ -37,7 +36,7 @@ export const authService = {
         }
 
 
-        const createUserAuth = usersRepository.createUserAccount(userAccount)
+        const createUserAuth = await usersRepository.createUserAccount(userAccount)
 
 
         await emailManager.sendEmailconfirmationMessage(userAccount)
