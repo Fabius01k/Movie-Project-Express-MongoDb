@@ -39,6 +39,8 @@ authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddlewa
 authRouter.post('/registration-confirmation',
     async (req: Request, res:Response) => {
 
+        console.log("star confirmation - router")
+
     const result = await authService.confirmEmail(req.body.code)
         if(result) {
             res.status(204).send()

@@ -5,6 +5,7 @@ import {v4 as uuidv4} from 'uuid'
 import add from 'date-fns/add'
 import {usersRepository} from "../repositories-db/users-repository-db";
 import {emailManager} from "../managers/email-manager";
+import {randomUUID} from "crypto";
 
 export const authService = {
     async createUserAuth(login: string, password: string, email: string): Promise<TUserAccountDb | null> {
@@ -47,11 +48,14 @@ export const authService = {
 
         let user = await usersRepository.findUserByConfirmCode(code)
 
+        console.log(user, "found user - service")
+
         if (!user) return false
-        if (user.emailConfirmation.confirmationCode) return false
+        if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expirationDate < new Date()) return false
 
+        console.log("user is found and is`nt confirmend - service")
 
             let result = await usersRepository.updateConfirmation(user.id)
             return result
@@ -70,16 +74,13 @@ export const authService = {
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
 
-        const confirmationCode = uuidv4()
+        const confirmationCode = randomUUID()
         console.log(confirmationCode, "do new code - servce")
 
-        let result = await usersRepository.chengConfirmationCode(user.id,confirmationCode)
+        await usersRepository.chengConfirmationCode(user.id,confirmationCode)
         console.log("code was cheng")
-        // user.emailConfirmation.confirmationCode = newСonfirmationCode
 
-        const code = user.emailConfirmation.confirmationCode
-
-        await emailManager.resendEmailconfirmationMessage(email, code)
+        await emailManager.resendEmailconfirmationMessage(email, confirmationCode)
 
         return true
 

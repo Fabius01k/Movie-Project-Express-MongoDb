@@ -120,6 +120,38 @@ describe('registration', () => {
 
 
     },10000)
+
+    it('should send code to email and should`nt conrirmed code ', async () => {
+        await request(app).delete('/testing/all-data').expect(204)
+
+        const createUser = await request(app)
+            .post("/auth/registration")
+            .send({
+                "login": "login222",
+                "password": "password222",
+                "email": "pav.murashckin@yandex.ru",
+                "code": "111222333444"
+            })
+            .expect(204)
+
+        const code = createUser.body.code
+
+        const confirmCode = await request(app)
+            .post("/auth/registration-confirmation")
+            .send({
+                "code": `${code}`
+            })
+            .expect(400)
+
+        // const resendCode = await request(app)
+        //     .post("/auth/registration-email-resending")
+        //     .send({
+        //         email: "pav.murashckin@yandex.ru"
+        //     })
+        //     .expect(204)
+
+
+    },10000)
 })
 
 
