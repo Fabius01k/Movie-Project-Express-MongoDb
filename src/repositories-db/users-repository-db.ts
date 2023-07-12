@@ -20,11 +20,11 @@ export const usersRepository = {
                     searchLoginTerm: string | null,
                     searchEmailTerm: string | null) {
 
-
+        console.log(searchLoginTerm, searchEmailTerm)
         const filter = {
             $or: [
-                {login: {$regex: searchLoginTerm ?? '', $options: 'i'}},
-                {email: {$regex: searchEmailTerm ?? '', $options: 'i'}},
+                {'accountData.userName.login': {$regex: searchLoginTerm ?? '', $options: 'i'}},
+                {'accountData.userName.email': {$regex: searchEmailTerm ?? '', $options: 'i'}},
             ]
         }
 
@@ -59,7 +59,7 @@ export const usersRepository = {
             .limit(pageSize)
             .toArray()
 
-
+        console.log('users', users)
         const items = users.map(u => mapUserFromDbView(u))
         const totalCount = await usersAccountCollection.countDocuments(filter)
 

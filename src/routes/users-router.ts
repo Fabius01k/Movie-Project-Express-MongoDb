@@ -44,7 +44,8 @@ usersRouter.get('/',basicAuthGuardMiddleware,
             pageNumber = 1
         }
       //  const adc = isNaN(Number(req.query.pageNumber)) ? 10 : Number(req.query.pageNumber)
-
+        console.log('hellllooooo',sortBy,sortDirection,+pageSize, +pageNumber,
+            searchLoginTerm, searchEmailTerm)
             const users = await usersService.findUsers(sortBy,sortDirection,+pageSize, +pageNumber,
             searchLoginTerm, searchEmailTerm)
         res.status(200).send(users)

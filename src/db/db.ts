@@ -10,7 +10,6 @@ import {TokensOfUserDb, TUserAccountDb} from "../models/user-account/user-accoun
 dotenv.config()
 const mongoURI = process.env.MONGO_URL || 'mongodb://0.0.0.0:27017'
 
-
 export const client = new MongoClient(mongoURI)
 
 const dbName = "myApi"
