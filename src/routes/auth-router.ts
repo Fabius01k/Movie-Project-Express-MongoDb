@@ -85,8 +85,8 @@ authRouter.post('/logout',tokenUserValidator,
 authRouter.get('/me',authMiddleware,
     async (req: Request, res: Response) => {
 
-        const token = req.cookies.refreshToken
-        console.log(token)
+        const token = req.cookies.accessToken
+
         const userId = await jwtService.getUserIdByToken(token)
 
         const authUser = await usersService.findAuthUser(userId!)
