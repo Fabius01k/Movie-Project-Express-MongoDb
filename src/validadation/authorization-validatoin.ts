@@ -26,7 +26,7 @@ export const basicAuthGuardMiddleware = (req: Request, res: Response, next: Next
 export const tokenUserValidator = async (req: Request, res: Response, next: NextFunction) => {
 
     const token = req.cookies.refreshToken
-    if (typeof token !== 'string') return res.sendStatus(401)
+    if (!token && typeof token !== 'string' && !token.trim()) return res.sendStatus(401)
 
 
     const userRefreshTokenInDB = await usersAccountTokenColletion.findOne({refreshToken: token})
