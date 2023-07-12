@@ -89,7 +89,7 @@ authRouter.get('/me',authMiddleware,
 
         const userId = await jwtService.getUserIdByToken(token)
 
-        const authUser = await usersService.findAuthUser(userId)
+        const authUser = await usersService.findAuthUser(userId!)
 
         if (authUser) {
             res.status(200).send(authUser)
