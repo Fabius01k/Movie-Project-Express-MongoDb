@@ -61,20 +61,29 @@ usersRouter.get('/',basicAuthGuardMiddleware,
 //     }
 //     })
 
+// usersRouter.post('/',basicAuthGuardMiddleware,userAuthCreateValidators,inputValidationMiddleware,
+//     async (req: Request, res: Response) => {
+//         console.log("user creation")
+//     try {
+//
+//         const newUser = await usersService.createUser(req.body.login,
+//             req.body.password,
+//             req.body.email)
+//         res.status(201).send(newUser)
+//     }
+//     catch (error) {
+//         console.error(error)
+//     }
+//     })
+
 usersRouter.post('/',basicAuthGuardMiddleware,userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res: Response) => {
-        console.log("user creation")
-    try {
 
         const newUser = await usersService.createUser(req.body.login,
-            req.body.password,
-            req.body.email)
-        res.status(201).send(newUser)
-    }
-    catch (error) {
-        console.error(error)
-    }
-    })
+                req.body.password,
+                req.body.email)
+            res.status(201).send(newUser)
+})
 
 usersRouter.delete('/:id',basicAuthGuardMiddleware,
     async (req: Request, res: Response) => {

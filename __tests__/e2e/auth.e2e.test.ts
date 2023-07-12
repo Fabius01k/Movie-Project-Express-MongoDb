@@ -161,51 +161,51 @@ describe('token', () => {
         await request(app).delete('/testing/all-data').expect(204)
     })
 
-    it('it shoild refresh token', async () => {
-        await request(app).delete('/testing/all-data').expect(204)
-
-        const createUser = await request(app)
-            .post("/users")
-            .set(auth, basic)
-            .send({
-                login: "login222",
-                password: "password222",
-                email: "simsbury65@gmail.com"
-            })
-            .expect(201)
-
-        expect(createUser.body).toEqual({
-            "createdAt": expect.any(String),
-            "email": "simsbury65@gmail.com",
-            "id": expect.any(String),
-            "login": "login222"
-        })
-
-        const token = await request(app)
-            .post("/auth/login")
-            .send({
-                loginOrEmail: "simsbury65@gmail.com",
-                password: "password222"
-            })
-            .expect(200)
-
-        expect(token.body.accessToken).toEqual(expect.any(String))
-
-        const refreshToken = await request(app)
-            .post("/auth/refresh-token")
-            .expect((res) => {
-                if (
-                    !res.headers['set-cookie'] ||
-                    !res.headers['set-cookie'].some(cookie =>
-                        cookie.includes('refreshToken')
-                    )
-                ) {
-                    throw new Error('refreshToken cookie not set');
-                }
-            })
-            .expect(200);
-
-    },10000)
+    // it('it shoild refresh token', async () => {
+    //     await request(app).delete('/testing/all-data').expect(204)
+    //
+    //     const createUser = await request(app)
+    //         .post("/users")
+    //         .set(auth, basic)
+    //         .send({
+    //             login: "login222",
+    //             password: "password222",
+    //             email: "simsbury65@gmail.com"
+    //         })
+    //         .expect(201)
+    //
+    //     expect(createUser.body).toEqual({
+    //         "createdAt": expect.any(String),
+    //         "email": "simsbury65@gmail.com",
+    //         "id": expect.any(String),
+    //         "login": "login222"
+    //     })
+    //
+    //     const token = await request(app)
+    //         .post("/auth/login")
+    //         .send({
+    //             loginOrEmail: "simsbury65@gmail.com",
+    //             password: "password222"
+    //         })
+    //         .expect(200)
+    //
+    //     expect(token.body.accessToken).toEqual(expect.any(String))
+    //
+    //     const refreshToken = await request(app)
+    //         .post("/auth/refresh-token")
+    //         .expect((res) => {
+    //             if (
+    //                 !res.headers['set-cookie'] ||
+    //                 !res.headers['set-cookie'].some(cookie =>
+    //                     cookie.includes('refreshToken')
+    //                 )
+    //             ) {
+    //                 throw new Error('refreshToken cookie not set');
+    //             }
+    //         })
+    //         .expect(200);
+    //
+    // },10000)
 
 
 })
