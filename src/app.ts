@@ -7,9 +7,12 @@ import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentRouter} from "./routes/comment-router";
 import {emailRouter} from "./routes/email-router";
+import cookieParser from "cookie-parser";
 
 const app = express()
+app.use(cookieParser())
 app.use(express.json())
+
 
 app.use('/videos', videosRouter)
 app.use('/blogs', blogsRouter)

@@ -7,8 +7,10 @@ import {WithId} from "mongodb";
 import {authService} from "../domain/auth-service";
 import {userAuthCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
-import {TUserAccountDb} from "../models/user-account/user-account-types";
+import {TUserAccountDb,TokensOfUserDb} from "../models/user-account/user-account-types";
 import {emailCodeResendingValidator, registrationCodeValidator} from "../validadation/registration-validation";
+import {randomUUID} from "crypto";
+import {tokenUserValidator} from "../validadation/authorization-validatoin";
 
 
 export const authRouter = Router({})
@@ -17,15 +19,84 @@ authRouter.post('/login',
     async (req: Request, res:Response) => {
     const user : WithId<TUserAccountDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
 
-        // console.log(user,"router")
+
         if (user) {
-            const accessToken = await jwtService.createJWT(user)
+            const accessToken = await jwtService.createAccessJWT(user)
+            const refreshToken = await jwtService.createRefreshJWT(user)
+
+            console.log(accessToken,"accessToken in login")
+            console.log(refreshToken,"refreshToken in login")
+
+            const userId = user.id
+            await authService.saveTokensUser(userId, refreshToken)
+
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 20 * 1000,
+            })
+
             res.status(200).send({accessToken})
         } else {
             res.sendStatus(401)
         }
-
 })
+
+authRouter.post('/refresh-token',tokenUserValidator,
+    async (req: Request, res:Response) => {
+
+        const token = req.cookies.refreshToken
+
+    const userForResend = await jwtService.getUserIdByToken(token)
+
+
+        const accessToken = await jwtService.createAccessJWT(userForResend)
+        const refreshToken = await jwtService.createRefreshJWT(userForResend)
+
+    console.log(accessToken,"new accessToken in login")
+    console.log(refreshToken,"new refreshToken in login")
+
+    const userId = userForResend
+    await authService.changeTokenUser(userId,refreshToken)
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 20 * 1000,
+    })
+
+    res.status(200).send({accessToken})
+})
+
+authRouter.post('/logout',tokenUserValidator,
+    async (req: Request, res:Response) => {
+
+        const token = req.cookies.refreshToken
+
+        const userForLogout = await jwtService.getUserIdByToken(token)
+
+        const userId = userForLogout
+        await authService.makeTokenIncorrect(userId)
+
+        res.clearCookie('refreshToken')
+        res.sendStatus(204)
+})
+
+authRouter.get('/me',authMiddleware,
+    async (req: Request, res: Response) => {
+
+        const token = req.cookies.refreshToken
+
+        const userId = await jwtService.getUserIdByToken(token)
+
+        const authUser = await usersService.findAuthUser(userId)
+
+        if (authUser) {
+            res.status(200).send(authUser)
+        } else {
+            res.sendStatus(401)
+        }
+    })
 
 authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res:Response) => {
@@ -62,15 +133,14 @@ authRouter.post('/registration-email-resending',emailCodeResendingValidator,inpu
         }
 })
 
-authRouter.get('/me',authMiddleware,
-    async (req: Request, res: Response) => {
-
-    const authUser = await usersService.findAuthUser(req.userId!)
-
-        if (authUser) {
-            res.status(200).send(authUser)
-        } else {
-            res.sendStatus(401)
-        }
-
-    })
+// authRouter.get('/me',authMiddleware,
+//     async (req: Request, res: Response) => {
+//
+//     const authUser = await usersService.findAuthUser(req.userId!)
+//
+//         if (authUser) {
+//             res.status(200).send(authUser)
+//         } else {
+//             res.sendStatus(401)
+//         }
+// })

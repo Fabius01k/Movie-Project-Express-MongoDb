@@ -1,6 +1,6 @@
 import {TUserView} from "../models/users/users-type";
-import {usersAccountCollection} from "../db/db";
-import {TUserAccountDb} from "../models/user-account/user-account-types";
+import {usersAccountCollection, usersAccountTokenColletion} from "../db/db";
+import {TokensOfUserDb, TUserAccountDb} from "../models/user-account/user-account-types";
 
 
 export let users: TUserAccountDb[] = []
@@ -15,17 +15,18 @@ const mapUserFromDbView = (user: TUserAccountDb): TUserView => {
 
 export const usersRepository = {
 
-    async findUsers(sortBy: string,sortDirection: 'asc' | 'desc',
-                    pageSize: number,pageNumber: number,
+    async findUsers(sortBy: string, sortDirection: 'asc' | 'desc',
+                    pageSize: number, pageNumber: number,
                     searchLoginTerm: string | null,
                     searchEmailTerm: string | null) {
 
 
         const filter = {
-                $or: [
-                    { login: { $regex: searchLoginTerm ?? '', $options: 'i' } },
-                    { email: { $regex: searchEmailTerm ?? '', $options: 'i' } },
-                ]}
+            $or: [
+                {login: {$regex: searchLoginTerm ?? '', $options: 'i'}},
+                {email: {$regex: searchEmailTerm ?? '', $options: 'i'}},
+            ]
+        }
 
         /*const filters: FilterQuery<UserDatabaseType>[] = [];
 
@@ -52,36 +53,36 @@ export const usersRepository = {
         }*/
 
         const users: TUserAccountDb[] = await usersAccountCollection
-                    .find(filter)
-                    .sort(sortBy,sortDirection)
-                    .skip((pageNumber - 1) * pageSize)
-                    .limit(pageSize)
-                    .toArray()
+            .find(filter)
+            .sort(sortBy, sortDirection)
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .toArray()
 
 
         const items = users.map(u => mapUserFromDbView(u))
         const totalCount = await usersAccountCollection.countDocuments(filter)
 
         return {
-            pagesCount: Math.ceil(totalCount/pageSize),
+            pagesCount: Math.ceil(totalCount / pageSize),
             page: +pageNumber,
             pageSize: +pageSize,
             totalCount: totalCount,
             items: items
         }
 
-        },
+    },
 
     async findAuthUser(id: string): Promise<TUserView | null> {
         const authUser: TUserAccountDb | null = await usersAccountCollection.findOne({id: id})
-        if(!authUser) return null
+        if (!authUser) return null
 
         return mapUserFromDbView(authUser)
     },
 
     async getUserById(id: string): Promise<TUserView | null> {
         const user: TUserAccountDb | null = await usersAccountCollection.findOne({id: id})
-        if(!user) return null
+        if (!user) return null
 
         return mapUserFromDbView(user)
     },
@@ -112,17 +113,23 @@ export const usersRepository = {
 
     async findByAuthLoginEmail(loginOrEmail: string) {
 
-        const user = await usersAccountCollection.findOne({ $or: [{ "accountData.userName.email" :loginOrEmail}, { "accountData.userName.login": loginOrEmail} ]})
+        const user = await usersAccountCollection.findOne({$or: [{"accountData.userName.email": loginOrEmail}, {"accountData.userName.login": loginOrEmail}]})
         console.log(user, "findBy")
         return user
     },
 
     async findUserByConfirmCode(emailConfirmationCode: string) {
 
-        const user = await usersAccountCollection.findOne({ "emailConfirmation.confirmationCode" :emailConfirmationCode})
+        const user = await usersAccountCollection.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode})
         console.log(user, "findBy")
         return user
     },
+
+    async findUserById(id: string) {
+        const user = await usersAccountCollection.findOne({id: id})
+        return user
+    },
+
 
     async updateConfirmation(id: string) {
         let result = await usersAccountCollection
@@ -131,11 +138,29 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
 
-    async chengConfirmationCode(id: string,confirmationCode: string) {
+    async chengConfirmationCode(id: string, confirmationCode: string) {
         let result = await usersAccountCollection
             .updateOne({id}, {$set: {'emailConfirmation.confirmationCode': confirmationCode}})
-        console.log(result, "code shanger - repository")
+
         return result.modifiedCount === 1
-    }
+    },
+
+    async saveTokenInDb(tokenUser: TokensOfUserDb): Promise<TokensOfUserDb> {
+        let result = await usersAccountTokenColletion
+            .insertOne(tokenUser)
+        return tokenUser
+    },
+
+    async changeTokenInDb(userId: string, refreshToken: string) {
+        let result = await usersAccountTokenColletion
+            .updateOne({userId}, {$set: {refreshToken: refreshToken}})
+
+        return result.modifiedCount === 1
+    },
+
+    async makeTokenIncorrectDb(userId: string) {
+        let result = await usersAccountTokenColletion.updateOne({userId}, {$unset: {refreshToken: ""}})
+        return result.modifiedCount === 1;
+    },
 }
 

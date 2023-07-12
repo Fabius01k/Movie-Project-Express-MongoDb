@@ -1,4 +1,6 @@
 import {Request, Response, NextFunction} from "express";
+import {usersAccountTokenColletion} from "../db/db";
+import {jwtService} from "../application/jwt-service";
 
 
 export const basicAuthGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -20,4 +22,14 @@ export const basicAuthGuardMiddleware = (req: Request, res: Response, next: Next
 
     return res.sendStatus(401)
 };
+
+export const tokenUserValidator = async (req: Request, res: Response, next: NextFunction) => {
+
+    const token = req.cookies.refreshToken
+    const userRefreshTokenInDB = await usersAccountTokenColletion.findOne({refreshToken: token})
+    const refreshTokenVerification = jwtService.getUserIdByToken(token)
+    if(!refreshTokenVerification || !userRefreshTokenInDB) return res.sendStatus(401)
+    next()
+}
+
 

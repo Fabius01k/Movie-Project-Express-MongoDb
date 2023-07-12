@@ -1,4 +1,4 @@
-import {TUserAccountDb} from "../models/user-account/user-account-types";
+import {TokensOfUserDb, TUserAccountDb} from "../models/user-account/user-account-types";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import add from 'date-fns/add'
@@ -44,6 +44,29 @@ export const authService = {
         return createUserAuth
     },
 
+    async saveTokensUser(userId: string, refreshToken: string): Promise<TokensOfUserDb> {
+
+        const tokenUser: TokensOfUserDb = {
+            userId: userId,
+            refreshToken: refreshToken,
+        }
+
+        let result = await usersRepository.saveTokenInDb(tokenUser)
+        return result
+    },
+
+    async changeTokenUser(userId: string, refreshToken: string): Promise<boolean> {
+
+        let result = await usersRepository.changeTokenInDb(userId,refreshToken)
+        return result
+    },
+
+    async makeTokenIncorrect(userId: string): Promise<boolean> {
+
+        let result = await usersRepository.makeTokenIncorrectDb(userId)
+        return result
+    },
+
     async confirmEmail(code: string): Promise<boolean> {
 
         let user = await usersRepository.findUserByConfirmCode(code)
@@ -57,7 +80,6 @@ export const authService = {
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expirationDate < new Date()) return false
 
-        console.log("user is found and is`nt confirmend - service")
 
             let result = await usersRepository.updateConfirmation(user.id)
             return result
@@ -71,16 +93,13 @@ export const authService = {
     async resendingCode(email: string): Promise<boolean | null> {
 
         let user = await usersRepository.findByAuthLoginEmail(email)
-        console.log(user,"found user for resending - service")
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
 
         const confirmationCode = randomUUID()
-        console.log(confirmationCode, "do new code - servce")
 
         await usersRepository.chengConfirmationCode(user.id,confirmationCode)
-        console.log("code was cheng")
 
         await emailManager.resendEmailconfirmationMessage(email, confirmationCode)
 
