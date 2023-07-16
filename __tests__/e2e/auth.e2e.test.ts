@@ -33,15 +33,21 @@ describe('post', () => {
             "login": "login222"
         })
 
-        const token = await request(app)
+        const res = await request(app)
             .post("/auth/login")
+            // .set('Cookie', 'refreshToken=213123123123')
             .send({
                 loginOrEmail: "simsbury65@gmail.com",
                 password: "password222"
             })
             .expect(200)
 
-        expect(token.body.accessToken).toEqual(expect.any(String))
+        expect(res.body.accessToken).toEqual(expect.any(String))
+        // expect(res.headers['set-cookie']).toBe(expect.any(Array))
+        expect(res.headers['set-cookie']).toBeDefined()
+        expect(res.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken'))).toBeDefined()
+        console.log(res.headers)
+        console.log(res.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken')).split(';')[0].split('=')[1])
 
     },10000)
 

@@ -158,6 +158,17 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
 
+    async addTokenInBlackListDb(userForResend: string,token: string ) {
+        const userId = userForResend
+
+        let result = await usersAccountTokenColletion
+            .updateOne({ userId },
+                {$push: { usedRefreshToken: token }})
+
+        return result.modifiedCount === 1
+    },
+
+
     async makeTokenIncorrectDb(userId: string) {
         let result = await usersAccountTokenColletion.updateOne({userId}, {$unset: {refreshToken: ""}})
         return result.modifiedCount === 1;

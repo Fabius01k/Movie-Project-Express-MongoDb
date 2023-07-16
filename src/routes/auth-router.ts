@@ -28,7 +28,8 @@ authRouter.post('/login',
             console.log(refreshToken,"refreshToken in login")
 
             const userId = user.id
-            await authService.saveTokensUser(userId, refreshToken)
+
+            await authService.saveTokensUser(userId, refreshToken,)
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -49,6 +50,7 @@ authRouter.post('/refresh-token',tokenUserValidator,
 
     const userForResend = await jwtService.getUserIdByToken(token)
 
+        await authService.addTokenToBlackList(userForResend,token)
 
         const accessToken = await jwtService.createAccessJWT(userForResend)
         const refreshToken = await jwtService.createRefreshJWT(userForResend)
@@ -73,9 +75,11 @@ authRouter.post('/logout',tokenUserValidator,
 
         const token = req.cookies.refreshToken
 
-        const userForLogout = await jwtService.getUserIdByToken(token)
+        const userForResend = await jwtService.getUserIdByToken(token)
 
-        const userId = userForLogout
+        await authService.addTokenToBlackList(userForResend,token)
+
+        const userId = userForResend
         await authService.makeTokenIncorrect(userId)
 
         res.clearCookie('refreshToken')
@@ -85,11 +89,11 @@ authRouter.post('/logout',tokenUserValidator,
 authRouter.get('/me',authMiddleware,
     async (req: Request, res: Response) => {
 
-        const token = req.cookies.accessToken
+        const token = req.headers.authorization!.split(' ')[1]
 
         const userId = await jwtService.getUserIdByToken(token)
 
-        const authUser = await usersService.findAuthUser(userId!)
+        const authUser = await usersService.findAuthUser(userId)
 
         if (authUser) {
             res.status(200).send(authUser)

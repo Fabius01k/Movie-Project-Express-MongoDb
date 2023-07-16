@@ -28,11 +28,28 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
     const token = req.cookies.refreshToken
     if (typeof token !== 'string') return res.sendStatus(401)
 
+    const userInDb = jwtService.getUserIdByToken(token)
+    const tokenInBlackList = await usersAccountTokenColletion.findOne({ where: { usedRefreshToken: token } })
+
+    if(tokenInBlackList) return res.sendStatus(401)
 
     const userRefreshTokenInDB = await usersAccountTokenColletion.findOne({refreshToken: token})
-    const refreshTokenVerification = jwtService.getUserIdByToken(token)
-    if(!refreshTokenVerification || !userRefreshTokenInDB) return res.sendStatus(401)
+    if(!userInDb || !userRefreshTokenInDB) return res.sendStatus(401)
+
     next()
 }
+
+// export const tokenUserValidator = async (req: Request, res: Response, next: NextFunction) => {
+//
+//     const token = req.cookies.refreshToken
+//     if (typeof token !== 'string') return res.sendStatus(401)
+//
+//
+//     const userRefreshTokenInDB = await usersAccountTokenColletion.findOne({refreshToken: token})
+//     const refreshTokenVerification = jwtService.getUserIdByToken(token)
+//     if(!refreshTokenVerification || !userRefreshTokenInDB) return res.sendStatus(401)
+//
+//     next()
+// }
 
 

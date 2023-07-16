@@ -49,6 +49,7 @@ export const authService = {
         const tokenUser: TokensOfUserDb = {
             userId: userId,
             refreshToken: refreshToken,
+            usedRefreshToken: [] as string[]
         }
 
         let result = await usersRepository.saveTokenInDb(tokenUser)
@@ -58,6 +59,11 @@ export const authService = {
     async changeTokenUser(userId: string, refreshToken: string): Promise<boolean> {
 
         let result = await usersRepository.changeTokenInDb(userId,refreshToken)
+        return result
+    },
+    async addTokenToBlackList(userForResend: string, token: string): Promise<boolean> {
+
+        let result = await usersRepository.addTokenInBlackListDb(userForResend,token)
         return result
     },
 
