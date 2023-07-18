@@ -50,7 +50,7 @@ authRouter.post('/login',
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 20 * 1000,
+                // maxAge: 20 * 1000,
             })
 
            return res.status(200).send({accessToken});
@@ -80,7 +80,7 @@ authRouter.post('/refresh-token',tokenUserValidator,
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
-        maxAge: 20 * 1000,
+    //     maxAge: 20 * 1000,
     })
 
     return res.status(200).send({accessToken})
