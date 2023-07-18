@@ -43,13 +43,60 @@ describe('post', () => {
             .expect(200)
 
         expect(res.body.accessToken).toEqual(expect.any(String))
-        // expect(res.headers['set-cookie']).toBe(expect.any(Array))
         expect(res.headers['set-cookie']).toBeDefined()
         expect(res.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken'))).toBeDefined()
-        console.log(res.headers)
         console.log(res.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken')).split(';')[0].split('=')[1])
 
     },10000)
+
+
+    it('should create send new pair of token', async () => {
+        await request(app).delete('/testing/all-data').expect(204)
+
+        const createUser = await request(app)
+            .post("/users")
+            .set(auth, basic)
+            .send({
+                login: "login222",
+                password: "password222",
+                email: "simsbury65@gmail.com"
+            })
+            .expect(201)
+
+        expect(createUser.body).toEqual({
+            "createdAt": expect.any(String),
+            "email": "simsbury65@gmail.com",
+            "id": expect.any(String),
+            "login": "login222"
+        })
+
+        const login = await request(app)
+            .post("/auth/login")
+            .send({
+                loginOrEmail: "simsbury65@gmail.com",
+                password: "password222"
+            })
+            .expect(200)
+
+        expect(login.body.accessToken).toEqual(expect.any(String))
+        expect(login.headers['set-cookie']).toBeDefined()
+        expect(login.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken'))).toBeDefined()
+        console.log(login.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken')).split(';')[0].split('=')[1])
+
+        const token = login.headers['set-cookie'];
+
+        const refreshTokenByUser = await request(app)
+            .post("/auth/refresh-token")
+            //.set('Cookie', 'refreshToken=213123123123')
+             .set('Cookie', `${token}`)
+
+        expect(refreshTokenByUser.body.accessToken).toEqual(expect.any(String))
+        expect(refreshTokenByUser.headers['set-cookie']).toBeDefined()
+        expect(refreshTokenByUser.headers['set-cookie'].find((el: string) => el.startsWith('refreshToken'))).toBeDefined()
+
+    },10000)
+
+
 
 })
 

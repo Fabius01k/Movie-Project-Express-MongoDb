@@ -29,7 +29,7 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
     if (typeof token !== 'string') return res.sendStatus(401)
 
     const userInDb = jwtService.getUserIdByToken(token)
-    const tokenInBlackList = await usersAccountTokenColletion.findOne({ where: { usedRefreshToken: token } })
+    const tokenInBlackList = await usersAccountTokenColletion.findOne({userId: userInDb, usedRefreshToken:{$in:[token]}  })
 
     if(tokenInBlackList) return res.sendStatus(401)
 

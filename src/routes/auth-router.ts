@@ -79,11 +79,11 @@ authRouter.post('/logout',tokenUserValidator,
 
         await authService.addTokenToBlackList(userForResend,token)
 
-        const userId = userForResend
-        await authService.makeTokenIncorrect(userId)
+       // const userId = userForResend
+        //await authService.makeTokenIncorrect(userId)
 
         res.clearCookie('refreshToken')
-        res.sendStatus(204)
+       return res.sendStatus(204)
 })
 
 authRouter.get('/me',authMiddleware,
@@ -95,11 +95,10 @@ authRouter.get('/me',authMiddleware,
 
         const authUser = await usersService.findAuthUser(userId)
 
-        if (authUser) {
-            res.status(200).send(authUser)
-        } else {
-            res.sendStatus(401)
-        }
+        if (!authUser)  return res.sendStatus(401);
+
+        return res.status(200).send(authUser);
+
     })
 
 authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddleware,
