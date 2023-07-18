@@ -7,13 +7,13 @@ import {TUserAccountDb} from "../models/user-account/user-account-types";
 
 export const jwtService = {
 
-     createAccessJWT(user: TUserAccountDb) {
-        const token = jwt.sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '10s'})
+     createAccessJWT(userId: string) {
+        const token = jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '10s'})
         return token
     },
 
-    createRefreshJWT(user: TUserAccountDb) {
-        const token1 = jwt.sign({userId: user.id}, settings.JWT_SECRET, {expiresIn: '20s'})
+    createRefreshJWT(userId: string) {
+        const token1 = jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '20s'})
         return token1
     },
 

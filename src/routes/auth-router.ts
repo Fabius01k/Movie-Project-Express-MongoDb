@@ -37,8 +37,8 @@ authRouter.post('/login',
 
 
         if (user) {
-            const accessToken = await jwtService.createAccessJWT(user)
-            const refreshToken = await jwtService.createRefreshJWT(user)
+            const accessToken = await jwtService.createAccessJWT(user.id)
+            const refreshToken = await jwtService.createRefreshJWT(user.id)
 
             console.log(accessToken,"accessToken in login")
             console.log(refreshToken,"refreshToken in login")
