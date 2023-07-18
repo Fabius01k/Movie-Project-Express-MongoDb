@@ -24,8 +24,9 @@ export const basicAuthGuardMiddleware = (req: Request, res: Response, next: Next
 };
 
 export const tokenUserValidator = async (req: Request, res: Response, next: NextFunction) => {
-
+console.log('start')
     const token = req.cookies.refreshToken
+    console.log('Token', token)
     if (typeof token !== 'string') return res.sendStatus(401)
 
     const userInDb = jwtService.getUserIdByToken(token)
