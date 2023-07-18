@@ -25,9 +25,10 @@ authRouter.get('/me',authMiddleware,
         console.log('Router userId', userId);
         const authUser = await usersService.findAuthUser(userId)
 
-        if (!authUser)  return res.sendStatus(401);
+        if (!authUser) return res.sendStatus(401);
 
-        return res.status(200).send(authUser);
+        return res.status(200).send({email: authUser.email, login: authUser.login, userId: authUser.id
+        });
 
     })
 
