@@ -15,6 +15,22 @@ import {tokenUserValidator} from "../validadation/authorization-validatoin";
 
 export const authRouter = Router({})
 
+
+authRouter.get('/me',authMiddleware,
+    async (req: Request, res: Response) => {
+        console.log('HERE')
+        const token = req.headers.authorization!.split(' ')[1]
+
+        const userId = await jwtService.getUserIdByToken(token)
+        console.log('Router userId', userId);
+        const authUser = await usersService.findAuthUser(userId)
+
+        if (!authUser)  return res.sendStatus(401);
+
+        return res.status(200).send(authUser);
+
+    })
+
 authRouter.post('/login',
     async (req: Request, res:Response) => {
     const user : WithId<TUserAccountDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
@@ -37,9 +53,9 @@ authRouter.post('/login',
                 maxAge: 20 * 1000,
             })
 
-            res.status(200).send({accessToken})
+           return res.status(200).send({accessToken});
         } else {
-            res.sendStatus(401)
+            return res.sendStatus(401)
         }
 })
 
@@ -55,8 +71,8 @@ authRouter.post('/refresh-token',tokenUserValidator,
         const accessToken = await jwtService.createAccessJWT(userForResend)
         const refreshToken = await jwtService.createRefreshJWT(userForResend)
 
-    console.log(accessToken,"new accessToken in login")
-    console.log(refreshToken,"new refreshToken in login")
+    //console.log(accessToken,"new accessToken in login")
+   // console.log(refreshToken,"new refreshToken in login")
 
     const userId = userForResend
     await authService.changeTokenUser(userId,refreshToken)
@@ -67,7 +83,7 @@ authRouter.post('/refresh-token',tokenUserValidator,
         maxAge: 20 * 1000,
     })
 
-    res.status(200).send({accessToken})
+    return res.status(200).send({accessToken})
 })
 
 authRouter.post('/logout',tokenUserValidator,
@@ -86,20 +102,6 @@ authRouter.post('/logout',tokenUserValidator,
        return res.sendStatus(204)
 })
 
-authRouter.get('/me',authMiddleware,
-    async (req: Request, res: Response) => {
-
-        const token = req.headers.authorization!.split(' ')[1]
-
-        const userId = await jwtService.getUserIdByToken(token)
-
-        const authUser = await usersService.findAuthUser(userId)
-
-        if (!authUser)  return res.sendStatus(401);
-
-        return res.status(200).send(authUser);
-
-    })
 
 authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res:Response) => {
@@ -135,6 +137,9 @@ authRouter.post('/registration-email-resending',emailCodeResendingValidator,inpu
             res.sendStatus(400)
         }
 })
+
+
+
 
 // authRouter.get('/me',authMiddleware,
 //     async (req: Request, res: Response) => {

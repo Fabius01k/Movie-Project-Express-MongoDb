@@ -34,7 +34,7 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
     if(tokenInBlackList) return res.sendStatus(401)
 
     const userRefreshTokenInDB = await usersAccountTokenColletion.findOne({refreshToken: token})
-    if(!userInDb || !userRefreshTokenInDB) return res.sendStatus(401)
+    if(userInDb !== userRefreshTokenInDB?.userId) return res.sendStatus(401)
 
     next()
 }
