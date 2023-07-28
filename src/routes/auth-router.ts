@@ -40,7 +40,10 @@ authRouter.post('/login',rateLimitMiddleware,
 
         if (user) {
             const accessToken = await jwtService.createAccessJWT(user.id)
-            const refreshToken = await jwtService.createRefreshJWT(user.id)
+            const refreshTokenPayload = {
+                deviceId: accessToken,
+            }
+            const refreshToken = await jwtService.createRefreshJWT(user.id, refreshTokenPayload)
 
 
             const sessionId = user.id
@@ -69,10 +72,11 @@ authRouter.post('/refresh-token',rateLimitMiddleware,tokenUserValidator,
 
     const userForResend = await jwtService.getUserIdByToken(token)
 
-        // await authService.addTokenToBlackList(userForResend,token)
-
         const accessToken = await jwtService.createAccessJWT(userForResend)
-        const refreshToken = await jwtService.createRefreshJWT(userForResend)
+        const refreshTokenPayload = {
+            deviceId: accessToken,
+        }
+        const refreshToken = await jwtService.createRefreshJWT(userForResend,refreshTokenPayload)
 
         const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
         const deviceId = deviceIdOfSession
