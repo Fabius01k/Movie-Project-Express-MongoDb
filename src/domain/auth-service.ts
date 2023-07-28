@@ -1,4 +1,4 @@
-import {TokensOfUserDb, TUserAccountDb} from "../models/user-account/user-account-types";
+import { TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import add from 'date-fns/add'
@@ -44,32 +44,44 @@ export const authService = {
         return createUserAuth
     },
 
-    async saveTokensUser(userId: string, refreshToken: string): Promise<TokensOfUserDb> {
+    async createSession(sessionId: string, ip: string, title: string,deviceId: string, refreshToken: string): Promise<UsersSessionDb> {
 
-        const tokenUser: TokensOfUserDb = {
-            userId: userId,
+        const userSession: UsersSessionDb = {
+
+            sessionId: sessionId,
+            ip: ip,
+            title: title,
+            deviceId: deviceId,
+            lastActiveDate: new Date().toISOString(),
             refreshToken: refreshToken,
-            usedRefreshToken: [] as string[]
+            tokenCreationDate: new Date(),
+            tokenExpirationDate: new Date(Date.now() + 20000)
         }
 
-        let result = await usersRepository.saveTokenInDb(tokenUser)
+        let result = await usersRepository.createSessionInDb(userSession)
         return result
     },
 
-    async changeTokenUser(userId: string, refreshToken: string): Promise<boolean> {
+    async changeDataInSession(deviceId: string, refreshToken: string): Promise<boolean> {
 
-        let result = await usersRepository.changeTokenInDb(userId,refreshToken)
+        let result = await usersRepository.changeDataInSessionInDb(deviceId,refreshToken)
         return result
     },
-    async addTokenToBlackList(userForResend: string, token: string): Promise<boolean> {
+    // async addTokenToBlackList(userForResend: string, token: string): Promise<boolean> {
+    //
+    //     let result = await usersRepository.addTokenInBlackListDb(userForResend,token)
+    //     return result
+    // },
 
-        let result = await usersRepository.addTokenInBlackListDb(userForResend,token)
-        return result
-    },
+    // async makeTokenIncorrect(deviceId: string,refreshToken: string): Promise<boolean> {
+    //
+    //     let result = await usersRepository.makeTokenIncorrectDb(deviceId,refreshToken)
+    //     return result
+    // },
 
-    async makeTokenIncorrect(userId: string): Promise<boolean> {
+    async deleteSession(deviceId: string): Promise<boolean> {
 
-        let result = await usersRepository.makeTokenIncorrectDb(userId)
+        let result = await usersRepository.deleteSessionInDb(deviceId)
         return result
     },
 
@@ -113,7 +125,7 @@ export const authService = {
 
     }
 }
-// if (user.emailConfirmation.isConfirmed) return false
+
 
 
 

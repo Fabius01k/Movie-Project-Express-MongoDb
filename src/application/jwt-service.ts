@@ -7,7 +7,7 @@ import {TUserAccountDb} from "../models/user-account/user-account-types";
 
 export const jwtService = {
 
-     createAccessJWT(userId: string) {
+    createAccessJWT(userId: string) {
         const token = jwt.sign({userId}, settings.JWT_SECRET, {expiresIn: '10s'})
         return token
     },
@@ -18,15 +18,35 @@ export const jwtService = {
     },
 
 
-
     getUserIdByToken(token: string) {
         try {
             const result: any = jwt.verify(token, settings.JWT_SECRET)
-            console.log(result)
             return result.userId
         } catch (error) {
             return null
         }
     },
+
+    getDeviceIdByToken(token: string) {
+        try {
+            const result: any = jwt.verify(token, settings.JWT_SECRET)
+            return result.deviceId
+
+        } catch (error) {
+            return null
+        }
+    },
+
+    getTokenCreationDate(token: string) {
+        try {
+            const result: any = jwt.verify(token, settings.JWT_SECRET)
+            const tokenCreationDate = new Date(result.iat * 1000);
+            return tokenCreationDate;
+
+        } catch (error) {
+            return null
+        }
+    },
 }
+
 

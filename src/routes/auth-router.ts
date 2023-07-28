@@ -7,10 +7,12 @@ import {WithId} from "mongodb";
 import {authService} from "../domain/auth-service";
 import {userAuthCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
-import {TUserAccountDb,TokensOfUserDb} from "../models/user-account/user-account-types";
+import {TUserAccountDb,UsersSessionDb} from "../models/user-account/user-account-types";
 import {emailCodeResendingValidator, registrationCodeValidator} from "../validadation/registration-validation";
 import {randomUUID} from "crypto";
 import {tokenUserValidator} from "../validadation/authorization-validatoin";
+import {v4 as uuid} from "uuid";
+import {rateLimitMiddleware} from "../middlewares/rate-limitmiddleware";
 
 
 export const authRouter = Router({})
@@ -18,11 +20,10 @@ export const authRouter = Router({})
 
 authRouter.get('/me',authMiddleware,
     async (req: Request, res: Response) => {
-        console.log('HERE')
+
         const token = req.headers.authorization!.split(' ')[1]
 
         const userId = await jwtService.getUserIdByToken(token)
-        console.log('Router userId', userId);
         const authUser = await usersService.findAuthUser(userId)
 
         if (!authUser) return res.sendStatus(401);
@@ -32,7 +33,7 @@ authRouter.get('/me',authMiddleware,
 
     })
 
-authRouter.post('/login',
+authRouter.post('/login',rateLimitMiddleware,
     async (req: Request, res:Response) => {
     const user : WithId<TUserAccountDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
 
@@ -41,17 +42,18 @@ authRouter.post('/login',
             const accessToken = await jwtService.createAccessJWT(user.id)
             const refreshToken = await jwtService.createRefreshJWT(user.id)
 
-            console.log(accessToken,"accessToken in login")
-            console.log(refreshToken,"refreshToken in login")
 
-            const userId = user.id
+            const sessionId = user.id
+            const ip = req.ip
+            const title = req.headers['user-agent'] || 'Unknown'
+            const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
 
-            await authService.saveTokensUser(userId, refreshToken,)
+            await authService.createSession(sessionId,ip,title,deviceId,refreshToken)
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
-                // maxAge: 20 * 1000,
+                maxAge: 20 * 1000,
             })
 
            return res.status(200).send({accessToken});
@@ -60,51 +62,50 @@ authRouter.post('/login',
         }
 })
 
-authRouter.post('/refresh-token',tokenUserValidator,
+authRouter.post('/refresh-token',rateLimitMiddleware,tokenUserValidator,
     async (req: Request, res:Response) => {
 
         const token = req.cookies.refreshToken
 
     const userForResend = await jwtService.getUserIdByToken(token)
 
-        await authService.addTokenToBlackList(userForResend,token)
+        // await authService.addTokenToBlackList(userForResend,token)
 
         const accessToken = await jwtService.createAccessJWT(userForResend)
         const refreshToken = await jwtService.createRefreshJWT(userForResend)
 
-    //console.log(accessToken,"new accessToken in login")
-   // console.log(refreshToken,"new refreshToken in login")
+        const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
+        const deviceId = deviceIdOfSession
 
-    const userId = userForResend
-    await authService.changeTokenUser(userId,refreshToken)
+    await authService.changeDataInSession(deviceId,refreshToken)
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
-    //     maxAge: 20 * 1000,
+        maxAge: 20 * 1000,
     })
 
     return res.status(200).send({accessToken})
 })
 
-authRouter.post('/logout',tokenUserValidator,
+authRouter.post('/logout',rateLimitMiddleware,tokenUserValidator,
     async (req: Request, res:Response) => {
 
         const token = req.cookies.refreshToken
 
-        const userForResend = await jwtService.getUserIdByToken(token)
+        const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
+        const deviceId = deviceIdOfSession
+        const refreshToken = uuid()
 
-        await authService.addTokenToBlackList(userForResend,token)
-
-       // const userId = userForResend
-        //await authService.makeTokenIncorrect(userId)
+        // await authService.makeTokenIncorrect(deviceId,refreshToken)
+        await authService.deleteSession(deviceId)
 
         res.clearCookie('refreshToken')
        return res.sendStatus(204)
 })
 
 
-authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddleware,
+authRouter.post('/registration',rateLimitMiddleware,userAuthCreateValidators,inputValidationMiddleware,
     async (req: Request, res:Response) => {
     const user = await authService.createUserAuth(req.body.login, req.body.password, req.body.email)
         if(user) {
@@ -114,7 +115,7 @@ authRouter.post('/registration',userAuthCreateValidators,inputValidationMiddlewa
         }
 })
 
-authRouter.post('/registration-confirmation',registrationCodeValidator,inputValidationMiddleware,
+authRouter.post('/registration-confirmation',rateLimitMiddleware,registrationCodeValidator,inputValidationMiddleware,
     async (req: Request, res:Response) => {
 
         console.log("star confirmation - router")
@@ -127,7 +128,7 @@ authRouter.post('/registration-confirmation',registrationCodeValidator,inputVali
         }
 })
 
-authRouter.post('/registration-email-resending',emailCodeResendingValidator,inputValidationMiddleware,
+authRouter.post('/registration-email-resending',rateLimitMiddleware,emailCodeResendingValidator,inputValidationMiddleware,
     async (req: Request, res:Response) => {
         console.log("resending router")
 

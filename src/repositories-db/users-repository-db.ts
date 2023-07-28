@@ -1,6 +1,7 @@
 import {TUserView} from "../models/users/users-type";
 import {usersAccountCollection, usersAccountTokenColletion} from "../db/db";
-import {TokensOfUserDb, TUserAccountDb} from "../models/user-account/user-account-types";
+import {TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
+import { v4 as uuid } from 'uuid'
 
 
 export let users: TUserAccountDb[] = []
@@ -145,33 +146,48 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
 
-    async saveTokenInDb(tokenUser: TokensOfUserDb): Promise<TokensOfUserDb> {
+    async createSessionInDb(userSession: UsersSessionDb): Promise<UsersSessionDb> {
         let result = await usersAccountTokenColletion
-            .insertOne(tokenUser)
-        return tokenUser
+            .insertOne(userSession)
+        return userSession
     },
 
-    async changeTokenInDb(userId: string, refreshToken: string) {
+    async changeDataInSessionInDb(deviceId: string, refreshToken: string) {
         let result = await usersAccountTokenColletion
-            .updateOne({userId}, {$set: {refreshToken: refreshToken}})
+            .updateOne({deviceId}, {$set: {refreshToken: refreshToken,
+                    lastActiveDate: new Date().toISOString(),
+                    tokenCreationDate: new Date(),
+                    tokenExpirationDate: new Date(Date.now() + 20000)
+                }})
 
         return result.modifiedCount === 1
     },
 
-    async addTokenInBlackListDb(userForResend: string,token: string ) {
-        const userId = userForResend
+    // async addTokenInBlackListDb(userForResend: string,token: string ) {
+    //     const userId = userForResend
+    //
+    //     let result = await usersAccountTokenColletion
+    //         .updateOne({ userId },
+    //             {$push: { usedRefreshToken: token }})
+    //
+    //     return result.modifiedCount === 1
+    // },
 
-        let result = await usersAccountTokenColletion
-            .updateOne({ userId },
-                {$push: { usedRefreshToken: token }})
 
-        return result.modifiedCount === 1
-    },
+    // async makeTokenIncorrectDb(deviceId: string, refreshToken: string) {
+    //     let result = await usersAccountTokenColletion
+    //         .updateOne({deviceId}, {$set: {refreshToken: refreshToken,
+    //             lastActiveDate: new Date().toISOString(),
+    //             tokenCreationDate: null as any,
+    //             tokenExpirationDate: undefined as any,
+    //
+    //     }})
+    //     return result.modifiedCount === 1;
+    // },
 
-
-    async makeTokenIncorrectDb(userId: string) {
-        let result = await usersAccountTokenColletion.updateOne({userId}, {$unset: {refreshToken: ""}})
-        return result.modifiedCount === 1;
-    },
+    async deleteSessionInDb(deviceId: string) {
+        let result = await usersAccountTokenColletion.deleteOne({ deviceId });
+        return result.deletedCount === 1;
+    }
 }
 

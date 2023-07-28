@@ -19,11 +19,37 @@ import {ObjectId} from "mongodb";
         },
     }
 
-    export type TokensOfUserDb = {
-        userId: string
-        refreshToken: string;
-        usedRefreshToken: string[]
+    export type UsersSessionDb = {
+            sessionId: string
+            ip: string
+            title: string
+            deviceId: string
+            lastActiveDate: string
+            refreshToken: string
+            tokenCreationDate: Date
+            tokenExpirationDate: Date
         }
+
+    export type UsersSessionView = {
+            ip: string
+            title: string
+            lastActiveDate: string
+            deviceId: string
+    }
+
+    export type NewDocumentToAppFromUser = {
+            ip: string
+            url: string
+            date: Date | { $gte: Date }
+        }
+
+
+
+    // export type TokensOfUserDb = {
+    //     userId: string
+    //     refreshToken: string;
+    //     usedRefreshToken: string[]
+    //     }
 
 
 
