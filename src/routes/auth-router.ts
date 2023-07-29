@@ -73,15 +73,14 @@ authRouter.post('/refresh-token', rateLimitMiddleware, tokenUserValidator,
         const userForResend = await jwtService.getUserIdByToken(token)
 
         const accessToken = await jwtService.createAccessJWT(userForResend)
+        const oldDeviceID = await jwtService.getDeviceIdByToken(token)
+
         const refreshTokenPayload = {
-            deviceId: randomUUID(),
+            deviceId: oldDeviceID,
         }
         const refreshToken = await jwtService.createRefreshJWT(userForResend, refreshTokenPayload)
 
-        const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
-        const deviceId = deviceIdOfSession
-
-        await authService.changeDataInSession(deviceId, refreshToken)
+        await authService.changeDataInSession(oldDeviceID, refreshToken)
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
