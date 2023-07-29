@@ -29,6 +29,10 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
 
     if (!token && typeof token !== 'string') return res.sendStatus(401)
 
+    const user = await jwtService.getUserIdByToken(token)
+
+    if(!user) return res.sendStatus(401)
+
     const deviceIdInReq = await jwtService.getDeviceIdByToken(token)
     const creationDateOftoken = await jwtService.getTokenCreationDate(token)
 
