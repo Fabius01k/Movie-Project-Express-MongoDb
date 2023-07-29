@@ -74,7 +74,7 @@ authRouter.post('/refresh-token', rateLimitMiddleware, tokenUserValidator,
 
         const accessToken = await jwtService.createAccessJWT(userForResend)
         const refreshTokenPayload = {
-            deviceId: accessToken,
+            deviceId: randomUUID(),
         }
         const refreshToken = await jwtService.createRefreshJWT(userForResend, refreshTokenPayload)
 

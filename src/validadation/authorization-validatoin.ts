@@ -27,7 +27,7 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
 
     const token = req.cookies.refreshToken
 
-    if (typeof token !== 'string') return res.sendStatus(401)
+    if (!token && typeof token !== 'string') return res.sendStatus(401)
 
     const deviceIdInReq = await jwtService.getDeviceIdByToken(token)
     const creationDateOftoken = await jwtService.getTokenCreationDate(token)
