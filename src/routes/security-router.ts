@@ -5,11 +5,12 @@ import {tokenUserValidator} from "../validadation/authorization-validatoin";
 import {UsersSessionView} from "../models/user-account/user-account-types";
 import {usersAccountTokenColletion} from "../db/db";
 import {deleteSessionByIdVavidation} from "../validadation/security-validation";
+import {authMiddleware} from "../middlewares/auth-middleware";
 
 
 export const securityRouter = Router({})
 
-securityRouter.get('/devices', tokenUserValidator,
+securityRouter.get('/devices',authMiddleware, tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
@@ -19,7 +20,7 @@ securityRouter.get('/devices', tokenUserValidator,
         res.status(200).send(sessionOfUser)
     })
 
-securityRouter.delete('/devices', tokenUserValidator,
+securityRouter.delete('/devices',authMiddleware, tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
@@ -33,7 +34,7 @@ securityRouter.delete('/devices', tokenUserValidator,
         return res.sendStatus(204)
     })
 
-securityRouter.delete('/devices/:deviceId', deleteSessionByIdVavidation,
+securityRouter.delete('/devices/:deviceId',authMiddleware, deleteSessionByIdVavidation,
     async (req: Request, res: Response) => {
 
         const deviceId = req.params.deviceId

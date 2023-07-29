@@ -38,7 +38,7 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
     const creationDateOftoken = await jwtService.getTokenCreationDate(token)
 
     const userSessionInDb = await usersAccountTokenColletion.findOne({refreshToken: token})
-    if(user !== userSessionInDb?.sessionId) return res.sendStatus(401)
+    // if(user !== userSessionInDb?.sessionId) return res.sendStatus(401)
 
         if(deviceIdInReq !== userSessionInDb?.deviceId &&
         creationDateOftoken !== userSessionInDb?.tokenCreationDate ) return res.sendStatus(401)
