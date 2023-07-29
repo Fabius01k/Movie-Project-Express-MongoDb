@@ -39,7 +39,7 @@ export const authService = {
         const createUserAuth = await usersRepository.createUserAccount(userAccount)
 
 
-        await emailManager.sendEmailconfirmationMessage(userAccount)
+        emailManager.sendEmailconfirmationMessage(userAccount)
 
         return createUserAuth
     },
@@ -119,7 +119,7 @@ export const authService = {
 
         await usersRepository.chengConfirmationCode(user.id,confirmationCode)
 
-        await emailManager.resendEmailconfirmationMessage(email, confirmationCode)
+        emailManager.resendEmailconfirmationMessage(email, confirmationCode)
 
         return true
 

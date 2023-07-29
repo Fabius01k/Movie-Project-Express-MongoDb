@@ -121,8 +121,6 @@ authRouter.post('/registration', rateLimitMiddleware, userAuthCreateValidators, 
 authRouter.post('/registration-confirmation', rateLimitMiddleware, registrationCodeValidator, inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
-        console.log("star confirmation - router")
-
         const result = await authService.confirmEmail(req.body.code)
         if (result) {
             res.status(204).send()
@@ -133,7 +131,6 @@ authRouter.post('/registration-confirmation', rateLimitMiddleware, registrationC
 
 authRouter.post('/registration-email-resending', rateLimitMiddleware, emailCodeResendingValidator, inputValidationMiddleware,
     async (req: Request, res: Response) => {
-        console.log("resending router")
 
         const result = await authService.resendingCode(req.body.email)
         if (result) {
@@ -144,14 +141,3 @@ authRouter.post('/registration-email-resending', rateLimitMiddleware, emailCodeR
     })
 
 
-// authRouter.get('/me',authMiddleware,
-//     async (req: Request, res: Response) => {
-//
-//     const authUser = await usersService.findAuthUser(req.userId!)
-//
-//         if (authUser) {
-//             res.status(200).send(authUser)
-//         } else {
-//             res.sendStatus(401)
-//         }
-// })
