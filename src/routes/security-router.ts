@@ -12,8 +12,8 @@ securityRouter.get('/devices', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
-        const userId = await jwtService.getUserIdByToken(token)
-        const sessionOfUser: UsersSessionView[] = await securityServise.getUserSessions(userId)
+        const sessionId = await jwtService.getUserIdByToken(token)
+        const sessionOfUser: UsersSessionView[] = await securityServise.getUserSessions(sessionId)
 
         res.status(200).send(sessionOfUser)
     })
@@ -22,8 +22,8 @@ securityRouter.delete('/devices', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
-        const user = await jwtService.getUserIdByToken(token)
-        const sessionId = user.id
+        const sessionId = await jwtService.getUserIdByToken(token)
+
         const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
         const deviceId = deviceIdOfSession
 
