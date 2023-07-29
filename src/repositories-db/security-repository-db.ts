@@ -60,11 +60,11 @@ export const sessionsRepository = {
     //
     // }
 
-    async countDocumentsInDb(ip: string, url: string, date: Date): Promise<number> {
+    async countDocumentsInDb(ip: string, url: string, tenSecondsAgo: Date): Promise<number> {
         const count = await userActionLogsCollection.countDocuments({
             ip: ip,
             url: url,
-            date: { $gte: date }
+            date: { $gte: tenSecondsAgo }
         });
         return count;
     }

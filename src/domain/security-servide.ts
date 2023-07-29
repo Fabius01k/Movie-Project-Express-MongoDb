@@ -64,8 +64,8 @@ export const securityServise = {
     //     // const count = await userActionLogsCollection.countDocuments(filter);
     //     // return count
     // }
-    async getDocumentCount(ip: string, url: string, date: Date): Promise<number> {
-        const count = await sessionsRepository.countDocumentsInDb(ip, url, date);
+    async getDocumentCount(ip: string, url: string, tenSecondsAgo: Date): Promise<number> {
+        const count = await sessionsRepository.countDocumentsInDb(ip, url, tenSecondsAgo);
         return count;
     }
 
