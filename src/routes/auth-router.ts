@@ -54,9 +54,9 @@ authRouter.post('/login', rateLimitMiddleware,
             await authService.createSession(sessionId, ip, title, refreshTokenPayload.deviceId, refreshToken)
 
             res.cookie('refreshToken', refreshToken, {
-                // httpOnly: true,
-                // secure: true,
-                // maxAge: 20 * 1000,
+                httpOnly: true,
+                secure: true,
+                maxAge: 20 * 1000,
             })
 
             return res.status(200).send({accessToken});
