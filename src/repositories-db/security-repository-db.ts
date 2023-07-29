@@ -44,20 +44,29 @@ export const sessionsRepository = {
         return documentForCount
     },
 
-    async countDocuments(filter: NewDocumentToAppFromUser): Promise<number> {
+    // async countDocuments(filter: NewDocumentToAppFromUser): Promise<number> {
+    //
+    //     const filterCount = {
+    //         ip: filter.ip,
+    //         url: filter.url,
+    //         date: filter.date
+    //     }
+    //
+    //     // const count = await sessionsRepository.countDocuments(filterCount);
+    //     // return count
+    //
+    //     const count = await userActionLogsCollection.countDocuments(filterCount);
+    //     return count
+    //
+    // }
 
-        const filterCount = {
-            ip: filter.ip,
-            url: filter.url,
-            date: filter.date
-        }
-
-        // const count = await sessionsRepository.countDocuments(filterCount);
-        // return count
-
-        const count = await userActionLogsCollection.countDocuments(filterCount);
-        return count
-
+    async countDocumentsInDb(ip: string, url: string, date: Date): Promise<number> {
+        const count = await userActionLogsCollection.countDocuments({
+            ip: ip,
+            url: url,
+            date: { $gte: date }
+        });
+        return count;
     }
 
 

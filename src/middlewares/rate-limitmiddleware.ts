@@ -13,11 +13,9 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
 
     await securityServise.addDocumentInCollection(ip,url,date)
 
-    const count = await securityServise.getDocumentCount(ip, url, tenSecondsAgo);
+    const count: number = await securityServise.getDocumentCount(ip, url, tenSecondsAgo);
 
-    const requestLimit = 5
-
-    if (count > requestLimit) return res.sendStatus(429);
+    if (count > 5) return res.sendStatus(429);
 
     next()
 }

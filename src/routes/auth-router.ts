@@ -65,7 +65,7 @@ authRouter.post('/login', rateLimitMiddleware,
         }
     })
 
-authRouter.post('/refresh-token', rateLimitMiddleware, tokenUserValidator,
+authRouter.post('/refresh-token', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
@@ -91,7 +91,7 @@ authRouter.post('/refresh-token', rateLimitMiddleware, tokenUserValidator,
         return res.status(200).send({accessToken})
     })
 
-authRouter.post('/logout', rateLimitMiddleware, tokenUserValidator,
+authRouter.post('/logout', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
