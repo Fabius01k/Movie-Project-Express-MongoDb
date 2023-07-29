@@ -20,7 +20,7 @@ securityRouter.get('/devices', tokenUserValidator,
         res.status(200).send(sessionOfUser)
     })
 
-securityRouter.delete('/devices',authMiddleware, tokenUserValidator,
+securityRouter.delete('/devices', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
@@ -34,7 +34,7 @@ securityRouter.delete('/devices',authMiddleware, tokenUserValidator,
         return res.sendStatus(204)
     })
 
-securityRouter.delete('/devices/:deviceId',authMiddleware, deleteSessionByIdVavidation,
+securityRouter.delete('/devices/:deviceId',tokenUserValidator, deleteSessionByIdVavidation,
     async (req: Request, res: Response) => {
 
         const deviceId = req.params.deviceId
