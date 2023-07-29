@@ -45,11 +45,7 @@ import {ObjectId} from "mongodb";
 
 
 
-    // export type TokensOfUserDb = {
-    //     userId: string
-    //     refreshToken: string;
-    //     usedRefreshToken: string[]
-    //     }
+
 
 
 

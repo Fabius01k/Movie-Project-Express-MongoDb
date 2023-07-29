@@ -2,23 +2,23 @@ import {Request, Response, Router} from "express";
 import {jwtService} from "../application/jwt-service";
 import {securityServise} from "../domain/security-servide";
 import {tokenUserValidator} from "../validadation/authorization-validatoin";
+import {UsersSessionView} from "../models/user-account/user-account-types";
+import {usersAccountTokenColletion} from "../db/db";
 
 
 export const securityRouter = Router({})
 
-securityRouter.get('/devices',tokenUserValidator,
+securityRouter.get('/devices', tokenUserValidator,
     async (req: Request, res: Response) => {
 
-    const token = req.cookies.refreshToken
-    const user = await jwtService.getUserIdByToken(token)
-    const sessionId = user.id
-
-const sessionOfUser = await securityServise.getUserSessions(sessionId)
+        const token = req.cookies.refreshToken
+        const userId = await jwtService.getUserIdByToken(token)
+        const sessionOfUser: UsersSessionView[] = await securityServise.getUserSessions(userId)
 
         res.status(200).send(sessionOfUser)
-})
+    })
 
-securityRouter.delete('/devices',tokenUserValidator,
+securityRouter.delete('/devices', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
@@ -27,12 +27,12 @@ securityRouter.delete('/devices',tokenUserValidator,
         const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
         const deviceId = deviceIdOfSession
 
-        await securityServise.deleteOtherSessions(sessionId,deviceId)
+        await securityServise.deleteOtherSessions(sessionId, deviceId)
 
         return res.sendStatus(204)
-        })
+    })
 
-securityRouter.delete('/devices/:deviceId',tokenUserValidator,
+securityRouter.delete('/devices/:deviceId', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const deviceId = req.params.deviceId
