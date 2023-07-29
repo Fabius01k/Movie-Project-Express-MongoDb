@@ -10,7 +10,7 @@ import {authMiddleware} from "../middlewares/auth-middleware";
 
 export const securityRouter = Router({})
 
-securityRouter.get('/devices',authMiddleware, tokenUserValidator,
+securityRouter.get('/devices', tokenUserValidator,
     async (req: Request, res: Response) => {
 
         const token = req.cookies.refreshToken
