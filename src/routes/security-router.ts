@@ -4,6 +4,7 @@ import {securityServise} from "../domain/security-servide";
 import {tokenUserValidator} from "../validadation/authorization-validatoin";
 import {UsersSessionView} from "../models/user-account/user-account-types";
 import {usersAccountTokenColletion} from "../db/db";
+import {deleteSessionByIdVavidation} from "../validadation/security-validation";
 
 
 export const securityRouter = Router({})
@@ -32,7 +33,7 @@ securityRouter.delete('/devices', tokenUserValidator,
         return res.sendStatus(204)
     })
 
-securityRouter.delete('/devices/:deviceId', tokenUserValidator,
+securityRouter.delete('/devices/:deviceId', deleteSessionByIdVavidation,
     async (req: Request, res: Response) => {
 
         const deviceId = req.params.deviceId
