@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {securityServise} from "../domain/security-servide";
-import {userActionLogsCollection} from "../db/db";
+
 import {sessionsRepository} from "../repositories-db/security-repository-db";
 
 

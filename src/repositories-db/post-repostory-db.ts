@@ -1,5 +1,5 @@
 import {blogs} from "./blogs-repository-db";
-import {blogsCollection, client, postsCollection} from "../db/db";
+import {blogsModel, postsModel} from "../db/db";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
 
@@ -32,14 +32,15 @@ export const postsRepository = {
 
     async findPosts(sortBy: string,sortDirection: 'asc' | 'desc',
                     pageSize: number,pageNumber: number) {
-        const posts: TPostDb[] = await postsCollection.find().
-        sort(sortBy,sortDirection).
-        skip((pageNumber-1)*pageSize).
-        limit(+pageSize).
-        toArray()
+        const posts: TPostDb[] = await postsModel.find()
+        // sort(sortBy,sortDirection).
+            .sort({ sortBy: sortDirection })
+            .skip((pageNumber-1)*pageSize)
+            .limit(+pageSize)
+            .lean()
 
         const items = posts.map(p => mapPostFromDbView(p))
-        const totalCount = await postsCollection.countDocuments()
+        const totalCount = await postsModel.countDocuments()
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
@@ -52,7 +53,7 @@ export const postsRepository = {
 
     async createPost(newPost: TPostDb): Promise<TPostView | null> {
 
-        await postsCollection.insertOne(newPost)
+        await postsModel.insertMany([newPost])
 
         return mapPostFromDbView(newPost)
 
@@ -61,21 +62,12 @@ export const postsRepository = {
 
     async createPostByBlogId(newPost: TPostDb): Promise<TPostView | null> {
 
-        await postsCollection.insertOne(newPost)
+        await postsModel.insertMany([newPost])
 
         return mapPostFromDbView(newPost)
 
 
     },
-
-
-    //async createPostByBlogId(id: string): Promise<TPostView | null> {
-        //const post: TPostDb | null = await postsCollection.findOne({id: id})
-        //if(!post) return null
-
-        //return mapPostFromDbView(post)
-
-    //},
 
     async findPostsByBlogId(sortBy: string,sortDirection: 'asc' | 'desc',
                             pageSize: number,pageNumber: number,blogId: string) {
@@ -86,15 +78,17 @@ export const postsRepository = {
                 id: new RegExp(blogId,'gi')
             }
 */
-        const posts: TPostDb[] = await postsCollection.
-        find({blogId: blogId}).
-        sort(sortBy,sortDirection).
-        skip((pageNumber-1)*pageSize).
-        limit(+pageSize).
-        toArray()
+        const posts: TPostDb[] = await postsModel
+            .find({blogId: blogId})
+        // sort(sortBy,sortDirection)
+            .sort({ sortBy: sortDirection })
+            .skip((pageNumber-1)*pageSize)
+            .limit(+pageSize)
+            .lean()
+
 
         const items = posts.map(p => mapPostFromDbView(p))
-        const totalCount = await postsCollection.countDocuments({blogId: blogId})
+        const totalCount = await postsModel.countDocuments({blogId: blogId})
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
@@ -106,7 +100,7 @@ export const postsRepository = {
     },
 
     async getPostById(id: string): Promise<TPostView | null> {
-        const post: TPostDb | null = await postsCollection.findOne({id: id})
+        const post: TPostDb | null = await postsModel.findOne({id: id})
         if(!post) return null
 
         return mapPostFromDbView(post)
@@ -115,12 +109,12 @@ export const postsRepository = {
 
     async updatePost(id: string, title: string, shortDescription: string, content: string,
                      blogId: string): Promise<boolean | null> {
-        const blog = await blogsCollection.findOne({id: blogId})
+        const blog = await blogsModel.findOne({id: blogId})
 
         if (!blog) {
             return null
         }
-        const updatePostPromise = await postsCollection.
+        const updatePostPromise = await postsModel.
         updateOne({id: id}, {
             $set: {
                 title: title,
@@ -135,7 +129,7 @@ export const postsRepository = {
     },
 
     async deletePost(id: string): Promise<boolean> {
-        const deletePostPromise = await postsCollection.
+        const deletePostPromise = await postsModel.
         deleteOne({id: id})
 
         return deletePostPromise.deletedCount === 1

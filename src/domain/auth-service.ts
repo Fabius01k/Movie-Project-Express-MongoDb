@@ -5,7 +5,7 @@ import add from 'date-fns/add'
 import {usersRepository} from "../repositories-db/users-repository-db";
 import {emailManager} from "../managers/email-manager";
 import {randomUUID} from "crypto";
-import {usersAccountCollection} from "../db/db";
+
 
 export const authService = {
     async createUserAuth(login: string, password: string, email: string): Promise<TUserAccountDb | null> {
@@ -15,7 +15,7 @@ export const authService = {
         const passwordHash = await this._generateHash(password, passwordSalt)
         const userAccount: TUserAccountDb = {
 
-            _id: new ObjectId(),
+            // _id: new ObjectId(),
             id: dateNow,
             accountData: {
                 userName: {
@@ -88,10 +88,6 @@ export const authService = {
     async confirmEmail(code: string): Promise<boolean> {
 
         let user = await usersRepository.findUserByConfirmCode(code)
-
-        console.log({code})
-        console.log(user, "found user - service")
-        console.log(await usersAccountCollection.find().toArray(), "found users - service")
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false

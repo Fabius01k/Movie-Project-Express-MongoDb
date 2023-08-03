@@ -1,8 +1,9 @@
-import {blogsCollection, client, postsCollection} from "../db/db";
+// import {blogsCollection, client, postsCollection} from "../db/db";
 import {TBlogDb, TBlogView} from "../models/blogs/blogs-type";
 import {ObjectId} from "mongodb";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {mapPostFromDbView} from "./post-repostory-db";
+import {blogsModel} from "../db/db";
 
 export let blogs: TBlogDb[] = []
 const mapBlogFromDbToView = (blog: TBlogDb): TBlogView => {
@@ -32,16 +33,17 @@ export const blogsRepository = {
         //     filter.name = { $regex: pagination.searchNameTerm, $options: "i" };
         // }
 
-        const blogs: TBlogDb[] = await blogsCollection
+        const blogs: TBlogDb[] = await blogsModel
             .find(filter)
-            .sort(sortBy,sortDirection)
+            // .sort(sortBy,sortDirection) // hm 9
+            .sort({ sortBy: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(+pageSize)
-            .toArray()
+            .lean()
 
 
         const items = blogs.map(b => mapBlogFromDbToView(b))
-        const totalCount = await blogsCollection.countDocuments(filter)
+        const totalCount = await blogsModel.countDocuments(filter)
 
         return {
             pagesCount: Math.ceil(totalCount/pageSize),
@@ -53,20 +55,19 @@ export const blogsRepository = {
     },
 
     async createBlog(newBlog: TBlogDb): Promise<TBlogView> {
-        await blogsCollection.insertOne(newBlog)
+        await blogsModel.insertMany([newBlog])
 
         return mapBlogFromDbToView(newBlog)
     },
 
     async createPostById(newPost: TPostDb): Promise<TPostView | null> {
 
-        await postsCollection.insertOne(newPost)
-
+        // await postsCollection.insertOne(newPost)
         return mapPostFromDbView(newPost)
     },
 
     async getBlogById(id: string): Promise<TBlogView | null> {
-        const blog: TBlogDb | null = await blogsCollection.findOne({id: id})
+        const blog: TBlogDb | null = await blogsModel.findOne({id: id})
         if (!blog) return null
 
         return mapBlogFromDbToView(blog)
@@ -74,7 +75,7 @@ export const blogsRepository = {
     },
 
     async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
-        const updateBlog = await blogsCollection.
+        const updateBlog = await blogsModel.
         updateOne({id: id}, {
             $set: {
                 name: name,
@@ -88,7 +89,7 @@ export const blogsRepository = {
     },
 
     async deleteBlog(id: string): Promise<boolean> {
-        const deleteBlog = await blogsCollection
+        const deleteBlog = await blogsModel
             .deleteOne({id: id})
 
         return deleteBlog.deletedCount === 1

@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import {usersAccountTokenColletion} from "../db/db";
+import {sessionsModel} from "../db/db";
 import {jwtService} from "../application/jwt-service";
 
 
@@ -37,7 +37,7 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
     const deviceIdInReq = await jwtService.getDeviceIdByToken(token)
     const creationDateOftoken = await jwtService.getTokenCreationDate(token)
 
-    const userSessionInDb = await usersAccountTokenColletion.findOne({refreshToken: token})
+    const userSessionInDb = await sessionsModel.findOne({refreshToken: token})
     // if(user !== userSessionInDb?.sessionId) return res.sendStatus(401)
 
         if(deviceIdInReq !== userSessionInDb?.deviceId &&

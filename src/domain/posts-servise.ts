@@ -1,14 +1,12 @@
 // import {blogs} from "./blogs-repository-db";
-import {blogsCollection, client, postsCollection, usersAccountCollection, } from "../db/db";
+
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
 import {postsRepository} from "../repositories-db/post-repostory-db";
 import {CommentsRepository} from "../repositories-db/comments-repository-db";
 import {TcommentDb, TcommentView} from "../models/comments/comments-type";
-import {jwtService} from "../application/jwt-service";
-import {settings} from "../application/settings";
+import {blogsModel, postsModel, userModel} from "../db/db";
 
-import {authMiddleware} from "../middlewares/auth-middleware";
 
 
 type TVposts = {
@@ -55,7 +53,7 @@ export const postsServise = {
                      blogId: string): Promise<TPostView | null> {
 
         const dateNow = new Date().getTime().toString()
-        const blog = await blogsCollection.findOne({id: blogId})
+        const blog = await blogsModel.findOne({id: blogId})
 
         if (!blog) {
             return null
@@ -81,13 +79,12 @@ export const postsServise = {
 
         const dateNow = new Date().getTime().toString()
 
-        const post = await postsCollection.findOne({id: postId})
+        const post = await postsModel.findOne({id: postId})
         if(!post) {
-            console.log("post not found")
             return null
         }
 
-        const user = await usersAccountCollection.findOne({id: userId})
+        const user = await userModel.findOne({id: userId})
         if(!user) {
 
             return null

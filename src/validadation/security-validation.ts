@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../application/jwt-service";
-import {usersAccountTokenColletion} from "../db/db";
+import {sessionsModel} from "../db/db";
 
 
 export const deleteSessionByIdVavidation = async (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +12,7 @@ export const deleteSessionByIdVavidation = async (req: Request, res: Response, n
 
     const creationDateOftoken = await jwtService.getTokenCreationDate(token)
     const ownerOfSendToken = await jwtService.getUserIdByToken(token)
-    const userSessionInDb = await usersAccountTokenColletion.findOne({deviceId: deviceId})
+    const userSessionInDb = await sessionsModel.findOne({deviceId: deviceId})
 
     if(!userSessionInDb) return res.sendStatus(404)
 

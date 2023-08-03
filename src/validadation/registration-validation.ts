@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {usersAccountCollection} from "../db/db";
+import {userModel} from "../db/db";
 
 
 
@@ -7,7 +7,7 @@ export const registrationCodeValidator = [
 
     body('code').isString().notEmpty().custom(async (value: string) => {
 
-        const user = await usersAccountCollection.findOne({"emailConfirmation.confirmationCode": value})
+        const user = await userModel.findOne({"emailConfirmation.confirmationCode": value})
 
         if(!user) {
             throw new Error('user doesn`t exist');
@@ -23,7 +23,7 @@ export const emailCodeResendingValidator = [
 
     body('email').isString().notEmpty().custom(async (value: string) => {
 
-        const user = await usersAccountCollection.findOne({"accountData.userName.email": value})
+        const user = await userModel.findOne({"accountData.userName.email": value})
 
         if(!user) {
             throw new Error('user doesn`t exist');

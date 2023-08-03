@@ -1,9 +1,10 @@
-import {blogsCollection, client} from "../db/db";
+// import {blogsCollection, client} from "../db/db";
 import {TBlogDb, TBlogView} from "../models/blogs/blogs-type";
 import {ObjectId} from "mongodb";
 import {blogsRepository} from "../repositories-db/blogs-repository-db";
 import {TPostDb, TPostView} from "../models/posts/posts-type";
 import {postsRepository} from "../repositories-db/post-repostory-db";
+import {blogsModel} from "../db/db";
 
 export let blogs: TBlogDb[] = []
 export const blogsService = {
@@ -43,7 +44,7 @@ export const blogsService = {
     async createPostByBlogID(title: string, shortDescription: string, content: string,
                          blogId: string): Promise<TPostView | null> {
         const dateNow = new Date().getTime().toString()
-        const blog = await blogsCollection.findOne({id: blogId})
+        const blog = await blogsModel.findOne({id: blogId})
 
         if (!blog) {
             return null

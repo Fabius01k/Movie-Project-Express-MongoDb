@@ -1,5 +1,4 @@
 import express, {Request, Response} from "express";
-import {collections} from "./db/db";
 import {videosRouter} from "./routes/videos-router";
 import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/post-router";
@@ -9,6 +8,8 @@ import {commentRouter} from "./routes/comment-router";
 import {emailRouter} from "./routes/email-router";
 import cookieParser from "cookie-parser";
 import {securityRouter} from "./routes/security-router";
+import {collections} from "./db/db";
+
 
 const app = express()
 app.use(cookieParser())
@@ -24,11 +25,22 @@ app.use('/comments',commentRouter)
 app.use('/email',emailRouter)
 app.use('/security',securityRouter)
 
+// app.delete('/testing/all-data', async (req: Request, res: Response) => {
+//     const promises = collections.map(async (model) => {
+//         await model.deleteMany();
+//     });
+//
+//     await Promise.all(promises);
+//     res.sendStatus(204);
+// });
 
-app.delete('/testing/all-data', async(req: Request, res: Response) => {
-    const promises = collections.map(c => c.deleteMany())
-    await Promise.all(promises)
-    res.sendStatus(204)
-})
+
+
+
+// app.delete('/testing/all-data', async(req: Request, res: Response) => {
+//     const promises = collections.map(c => c.deleteMany())
+//     await Promise.all(promises)
+//     res.sendStatus(204)
+// })
 
 export default app

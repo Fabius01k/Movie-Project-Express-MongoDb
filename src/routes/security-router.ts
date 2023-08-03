@@ -3,7 +3,7 @@ import {jwtService} from "../application/jwt-service";
 import {securityServise} from "../domain/security-servide";
 import {tokenUserValidator} from "../validadation/authorization-validatoin";
 import {UsersSessionView} from "../models/user-account/user-account-types";
-import {usersAccountTokenColletion} from "../db/db";
+
 import {deleteSessionByIdVavidation} from "../validadation/security-validation";
 import {authMiddleware} from "../middlewares/auth-middleware";
 

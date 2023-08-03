@@ -1,4 +1,4 @@
-import {client, videosCollection} from "../db/db";
+import {videosModel} from "../db/db";
 import {TVideoDb, TVideoView} from "../models/videos/videos-type";
 import {ObjectId} from "mongodb";
 
@@ -34,19 +34,18 @@ const mapVideoFromDbToView = (video:TVideoDb): TVideoView => {
 export const videosRepository = {
 
     async findVideos(): Promise<TVideoView[]> {
-        const videos: TVideoDb[] = await videosCollection.find().toArray();
+        const videos: TVideoDb[] = await videosModel.find().lean();
         return videos.map(v => mapVideoFromDbToView(v))
     },
 
     async createVideo(newVideo: TVideoDb): Promise<TVideoView> {
-        await videosCollection.insertOne(newVideo);
+        await videosModel.insertMany([newVideo]);
 
         return mapVideoFromDbToView(newVideo);
-
-    },
+        },
 
     async getVideoById(id: number): Promise<TVideoView | null> {
-        const video: TVideoDb | null = await videosCollection.findOne({id: id})
+        const video: TVideoDb | null = await videosModel.findOne({id: id})
         if (!video) return null
 
         return mapVideoFromDbToView(video)
@@ -57,7 +56,7 @@ export const videosRepository = {
                       minAgeRestriction: number | null,
                       publicationDate: string): Promise<boolean> {
 
-        const updateVideo = await videosCollection.
+        const updateVideo = await videosModel.
         updateOne({id: id}, {
             $set: {
                 title: title,
@@ -74,7 +73,7 @@ export const videosRepository = {
     },
 
     async deleteVideo(id: number): Promise<boolean> {
-        const deleteVideo = await videosCollection.
+        const deleteVideo = await videosModel.
         deleteOne({id: id})
 
         return deleteVideo.deletedCount === 1
