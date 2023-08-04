@@ -5,9 +5,11 @@ import {userModel} from "../db/db";
 
 export const registrationCodeValidator = [
 
-    body('code').isString().notEmpty().custom(async (value: string) => {
-
-        const user = await userModel.findOne({"emailConfirmation.confirmationCode": value})
+    body('code')
+        .isString()
+        .notEmpty()
+        .custom(async (value: string) => {
+            const user = await userModel.findOne({"emailConfirmation.confirmationCode": value})
 
         if(!user) {
             throw new Error('user doesn`t exist');
@@ -21,9 +23,11 @@ export const registrationCodeValidator = [
 
 export const emailCodeResendingValidator = [
 
-    body('email').isString().notEmpty().custom(async (value: string) => {
-
-        const user = await userModel.findOne({"accountData.userName.email": value})
+    body('email')
+        .isString()
+        .notEmpty()
+        .custom(async (value: string) => {
+            const user = await userModel.findOne({"accountData.userName.email": value})
 
         if(!user) {
             throw new Error('user doesn`t exist');
@@ -35,5 +39,34 @@ export const emailCodeResendingValidator = [
     })
 ]
 
+export const emailPasswordResendingValidator = [
+    body('email').isString()
+        .notEmpty()
+        .custom(async (value: string) => {
+            const user = await userModel.findOne({"accountData.userName.email": value})
 
+    if(!user) {
+        throw new Error('user doesn`t exist');
+    }
+})
+]
+
+
+export const PasswordResendingCodeValidator = [
+    body('recoveryCode')
+        .isString()
+        .notEmpty()
+        .custom(async (value: string) => {
+        const user = await userModel.findOne({"resetPasswordCode": value})
+            if(!user) {
+                throw new Error('user doesn`t exist');
+            }
+        }),
+
+    body('newPassword')
+        .isString()
+        .notEmpty()
+        .isLength({min:6,max:20})
+        .withMessage('password is not correct'),
+]
 

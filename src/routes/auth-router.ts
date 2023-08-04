@@ -8,7 +8,11 @@ import {authService} from "../domain/auth-service";
 import {userAuthCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
-import {emailCodeResendingValidator, registrationCodeValidator} from "../validadation/registration-validation";
+import {
+    emailCodeResendingValidator,
+    emailPasswordResendingValidator, PasswordResendingCodeValidator,
+    registrationCodeValidator
+} from "../validadation/registration-validation";
 import {randomUUID} from "crypto";
 import {tokenUserValidator} from "../validadation/authorization-validatoin";
 import {v4 as uuid} from "uuid";
@@ -98,7 +102,7 @@ authRouter.post('/logout', tokenUserValidator,
 
         const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
         const deviceId = deviceIdOfSession
-        const refreshToken = uuid()
+
 
         // await authService.makeTokenIncorrect(deviceId,refreshToken)
         await authService.deleteSession(deviceId)
@@ -129,10 +133,35 @@ authRouter.post('/registration-confirmation', rateLimitMiddleware, registrationC
         }
     })
 
-authRouter.post('/registration-email-resending', rateLimitMiddleware, emailCodeResendingValidator, inputValidationMiddleware,
+authRouter.post('/registration-email-resending', rateLimitMiddleware, emailCodeResendingValidator,
+    inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
         const result = await authService.resendingCode(req.body.email)
+        if (result) {
+            res.status(204).send()
+        } else {
+            res.sendStatus(400)
+        }
+    })
+
+authRouter.post('/new-password',rateLimitMiddleware,PasswordResendingCodeValidator,
+    inputValidationMiddleware,
+    async (req: Request, res: Response) => {
+        const result = await authService.makeNewPasswordByResendingCode(req.body.newPassword,req.body.recoveryCode )
+        if (result) {
+            res.status(204).send()
+        } else {
+            res.sendStatus(400)
+        }
+    })
+
+authRouter.post('/password-recovery',rateLimitMiddleware,emailPasswordResendingValidator,
+    inputValidationMiddleware,
+
+    async (req: Request, res: Response) => {
+
+    const result = await authService.resendingPasswordCode(req.body.email)
         if (result) {
             res.status(204).send()
         } else {

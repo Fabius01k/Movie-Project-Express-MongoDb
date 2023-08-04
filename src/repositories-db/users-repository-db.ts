@@ -116,14 +116,17 @@ export const usersRepository = {
     async findByAuthLoginEmail(loginOrEmail: string) {
 
         const user = await userModel.findOne({$or: [{"accountData.userName.email": loginOrEmail}, {"accountData.userName.login": loginOrEmail}]})
-        console.log(user, "findBy")
         return user
     },
 
     async findUserByConfirmCode(emailConfirmationCode: string) {
 
         const user = await userModel.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode})
-        console.log(user, "findBy")
+        return user
+    },
+
+    async findUserByResetPasswordCode(recoveryCode: string) {
+        const user = await userModel.findOne({"resetPasswordCode": recoveryCode})
         return user
     },
 
@@ -136,13 +139,34 @@ export const usersRepository = {
     async updateConfirmation(id: string) {
         let result = await userModel
             .updateOne({id}, {$set: {'emailConfirmation.isConfirmed': true}})
-        console.log(result, "confirmation finally")
+
         return result.modifiedCount === 1
     },
 
     async chengConfirmationCode(id: string, confirmationCode: string) {
         let result = await userModel
             .updateOne({id}, {$set: {'emailConfirmation.confirmationCode': confirmationCode}})
+
+        return result.modifiedCount === 1
+    },
+
+    async changeResetPasswordCode(id: string, NewResetPasswordCode: string,
+                                  NewExpirationDatePasswordCode: Date) {
+        let result = await userModel
+            .updateOne({id},{$set: {
+                'resetPasswordCode': NewResetPasswordCode,
+                'expirationDatePasswordCode':NewExpirationDatePasswordCode
+            }})
+
+        return result.modifiedCount === 1
+    },
+
+    async changePasswordInDb(id: string,passwordSalt: string, passwordHash: string) {
+        let result = await userModel
+            .updateOne({id},{$set: {
+                'passwordSalt': passwordSalt,
+                'passwordHash': passwordHash
+                }})
 
         return result.modifiedCount === 1
     },
@@ -164,6 +188,7 @@ export const usersRepository = {
         return result.modifiedCount === 1
     },
 
+
     // async addTokenInBlackListDb(userForResend: string,token: string ) {
     //     const userId = userForResend
     //
@@ -172,18 +197,6 @@ export const usersRepository = {
     //             {$push: { usedRefreshToken: token }})
     //
     //     return result.modifiedCount === 1
-    // },
-
-
-    // async makeTokenIncorrectDb(deviceId: string, refreshToken: string) {
-    //     let result = await usersAccountTokenColletion
-    //         .updateOne({deviceId}, {$set: {refreshToken: refreshToken,
-    //             lastActiveDate: new Date().toISOString(),
-    //             tokenCreationDate: null as any,
-    //             tokenExpirationDate: undefined as any,
-    //
-    //     }})
-    //     return result.modifiedCount === 1;
     // },
 
     async deleteSessionInDb(deviceId: string) {

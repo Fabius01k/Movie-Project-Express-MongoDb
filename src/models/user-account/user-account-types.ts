@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 
         export type TUserAccountDb = {
-        // _id?: ObjectId
+        _id?: ObjectId
         id: string
         accountData: {
             userName: {
@@ -17,6 +17,8 @@ import {ObjectId} from "mongodb";
             expirationDate: Date
             isConfirmed: boolean
         },
+            resetPasswordCode: string | null
+            expirationDatePasswordCode: Date
     }
 
     export type UsersSessionDb = {

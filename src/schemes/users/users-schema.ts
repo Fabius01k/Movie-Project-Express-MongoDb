@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 
 
 export const usersSchema = new mongoose.Schema<WithId<TUserAccountDb>>({
+       _id: { type: ObjectId, require: true},
        id: { type: String, require: true },
     accountData: {
         userName: {
@@ -19,4 +20,6 @@ export const usersSchema = new mongoose.Schema<WithId<TUserAccountDb>>({
         expirationDate: { type: Date, require: true },
         isConfirmed: { type: Boolean, require: true },
     },
+    resetPasswordCode: { type: String, default: null },
+    expirationDatePasswordCode: { type: Date, default: null },
 })

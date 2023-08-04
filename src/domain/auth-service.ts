@@ -15,7 +15,7 @@ export const authService = {
         const passwordHash = await this._generateHash(password, passwordSalt)
         const userAccount: TUserAccountDb = {
 
-            // _id: new ObjectId(),
+            _id: new ObjectId(),
             id: dateNow,
             accountData: {
                 userName: {
@@ -32,7 +32,9 @@ export const authService = {
                     hours: 1
                 }),
                 isConfirmed: false
-            }
+            },
+            resetPasswordCode: null,
+            expirationDatePasswordCode: new Date()
         }
 
 
@@ -104,6 +106,20 @@ export const authService = {
         return hash
     },
 
+    async makeNewPasswordByResendingCode(newPassword: string, recoveryCode: string): Promise<boolean> {
+
+        let user = await usersRepository.findUserByResetPasswordCode(recoveryCode)
+        if (!user) return false
+        if (user.resetPasswordCode !== recoveryCode) return false
+        if (user.expirationDatePasswordCode < new Date()) return false
+
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(newPassword, passwordSalt)
+
+        let result = await usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
+        return result
+    },
+
     async resendingCode(email: string): Promise<boolean | null> {
 
         let user = await usersRepository.findByAuthLoginEmail(email)
@@ -118,8 +134,21 @@ export const authService = {
         emailManager.resendEmailconfirmationMessage(email, confirmationCode)
 
         return true
+    },
 
-    }
+    async resendingPasswordCode(email: string): Promise<boolean | null> {
+
+        let user = await usersRepository.findByAuthLoginEmail(email)
+        if (!user) return false
+
+        const NewResetPasswordCode = randomUUID()
+        const NewExpirationDatePasswordCode = add(new Date(), { hours: 24 });
+        await usersRepository.changeResetPasswordCode(user.id,NewResetPasswordCode,NewExpirationDatePasswordCode)
+
+        emailManager.resendPasswordCodeMessage(email,NewResetPasswordCode)
+
+        return true
+    },
 }
 
 

@@ -35,5 +35,18 @@ export const emailManager = {
         const subject = "Новый код подтверждения регистрации"
 
         await emailAdapter.sendEmail(email, subject, message)
-    }
+    },
+
+    async resendPasswordCodeMessage(email: string, code: string) {
+
+        const refreshPasswordCode = code
+
+        const message = `<h1>Password recovery</h1>
+        <p>To finish registration please follow the link below:
+            <a href='https://project-nu-silk.vercel.app/registration-confirmation?code=${refreshPasswordCode}'>recovery password</a>
+        </p>`
+        const subject = "Код восстановления пароля"
+
+        await emailAdapter.sendEmail(email, subject, message)
+    },
 }

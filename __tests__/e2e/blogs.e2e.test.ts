@@ -23,7 +23,7 @@ describe('get \ getByID', () => {
 
         expect(result.body).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 0, "totalCount": 0})
 
-    })
+    }, 10000)
 
     it('should return status code 404 if blog not found', async () => {
         await request(app)

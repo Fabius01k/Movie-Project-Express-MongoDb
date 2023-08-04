@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import {TUserAccountDb} from "../models/user-account/user-account-types";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
+import {randomUUID} from "crypto";
 
 export let users: TUserAccountDb[] = []
 
@@ -58,7 +59,9 @@ export const usersService = {
                         hours: 1
                     }),
                     isConfirmed: true
-                }
+                },
+            resetPasswordCode: null,
+            expirationDatePasswordCode: new Date()
 
         }
 

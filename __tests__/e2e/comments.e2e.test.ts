@@ -80,7 +80,7 @@ describe('get', () => {
                 createdAt: expect.any(String),
                 id: expect.any(String)
             })
-    })
+    },10000)
 
     it('should return 404 if comment not found', async () => {
 

@@ -32,9 +32,11 @@ export const accessingToAppModel =
     mongoose.model<NewDocumentToAppFromUser>("accessingToApp",accessingToAppSchema)
 
 
-export const collections = [videosModel,blogsModel,
-    postsModel,commentSchema,usersSchema,
-    sessionsModel,accessingToAppSchema
+export const collections: mongoose.Model<any, {}, {}, {},
+     mongoose.Document<unknown, {}, any> & any
+    & {_id: mongoose.Types.ObjectId}, any>[] = [videosModel,blogsModel,
+    postsModel,commentsModel,userModel,
+    sessionsModel,accessingToAppModel
 ]
 
 
