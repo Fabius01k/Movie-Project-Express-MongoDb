@@ -1,7 +1,7 @@
 import {TUserView} from "../models/users/users-type";
 import {sessionsModel, userModel} from "../db/db";
 import {TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
-import { v4 as uuid } from 'uuid'
+import {v4 as uuid} from 'uuid'
 
 
 export let users: TUserAccountDb[] = []
@@ -56,7 +56,7 @@ export const usersRepository = {
         const users: TUserAccountDb[] = await userModel
             .find(filter)
             // .sort(sortBy, sortDirection)
-            .sort({ sortBy: sortDirection })
+            .sort({sortBy: sortDirection})
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .lean()
@@ -153,20 +153,24 @@ export const usersRepository = {
     async changeResetPasswordCode(id: string, NewResetPasswordCode: string,
                                   NewExpirationDatePasswordCode: Date) {
         let result = await userModel
-            .updateOne({id},{$set: {
-                'resetPasswordCode': NewResetPasswordCode,
-                'expirationDatePasswordCode':NewExpirationDatePasswordCode
-            }})
+            .updateOne({id}, {
+                $set: {
+                    'resetPasswordCode': NewResetPasswordCode,
+                    'expirationDatePasswordCode': NewExpirationDatePasswordCode
+                }
+            })
 
         return result.modifiedCount === 1
     },
 
-    async changePasswordInDb(id: string,passwordSalt: string, passwordHash: string) {
+    async changePasswordInDb(id: string, passwordSalt: string, passwordHash: string) {
         let result = await userModel
-            .updateOne({id},{$set: {
-                'passwordSalt': passwordSalt,
-                'passwordHash': passwordHash
-                }})
+            .updateOne({id}, {
+                $set: {
+                    'accountData.passwordSalt': passwordSalt,
+                    'accountData.passwordHash': passwordHash
+                }
+            })
 
         return result.modifiedCount === 1
     },
@@ -179,11 +183,14 @@ export const usersRepository = {
 
     async changeDataInSessionInDb(deviceId: string, refreshToken: string) {
         let result = await sessionsModel
-            .updateOne({deviceId}, {$set: {refreshToken: refreshToken,
+            .updateOne({deviceId}, {
+                $set: {
+                    refreshToken: refreshToken,
                     lastActiveDate: new Date().toISOString(),
                     tokenCreationDate: new Date(),
                     tokenExpirationDate: new Date(Date.now() + 20000)
-                }})
+                }
+            })
 
         return result.modifiedCount === 1
     },
@@ -200,7 +207,7 @@ export const usersRepository = {
     // },
 
     async deleteSessionInDb(deviceId: string) {
-        let result = await sessionsModel.deleteOne({ deviceId });
+        let result = await sessionsModel.deleteOne({deviceId});
         return result.deletedCount === 1;
     }
 }

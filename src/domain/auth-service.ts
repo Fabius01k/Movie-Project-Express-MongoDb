@@ -110,14 +110,12 @@ export const authService = {
 
         let user = await usersRepository.findUserByResetPasswordCode(recoveryCode)
         if (!user) return false
-        if (user.resetPasswordCode !== recoveryCode) return false
         if (user.expirationDatePasswordCode < new Date()) return false
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
 
-        let result = await usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
-        return result
+       return  usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
     },
 
     async resendingCode(email: string): Promise<boolean | null> {
