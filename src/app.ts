@@ -26,8 +26,8 @@ app.use('/email',emailRouter)
 app.use('/security',securityRouter)
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
-    const promises = collections.map((model) => {
-        model.deleteMany({});
+    const promises = collections.map(async (model: any) => {
+        await model.deleteMany({})
     });
 
     await Promise.all(promises);
