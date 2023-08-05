@@ -145,10 +145,10 @@ authRouter.post('/registration-email-resending', rateLimitMiddleware, emailCodeR
         }
     })
 
-authRouter.post('/new-password',rateLimitMiddleware,PasswordResendingCodeValidator,
+authRouter.post('/new-password', rateLimitMiddleware, PasswordResendingCodeValidator,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
-        const result = await authService.makeNewPasswordByResendingCode(req.body.newPassword,req.body.recoveryCode )
+        const result = await authService.makeNewPasswordByResendingCode(req.body.newPassword, req.body.recoveryCode)
         if (result) {
             res.status(204).send()
         } else {
@@ -156,17 +156,13 @@ authRouter.post('/new-password',rateLimitMiddleware,PasswordResendingCodeValidat
         }
     })
 
-authRouter.post('/password-recovery',rateLimitMiddleware,emailPasswordResendingValidator,
+authRouter.post('/password-recovery', rateLimitMiddleware, emailPasswordResendingValidator,
     inputValidationMiddleware,
 
     async (req: Request, res: Response) => {
 
-    const result = await authService.resendingPasswordCode(req.body.email)
-        if (result) {
-            res.status(204).send()
-        } else {
-            res.sendStatus(400)
-        }
+        await authService.resendingPasswordCode(req.body.email)
+        return res.sendStatus(204)
     })
 
 

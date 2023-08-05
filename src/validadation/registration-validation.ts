@@ -41,13 +41,13 @@ export const emailCodeResendingValidator = [
 export const emailPasswordResendingValidator = [
     body('email').isString()
         .notEmpty()
-        .custom(async (value: string) => {
-            const user = await userModel.findOne({"accountData.userName.email": value})
-
-            if (!user) {
-                throw new Error('user doesn`t exist');
-            }
-        })
+        // .custom(async (value: string) => {
+        //     const user = await userModel.findOne({"accountData.userName.email": value})
+        //
+        //     if (!user) {
+        //         throw new Error('user doesn`t exist');
+        //     }
+        // })
 ]
 
 
