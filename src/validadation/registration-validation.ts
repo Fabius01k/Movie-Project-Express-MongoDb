@@ -41,6 +41,7 @@ export const emailCodeResendingValidator = [
 export const emailPasswordResendingValidator = [
     body('email').isString()
         .notEmpty()
+        .isEmail()
         // .custom(async (value: string) => {
         //     const user = await userModel.findOne({"accountData.userName.email": value})
         //
