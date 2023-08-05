@@ -43,7 +43,7 @@ export const emailManager = {
 
         const message = `<h1>Password recovery</h1>
         <p>To finish registration please follow the link below:
-            <a href='https://project-nu-silk.vercel.app/registration-confirmation?code=${refreshPasswordCode}'>recovery password</a>
+            <a href='https://project-nu-silk.vercel.app/password-recovery?recoveryCode=${refreshPasswordCode}'>recovery password</a>
         </p>`
         const subject = "Код восстановления пароля"
 

@@ -1,7 +1,7 @@
 // @ts-ignore
 import request from 'supertest'
 import app from "../../src/app";
-
+import mongoose from 'mongoose'
 
 const auth = 'Authorization'
 const basic = 'Basic YWRtaW46cXdlcnR5'

@@ -2,11 +2,11 @@
 import request from 'supertest'
 import app from "../../src/app";
 import {runDb} from "../../src/db/db";
-import exp = require("constants");
 
+import mongoose from 'mongoose'
 const auth = 'Authorization'
 const basic = 'Basic YWRtaW46cXdlcnR5'
-
+const dbName = "myApi"
 
 describe('get \ getByID', () => {
 
@@ -48,6 +48,30 @@ describe('get \ getByID', () => {
             websiteUrl: "https://dzen.ru",
             createdAt: expect.any(String),
             isMembership: false
+        })
+    })
+
+
+    describe('Mongoose integration', () => {
+        const mongoURI = `mongodb://0.0.0.0:27017/${dbName}`
+
+        beforeAll(async () => {
+
+            await mongoose.connect(mongoURI)
+        })
+
+        afterAll(async () => {
+
+            await mongoose.connection.close()
+        })
+
+        describe('GET blogs', () => {
+            it('+ GET blogs', async () => {
+                const res_ = await request(app)
+                    .get('/blogs')
+                    .expect(200)
+
+            },10000)
         })
     })
 

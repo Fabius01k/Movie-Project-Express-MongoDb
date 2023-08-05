@@ -131,7 +131,7 @@ export const authService = {
 
         await usersRepository.chengConfirmationCode(user.id,confirmationCode)
 
-        emailManager.resendEmailconfirmationMessage(email, confirmationCode)
+        await emailManager.resendEmailconfirmationMessage(email, confirmationCode)
 
         return true
     },
@@ -145,7 +145,7 @@ export const authService = {
         const NewExpirationDatePasswordCode = add(new Date(), { hours: 24 });
         await usersRepository.changeResetPasswordCode(user.id,NewResetPasswordCode,NewExpirationDatePasswordCode)
 
-        emailManager.resendPasswordCodeMessage(email,NewResetPasswordCode)
+        await emailManager.resendPasswordCodeMessage(email,NewResetPasswordCode)
 
         return true
     },
