@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import {ObjectId, WithId} from "mongodb";
-import {TPostDb} from "../../models/posts/posts-type";
+import {ClassPostDb} from "../../classes/posts/posts-class";
 
 
-export const postsSchema = new mongoose.Schema<WithId<TPostDb>>({
+export const postsSchema = new mongoose.Schema<WithId<ClassPostDb>>({
     _id: { type: ObjectId, require: true},
     id: { type: String, require: true },
     title: { type: String, require: true},

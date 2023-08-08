@@ -2,7 +2,7 @@ import {TUserDb} from "../models/users/users-type";
 import * as jwt from 'jsonwebtoken'
 import {settings} from "./settings";
 import {ObjectId} from "mongodb";
-import {TUserAccountDb} from "../models/user-account/user-account-types";
+
 
 
 export const jwtService = {

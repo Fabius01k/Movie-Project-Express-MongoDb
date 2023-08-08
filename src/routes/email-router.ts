@@ -3,11 +3,16 @@ import {emailAdapter} from "../adapters/email-adatper";
 
 export const emailRouter = Router({})
 
-emailRouter.post('/send', async (req: Request, res: Response) => {
+class EmailController {
+    async sendEmailToUser(req: Request, res: Response) {
 
-    await emailAdapter.sendEmail(req.body.email, req.body.subject, req.body.message)
+        await emailAdapter.sendEmail(req.body.email, req.body.subject, req.body.message)
+    }
+}
 
-})
+const emailController = new EmailController()
+
+emailRouter.post('/send', emailController.sendEmailToUser)
 
 
 

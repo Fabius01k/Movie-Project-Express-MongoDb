@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import {TVideoDb} from "../../models/videos/videos-type";
 import {ObjectId, WithId} from "mongodb";
+import {ClassVideoDb} from "../../classes/videos/videos-class";
 
 
-export const videosSchema = new mongoose.Schema<WithId<TVideoDb>>({
+export const videosSchema = new mongoose.Schema<WithId<ClassVideoDb>>({
     _id: { type: ObjectId, require: true},
     id: { type: Number, require: true },
     title: { type: String, require: true },

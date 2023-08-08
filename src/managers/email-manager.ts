@@ -1,11 +1,14 @@
-import {TUserAccountDb} from "../models/user-account/user-account-types";
 import {emailAdapter} from "../adapters/email-adatper";
-import {usersRepository} from "../repositories-db/users-repository-db";
+import {UsersRepository} from "../repositories-db/users-repository-db";
+import {ClassUserAccountDb} from "../classes/users/users-class";
 
 
-export const emailManager = {
+export class EmailManager {
+    constructor(
+        protected usersRepository: UsersRepository
+    ) {}
 
-    async sendEmailconfirmationMessage(userAccount: TUserAccountDb) {
+    async sendEmailconfirmationMessage(userAccount: ClassUserAccountDb) {
 
         const userConfirmationCode = userAccount.emailConfirmation.confirmationCode
 
@@ -19,13 +22,11 @@ export const emailManager = {
         const subject = "Код подтверждения регистрации"
 
         await emailAdapter.sendEmail(email, subject, message)
-
-
-    },
+    }
 
     async resendEmailconfirmationMessage(email: string, code: string) {
 
-        const user = await usersRepository.findByAuthLoginEmail(email)
+        const user = await this.usersRepository.findByAuthLoginEmail(email)
         const userConfirmationCode = code
 
         const message = `<h1>Thank for your registration</h1>
@@ -35,7 +36,7 @@ export const emailManager = {
         const subject = "Новый код подтверждения регистрации"
 
         await emailAdapter.sendEmail(email, subject, message)
-    },
+    }
 
     async resendPasswordCodeMessage(email: string, code: string) {
 
@@ -48,5 +49,5 @@ export const emailManager = {
         const subject = "Код восстановления пароля"
 
         await emailAdapter.sendEmail(email, subject, message)
-    },
+    }
 }

@@ -1,6 +1,6 @@
 import {body} from "express-validator";
-import {usersService} from "../domain/users-service";
-import {usersRepository} from "../repositories-db/users-repository-db";
+import {usersRepository} from "../composition-root";
+
 
 export const userCreateValidators = [
 

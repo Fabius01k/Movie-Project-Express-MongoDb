@@ -1,9 +1,9 @@
 import {WithId} from "mongodb";
-import {UsersSessionDb} from "../../models/user-account/user-account-types";
 import mongoose from "mongoose";
+import {ClassUsersSessionDb} from "../../classes/users/users-class";
 
 
-export const sessionsSchema = new mongoose.Schema<WithId<UsersSessionDb>>({
+export const sessionsSchema = new mongoose.Schema<WithId<ClassUsersSessionDb>>({
     sessionId: { type: String, require: true },
     ip: { type: String, require: true },
     title: { type: String, require: true },

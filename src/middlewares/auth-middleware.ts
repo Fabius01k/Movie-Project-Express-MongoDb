@@ -1,10 +1,12 @@
 import {NextFunction} from "express";
 import {Request, Response} from "express";
 import {jwtService} from "../application/jwt-service";
-import {usersService} from "../domain/users-service";
+import {UsersService} from "../domain/users-service";
 import {ObjectId} from "mongodb";
+import {usersService} from "../composition-root";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+
     if (!req.headers.authorization) return  res.sendStatus(401);
 
     const token = req.headers.authorization.split(' ')[1]
@@ -17,26 +19,23 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     req.userId = foundUser?.id
     next()
 }
-
-export const authMiddleware1 = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) return  res.sendStatus(401);
-
-    const token = req.headers.authorization.split(' ')[1]
-    const userId = await jwtService.getUserIdByToken(token)
-
-    if(!userId) return res.sendStatus(401);
-
-    const foundUser =  await usersService.findUserById(userId)
-    //if(!foundUser)=> 401
-    req.userId = foundUser?.id
-    next()
-}
-
-
-
-// export const authTokenGetMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+// export class AuthMiddleware {
+//     usersService: UsersService
+//     constructor() {
+//         this.usersService = new UsersService()
+//     }
 //
-//     const token = req.cookies.accessToken
-//     if(!token) return res.sendStatus(401)
+//     async handle(req: Request, res: Response, next: NextFunction) {
+//         if (!req.headers.authorization) return res.sendStatus(401);
 //
+//         const token = req.headers.authorization.split(' ')[1]
+//         const userId = await jwtService.getUserIdByToken(token)
+//
+//         if (!userId) return res.sendStatus(401);
+//
+//         const foundUser = await this.usersService.findUserById(userId)
+//         //if(!foundUser)=> 401
+//         req.userId = foundUser?.id
+//         next()
+//     }
 // }

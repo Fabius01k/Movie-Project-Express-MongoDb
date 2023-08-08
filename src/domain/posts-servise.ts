@@ -1,54 +1,31 @@
-// import {blogs} from "./blogs-repository-db";
-
-import {TPostDb, TPostView} from "../models/posts/posts-type";
+import {TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
-import {postsRepository} from "../repositories-db/post-repostory-db";
+import {PostsRepostory} from "../repositories-db/post-repostory-db";
 import {CommentsRepository} from "../repositories-db/comments-repository-db";
-import {TcommentDb, TcommentView} from "../models/comments/comments-type";
+import {TcommentView} from "../models/comments/comments-type";
 import {blogsModel, postsModel, userModel} from "../db/db";
+import {ClassPostDb} from "../classes/posts/posts-class";
+import {ClassCommentDb} from "../classes/comments/comments-class";
 
+export let posts: ClassPostDb[] = []
 
-
-type TVposts = {
-
-    id: string
-    title: string
-    shortDescription: string
-    content: string
-    blogId: string
-    blogName: string
-}
-
-export let posts: TVposts[] = []
-
-const mapPostFromDbView = (post: TPostDb): TPostView => {
-    return {
-        id: post.id,
-        title: post.title,
-        shortDescription: post.shortDescription,
-        content: post.content,
-        blogId: post.blogId,
-        blogName: post.blogName,
-        createdAt: post.createdAt
-    }
-}
-
-export const postsServise = {
+export class PostsServise {
+    constructor(
+        protected postsRepository: PostsRepostory,
+        protected commentsRepository: CommentsRepository
+    ) {}
 
     async findPosts(sortBy: string,sortDirection: 'asc' | 'desc',
                     pageSize: number,pageNumber: number) {
-        return postsRepository.findPosts(
+        return this.postsRepository.findPosts(
             sortBy,sortDirection,pageSize,pageNumber
         )
-    },
-
+    }
     async findCommentByPostID(sortBy: string,sortDirection: 'asc' | 'desc',
                               pageSize: number,pageNumber: number, postId: string) {
-        return CommentsRepository.findCommentByPostID(sortBy,sortDirection,pageSize,pageNumber,postId
+        return this.commentsRepository.findCommentByPostID(sortBy,sortDirection,pageSize,pageNumber,postId
         )
-
-    },
-
+    }
     async createPost(title: string, shortDescription: string, content: string,
                      blogId: string): Promise<TPostView | null> {
 
@@ -59,22 +36,21 @@ export const postsServise = {
             return null
         }
 
-        const newPost: TPostDb = {
-            _id: new ObjectId(),
-            id: dateNow,
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blog.name,
-            createdAt: new Date().toISOString(),
+        const newPost = new ClassPostDb(
+            new ObjectId(),
+            dateNow,
+            title,
+            shortDescription,
+            content,
+            blogId,
+            blog.name,
+            new Date().toISOString(),
 
-        }
-        const createdPostService = await postsRepository.createPost(newPost)
+        )
+        const createdPostService = await this.postsRepository.createPost(newPost)
 
         return createdPostService
-    },
-
+    }
     async createCommentByPostId(content: string, postId: string,userId: string ): Promise<TcommentView | null> {
 
         const dateNow = new Date().getTime().toString()
@@ -90,37 +66,29 @@ export const postsServise = {
             return null
         }
 
-
-
-        const newComment: TcommentDb = {
-            _id: new ObjectId(),
-            id: dateNow,
-            content: content,
-            commentatorInfo: {
+        const newComment = new ClassCommentDb(
+            new ObjectId(),
+            dateNow,
+            content,
+            {
                 userId: user.id,
                 userLogin: user.accountData.userName.login
             },
-            createdAt: new Date().toISOString(),
-            postId:postId
-        }
-        const createdCommentService = await CommentsRepository.createCommentByPostId(newComment)
+            new Date().toISOString(),
+            postId
+    )
+        const createdCommentService = await this.commentsRepository.createCommentByPostId(newComment)
 
         return createdCommentService
-
-    },
-
+    }
     async getPostById(id: string): Promise<TPostView | null> {
-        return postsRepository.getPostById(id)
-
-    },
-
+        return this.postsRepository.getPostById(id)
+    }
     async updatePost(id: string, title: string, shortDescription: string, content: string,
                      blogId: string): Promise<boolean | null> {
-        return await postsRepository.updatePost(id,title,shortDescription,content,blogId)
-    },
-
+        return await this.postsRepository.updatePost(id,title,shortDescription,content,blogId)
+    }
     async deletePost(id: string): Promise<boolean> {
-        return await postsRepository.deletePost(id)
-
+        return await this.postsRepository.deletePost(id)
     }
 }

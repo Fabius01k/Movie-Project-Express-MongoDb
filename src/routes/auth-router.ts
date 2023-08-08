@@ -1,13 +1,11 @@
 import {Request, Response, Router} from "express";
-import {usersService} from "../domain/users-service";
+import {UsersService} from "../domain/users-service";
 import {jwtService} from "../application/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {TUserDb} from "../models/users/users-type";
 import {WithId} from "mongodb";
-import {authService} from "../domain/auth-service";
+import {AuthService} from "../domain/auth-service";
 import {userAuthCreateValidators} from "../validadation/user-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
-import {TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
 import {
     emailCodeResendingValidator,
     emailPasswordResendingValidator, PasswordResendingCodeValidator,
@@ -17,31 +15,32 @@ import {randomUUID} from "crypto";
 import {tokenUserValidator} from "../validadation/authorization-validatoin";
 import {v4 as uuid} from "uuid";
 import {rateLimitMiddleware} from "../middlewares/rate-limitmiddleware";
+import {ClassUserAccountDb} from "../classes/users/users-class";
+import {authController} from "../composition-root";
 
 
 export const authRouter = Router({})
 
-
-authRouter.get('/me', authMiddleware,
-    async (req: Request, res: Response) => {
+export class AuthController {
+    constructor(
+        protected usersService: UsersService,
+        protected authService: AuthService
+    ) {}
+    async getInformationForUser(req: Request, res: Response) {
 
         const token = req.headers.authorization!.split(' ')[1]
 
         const userId = await jwtService.getUserIdByToken(token)
-        const authUser = await usersService.findAuthUser(userId)
+        const authUser = await this.usersService.findAuthUser(userId)
 
         if (!authUser) return res.sendStatus(401);
 
         return res.status(200).send({
             email: authUser.email, login: authUser.login, userId: authUser.id
         });
-
-    })
-
-authRouter.post('/login', rateLimitMiddleware,
-    async (req: Request, res: Response) => {
-        const user: WithId<TUserAccountDb> | null = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
-
+    }
+    async loginUser(req: Request, res: Response) {
+        const user: WithId<ClassUserAccountDb> | null = await this.usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
 
         if (user) {
             const accessToken = await jwtService.createAccessJWT(user.id)
@@ -50,12 +49,11 @@ authRouter.post('/login', rateLimitMiddleware,
             }
             const refreshToken = await jwtService.createRefreshJWT(user.id, refreshTokenPayload)
 
-
             const sessionId = user.id
             const ip = req.ip
             const title = req.headers['user-agent'] || 'Unknown'
 
-            await authService.createSession(sessionId, ip, title, refreshTokenPayload.deviceId, refreshToken)
+            await this.authService.createSession(sessionId, ip, title, refreshTokenPayload.deviceId, refreshToken)
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -67,10 +65,8 @@ authRouter.post('/login', rateLimitMiddleware,
         } else {
             return res.sendStatus(401)
         }
-    })
-
-authRouter.post('/refresh-token', tokenUserValidator,
-    async (req: Request, res: Response) => {
+    }
+    async genereteNewTokensForUser(req: Request, res: Response) {
 
         const token = req.cookies.refreshToken
 
@@ -84,7 +80,7 @@ authRouter.post('/refresh-token', tokenUserValidator,
         }
         const refreshToken = await jwtService.createRefreshJWT(userForResend, refreshTokenPayload)
 
-        await authService.changeDataInSession(oldDeviceID, refreshToken)
+        await this.authService.changeDataInSession(oldDeviceID, refreshToken)
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -93,76 +89,87 @@ authRouter.post('/refresh-token', tokenUserValidator,
         })
 
         return res.status(200).send({accessToken})
-    })
-
-authRouter.post('/logout', tokenUserValidator,
-    async (req: Request, res: Response) => {
+    }
+    async logoutUser(req: Request, res: Response) {
 
         const token = req.cookies.refreshToken
 
-        const deviceIdOfSession = await jwtService.getDeviceIdByToken(token)
-        const deviceId = deviceIdOfSession
+        const deviceId = await jwtService.getDeviceIdByToken(token)
 
-
-        // await authService.makeTokenIncorrect(deviceId,refreshToken)
-        await authService.deleteSession(deviceId)
+        await this.authService.deleteSession(deviceId)
 
         res.clearCookie('refreshToken')
         return res.sendStatus(204)
-    })
-
-
-authRouter.post('/registration', rateLimitMiddleware, userAuthCreateValidators, inputValidationMiddleware,
-    async (req: Request, res: Response) => {
-        const user = await authService.createUserAuth(req.body.login, req.body.password, req.body.email)
+    }
+    async registrationUser(req: Request, res: Response) {
+        const user = await this.authService.createUserAuth(req.body.login, req.body.password, req.body.email)
         if (user) {
             res.status(204).send()
         } else {
             res.sendStatus(400)
         }
-    })
+    }
+    async registrationConfirmationUser(req: Request, res: Response) {
 
-authRouter.post('/registration-confirmation', rateLimitMiddleware, registrationCodeValidator, inputValidationMiddleware,
-    async (req: Request, res: Response) => {
-
-        const result = await authService.confirmEmail(req.body.code)
+        const result = await this.authService.confirmEmail(req.body.code)
         if (result) {
             res.status(204).send()
         } else {
             res.sendStatus(400)
         }
-    })
+    }
+    async resendingRegistrationCode(req: Request, res: Response) {
+
+        const result = await this.authService.resendingCode(req.body.email)
+        if (result) {
+            res.status(204).send()
+        } else {
+            res.sendStatus(400)
+        }
+    }
+    async recoverPasswordForUser(req: Request, res: Response) {
+        const result = await this.authService.makeNewPasswordByResendingCode(req.body.newPassword, req.body.recoveryCode)
+        if (result) {
+            res.status(204).send()
+        } else {
+            res.sendStatus(400)
+        }
+    }
+    async sendRecoveryCodeForUser(req: Request, res: Response) {
+
+        await this.authService.resendingPasswordCode(req.body.email)
+        return res.sendStatus(204)
+    }
+}
+
+authRouter.get('/me', authMiddleware,
+    authController.getInformationForUser.bind(authController))
+
+authRouter.post('/login', rateLimitMiddleware,
+    authController.loginUser.bind(authController))
+
+authRouter.post('/refresh-token', tokenUserValidator,
+    authController.genereteNewTokensForUser.bind(authController))
+
+authRouter.post('/logout', tokenUserValidator,
+    authController.logoutUser.bind(authController))
+
+authRouter.post('/registration', rateLimitMiddleware, userAuthCreateValidators, inputValidationMiddleware,
+    authController.registrationUser.bind(authController))
+
+authRouter.post('/registration-confirmation', rateLimitMiddleware, registrationCodeValidator, inputValidationMiddleware,
+    authController.registrationConfirmationUser.bind(authController))
 
 authRouter.post('/registration-email-resending', rateLimitMiddleware, emailCodeResendingValidator,
     inputValidationMiddleware,
-    async (req: Request, res: Response) => {
-
-        const result = await authService.resendingCode(req.body.email)
-        if (result) {
-            res.status(204).send()
-        } else {
-            res.sendStatus(400)
-        }
-    })
+    authController.resendingRegistrationCode.bind(authController))
 
 authRouter.post('/new-password', rateLimitMiddleware, PasswordResendingCodeValidator,
     inputValidationMiddleware,
-    async (req: Request, res: Response) => {
-        const result = await authService.makeNewPasswordByResendingCode(req.body.newPassword, req.body.recoveryCode)
-        if (result) {
-            res.status(204).send()
-        } else {
-            res.sendStatus(400)
-        }
-    })
+    authController.recoverPasswordForUser.bind(authController))
 
 authRouter.post('/password-recovery', rateLimitMiddleware, emailPasswordResendingValidator,
     inputValidationMiddleware,
-
-    async (req: Request, res: Response) => {
-
-        await authService.resendingPasswordCode(req.body.email)
-        return res.sendStatus(204)
-    })
+    authController.sendRecoveryCodeForUser.bind(authController))
 
 

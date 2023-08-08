@@ -1,7 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {securityServise} from "../domain/security-servide";
-
-import {sessionsRepository} from "../repositories-db/security-repository-db";
+import {securityService} from "../composition-root";
 
 
 export const rateLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,9 +9,9 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
     const date = new Date()
     const tenSecondsAgo = new Date(date.getTime() - 10000);
 
-    await securityServise.addDocumentInCollection(ip,url,date)
+    await securityService.addDocumentInCollection(ip,url,date)
 
-    const count: number = await securityServise.getDocumentCount(ip, url, tenSecondsAgo);
+    const count: number = await securityService.getDocumentCount(ip, url, tenSecondsAgo);
 
     if (count > 5) return res.sendStatus(429);
 

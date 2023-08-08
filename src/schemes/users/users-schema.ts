@@ -1,9 +1,9 @@
 import {ObjectId, WithId} from "mongodb";
-import {TUserAccountDb} from "../../models/user-account/user-account-types";
 import mongoose from "mongoose";
+import {ClassUserAccountDb} from "../../classes/users/users-class";
 
 
-export const usersSchema = new mongoose.Schema<WithId<TUserAccountDb>>({
+export const usersSchema = new mongoose.Schema<WithId<ClassUserAccountDb>>({
     _id: {type: ObjectId, require: true},
     id: {type: String, require: true},
     accountData: {
@@ -20,6 +20,8 @@ export const usersSchema = new mongoose.Schema<WithId<TUserAccountDb>>({
         expirationDate: {type: Date, require: true},
         isConfirmed: {type: Boolean, require: true},
     },
-    resetPasswordCode: {type: String, default: null},
-    expirationDatePasswordCode: {type: Date, default: null},
+    passwordUpdate: {
+        resetPasswordCode: {type: String, default: null},
+        expirationDatePasswordCode: {type: Date, default: null},
+    },
 })

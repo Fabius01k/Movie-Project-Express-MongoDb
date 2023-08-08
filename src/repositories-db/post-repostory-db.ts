@@ -1,22 +1,12 @@
 import {blogs} from "./blogs-repository-db";
 import {blogsModel, postsModel} from "../db/db";
-import {TPostDb, TPostView} from "../models/posts/posts-type";
+import {TPostView} from "../models/posts/posts-type";
 import {ObjectId} from "mongodb";
+import {ClassPostDb} from "../classes/posts/posts-class";
 
+export let posts: ClassPostDb[] = []
 
-type TVposts = {
-
-    id: string
-    title: string
-    shortDescription: string
-    content: string
-    blogId: string
-    blogName: string
-}
-
-export let posts: TVposts[] = []
-
- export const mapPostFromDbView = (post: TPostDb): TPostView => {
+ export const mapPostFromDbView = (post: ClassPostDb): TPostView => {
     return {
         id: post.id,
         title: post.title,
@@ -28,12 +18,11 @@ export let posts: TVposts[] = []
     }
 }
 
-export const postsRepository = {
-
+export class PostsRepostory {
     async findPosts(sortBy: string,sortDirection: 'asc' | 'desc',
                     pageSize: number,pageNumber: number) {
-        const posts: TPostDb[] = await postsModel.find()
-        // sort(sortBy,sortDirection).
+        const posts: ClassPostDb[] = await postsModel.find()
+            // sort(sortBy,sortDirection).
             .sort({ sortBy: sortDirection })
             .skip((pageNumber-1)*pageSize)
             .limit(+pageSize)
@@ -49,26 +38,19 @@ export const postsRepository = {
             totalCount: totalCount,
             items: items
         }
-    },
-
-    async createPost(newPost: TPostDb): Promise<TPostView | null> {
-
-        await postsModel.insertMany([newPost])
-
-        return mapPostFromDbView(newPost)
-
-
-    },
-
-    async createPostByBlogId(newPost: TPostDb): Promise<TPostView | null> {
+    }
+    async createPost(newPost: ClassPostDb): Promise<TPostView | null> {
 
         await postsModel.insertMany([newPost])
 
         return mapPostFromDbView(newPost)
+    }
+    async createPostByBlogId(newPost: ClassPostDb): Promise<TPostView | null> {
 
+        await postsModel.insertMany([newPost])
 
-    },
-
+        return mapPostFromDbView(newPost)
+    }
     async findPostsByBlogId(sortBy: string,sortDirection: 'asc' | 'desc',
                             pageSize: number,pageNumber: number,blogId: string) {
 
@@ -78,9 +60,9 @@ export const postsRepository = {
                 id: new RegExp(blogId,'gi')
             }
 */
-        const posts: TPostDb[] = await postsModel
+        const posts: ClassPostDb[] = await postsModel
             .find({blogId: blogId})
-        // sort(sortBy,sortDirection)
+            // sort(sortBy,sortDirection)
             .sort({ sortBy: sortDirection })
             .skip((pageNumber-1)*pageSize)
             .limit(+pageSize)
@@ -97,16 +79,13 @@ export const postsRepository = {
             totalCount: totalCount,
             items: items
         }
-    },
-
+    }
     async getPostById(id: string): Promise<TPostView | null> {
-        const post: TPostDb | null = await postsModel.findOne({id: id})
+        const post: ClassPostDb | null = await postsModel.findOne({id: id})
         if(!post) return null
 
         return mapPostFromDbView(post)
-
-    },
-
+    }
     async updatePost(id: string, title: string, shortDescription: string, content: string,
                      blogId: string): Promise<boolean | null> {
         const blog = await blogsModel.findOne({id: blogId})
@@ -126,13 +105,11 @@ export const postsRepository = {
         })
         const post = updatePostPromise.matchedCount === 1
         return post
-    },
-
+    }
     async deletePost(id: string): Promise<boolean> {
         const deletePostPromise = await postsModel.
         deleteOne({id: id})
 
         return deletePostPromise.deletedCount === 1
-
     }
 }

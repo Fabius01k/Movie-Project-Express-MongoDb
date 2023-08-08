@@ -1,8 +1,9 @@
-import {TcommentDb, TcommentView} from "../models/comments/comments-type";
+import {TcommentView} from "../models/comments/comments-type";
 import {commentsModel} from "../db/db";
+import {ClassCommentDb} from "../classes/comments/comments-class";
 
-export let comments: TcommentDb[] = []
-const mapCommentFromDbToView = (comment: TcommentDb): TcommentView => {
+export let comments: ClassCommentDb[] = []
+const mapCommentFromDbToView = (comment: ClassCommentDb): TcommentView => {
     return {
         id: comment.id,
         content: comment.content,
@@ -14,27 +15,23 @@ const mapCommentFromDbToView = (comment: TcommentDb): TcommentView => {
     }
 }
 
-export const CommentsRepository = {
-
+export class CommentsRepository {
     async getCommentById(id: string): Promise<TcommentView | null> {
-        const comment: TcommentDb | null = await commentsModel.findOne({id: id})
+        const comment: ClassCommentDb | null = await commentsModel.findOne({id: id})
         if (!comment) return null
 
         return mapCommentFromDbToView(comment)
-
-    },
-
-    async createCommentByPostId(newComment: TcommentDb): Promise<TcommentView | null> {
+    }
+    async createCommentByPostId(newComment: ClassCommentDb): Promise<TcommentView | null> {
 
         await commentsModel.insertMany([newComment])
 
         return mapCommentFromDbToView(newComment)
-    },
-
+    }
     async findCommentByPostID(sortBy: string,sortDirection: 'asc' | 'desc',
                               pageSize: number,pageNumber: number,postId: string) {
 
-        const comment: TcommentDb[] = await commentsModel
+        const comment: ClassCommentDb[] = await commentsModel
             .find({postId: postId})
             // .sort(sortBy,sortDirection)
             .sort({ sortBy: sortDirection })
@@ -52,10 +49,7 @@ export const CommentsRepository = {
             totalCount: totalCount,
             items: items
         }
-        },
-
-
-
+    }
     async updateCommentByID(commentId: string, content: string): Promise<boolean> {
         const updateCommentByID = await commentsModel
             .updateOne({id: commentId}, {
@@ -66,12 +60,12 @@ export const CommentsRepository = {
 
         const comment = updateCommentByID.matchedCount === 1
         return comment
-    },
-
+    }
     async deleteComment(commentId: string): Promise<boolean> {
         const deleteComment = await commentsModel
             .deleteOne({id: commentId})
 
         return deleteComment.deletedCount === 1
-    },
+    }
 }
+

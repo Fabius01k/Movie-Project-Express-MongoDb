@@ -1,11 +1,10 @@
 import {TUserView} from "../models/users/users-type";
 import {sessionsModel, userModel} from "../db/db";
-import {TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
 import {v4 as uuid} from 'uuid'
+import {ClassUserAccountDb, ClassUsersSessionDb} from "../classes/users/users-class";
 
-
-export let users: TUserAccountDb[] = []
-const mapUserFromDbView = (user: TUserAccountDb): TUserView => {
+export let users: ClassUserAccountDb[] = []
+const mapUserFromDbView = (user: ClassUserAccountDb): TUserView => {
     return {
         id: user.id,
         login: user.accountData.userName.login,
@@ -14,8 +13,7 @@ const mapUserFromDbView = (user: TUserAccountDb): TUserView => {
     }
 }
 
-export const usersRepository = {
-
+export class UsersRepository {
     async findUsers(sortBy: string, sortDirection: 'asc' | 'desc',
                     pageSize: number, pageNumber: number,
                     searchLoginTerm: string | null,
@@ -53,7 +51,7 @@ export const usersRepository = {
             filter.$or = filters;
         }*/
 
-        const users: TUserAccountDb[] = await userModel
+        const users: ClassUserAccountDb[] = await userModel
             .find(filter)
             // .sort(sortBy, sortDirection)
             .sort({sortBy: sortDirection})
@@ -72,40 +70,34 @@ export const usersRepository = {
             totalCount: totalCount,
             items: items
         }
-
-    },
-
+    }
     async findAuthUser(id: string): Promise<TUserView | null> {
-        const authUser: TUserAccountDb | null = await userModel.findOne({id: id})
+        const authUser: ClassUserAccountDb | null = await userModel.findOne({id: id})
         if (!authUser) return null
 
         return mapUserFromDbView(authUser)
-    },
-
+    }
     async getUserById(id: string): Promise<TUserView | null> {
-        const user: TUserAccountDb | null = await userModel.findOne({id: id})
+        const user: ClassUserAccountDb | null = await userModel.findOne({id: id})
         if (!user) return null
 
         return mapUserFromDbView(user)
-    },
-
-    async createUser(newUser: TUserAccountDb): Promise<TUserView | null> {
+    }
+    async createUser(newUser: ClassUserAccountDb): Promise<TUserView | null> {
         await userModel.insertMany([newUser])
 
         return mapUserFromDbView(newUser)
-    },
-
-    async createUserAccount(userAccount: TUserAccountDb): Promise<TUserAccountDb | null> {
+    }
+    async createUserAccount(userAccount: ClassUserAccountDb): Promise<ClassUserAccountDb | null> {
         await userModel.insertMany([userAccount])
         return userAccount
-    },
-
+    }
     async deleteUser(id: string): Promise<boolean> {
         const deleteUser = await userModel
             .deleteOne({id: id})
 
         return deleteUser.deletedCount === 1
-    },
+    }
 
     // async findByLoginEmail(loginOrEmail: string) {
     //
@@ -117,52 +109,45 @@ export const usersRepository = {
 
         const user = await userModel.findOne({$or: [{"accountData.userName.email": loginOrEmail}, {"accountData.userName.login": loginOrEmail}]})
         return user
-    },
-
+    }
     async findUserByConfirmCode(emailConfirmationCode: string) {
 
         const user = await userModel.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode})
         return user
-    },
-
+    }
     async findUserByResetPasswordCode(recoveryCode: string) {
-        const user = await userModel.findOne({"resetPasswordCode": recoveryCode})
+        const user = await userModel.findOne({"passwordUpdate.resetPasswordCode": recoveryCode})
         return user
-    },
-
+    }
     async findUserById(id: string) {
         const user = await userModel.findOne({id: id})
         return user
-    },
-
+    }
 
     async updateConfirmation(id: string) {
         let result = await userModel
             .updateOne({id}, {$set: {'emailConfirmation.isConfirmed': true}})
 
         return result.modifiedCount === 1
-    },
-
+    }
     async chengConfirmationCode(id: string, confirmationCode: string) {
         let result = await userModel
             .updateOne({id}, {$set: {'emailConfirmation.confirmationCode': confirmationCode}})
 
         return result.modifiedCount === 1
-    },
-
+    }
     async changeResetPasswordCode(id: string, NewResetPasswordCode: string,
                                   NewExpirationDatePasswordCode: Date) {
         let result = await userModel
             .updateOne({id}, {
                 $set: {
-                    'resetPasswordCode': NewResetPasswordCode,
-                    'expirationDatePasswordCode': NewExpirationDatePasswordCode
+                    'passwordUpdate.resetPasswordCode': NewResetPasswordCode,
+                    'passwordUpdate.expirationDatePasswordCode': NewExpirationDatePasswordCode
                 }
             })
 
         return result.modifiedCount === 1
-    },
-
+    }
     async changePasswordInDb(id: string, passwordSalt: string, passwordHash: string) {
         let result = await userModel
             .updateOne({id}, {
@@ -173,14 +158,12 @@ export const usersRepository = {
             })
 
         return result.modifiedCount === 1
-    },
-
-    async createSessionInDb(userSession: UsersSessionDb): Promise<UsersSessionDb> {
+    }
+    async createSessionInDb(userSession: ClassUsersSessionDb): Promise<ClassUsersSessionDb> {
         let result = await sessionsModel
             .insertMany([userSession])
         return userSession
-    },
-
+    }
     async changeDataInSessionInDb(deviceId: string, refreshToken: string) {
         let result = await sessionsModel
             .updateOne({deviceId}, {
@@ -193,8 +176,7 @@ export const usersRepository = {
             })
 
         return result.modifiedCount === 1
-    },
-
+    }
 
     // async addTokenInBlackListDb(userForResend: string,token: string ) {
     //     const userId = userForResend
@@ -210,5 +192,5 @@ export const usersRepository = {
         let result = await sessionsModel.deleteOne({deviceId});
         return result.deletedCount === 1;
     }
-}
 
+}

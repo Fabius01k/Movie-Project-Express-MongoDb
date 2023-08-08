@@ -57,7 +57,7 @@ export const PasswordResendingCodeValidator = [
         .isString()
         .notEmpty()
         .custom(async (value: string) => {
-            const user = await userModel.findOne({"resetPasswordCode": value})
+            const user = await userModel.findOne({"passwordUpdate.resetPasswordCode": value})
             if (!user) {
                 throw new Error('user doesn`t exist');
             }

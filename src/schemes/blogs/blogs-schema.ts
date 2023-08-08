@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import {ObjectId, WithId} from "mongodb";
-import {TBlogDb} from "../../models/blogs/blogs-type";
+import {ClassBlogDb} from "../../classes/blogs/blogs-class";
 
 
-export const blogsSchema = new mongoose.Schema<WithId<TBlogDb>>({
+export const blogsSchema = new mongoose.Schema<WithId<ClassBlogDb>>({
     _id: { type: ObjectId, require: true},
     id: { type: String, require: true },
     name: { type: String, require: true },

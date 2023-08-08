@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import {ObjectId, WithId} from "mongodb";
-import {TcommentDb} from "../../models/comments/comments-type";
+
+import {ClassCommentDb} from "../../classes/comments/comments-class";
 
 
-export const commentSchema = new mongoose.Schema<WithId<TcommentDb>>({
+export const commentSchema = new mongoose.Schema<WithId<ClassCommentDb>>({
     _id: { type: ObjectId, require: true},
     id: { type: String, require: true },
     content: { type: String, require: true },

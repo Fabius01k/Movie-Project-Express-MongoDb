@@ -1,23 +1,33 @@
-import { TUserAccountDb, UsersSessionDb} from "../models/user-account/user-account-types";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import add from 'date-fns/add'
-import {usersRepository} from "../repositories-db/users-repository-db";
-import {emailManager} from "../managers/email-manager";
+import {UsersRepository} from "../repositories-db/users-repository-db";
+import {EmailManager} from "../managers/email-manager";
 import {randomUUID} from "crypto";
+import {ClassUserAccountDb, ClassUsersSessionDb} from "../classes/users/users-class";
+import {emailManager} from "../composition-root";
 
-
-export const authService = {
-    async createUserAuth(login: string, password: string, email: string): Promise<TUserAccountDb | null> {
+export class AuthService {
+    // usersRepository: UsersRepository
+    // emailManager: EmailManager
+    // constructor() {
+    //     this.usersRepository = new UsersRepository
+    //     this.emailManager = new EmailManager()
+    // }
+    constructor(
+        protected usersRepository: UsersRepository,
+        protected emailManager: EmailManager
+    ) {}
+    async createUserAuth(login: string, password: string, email: string): Promise<ClassUserAccountDb | null> {
 
         const dateNow = new Date().getTime().toString()
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
-        const userAccount: TUserAccountDb = {
 
-            _id: new ObjectId(),
-            id: dateNow,
-            accountData: {
+        const userAccount = new ClassUserAccountDb(
+            new ObjectId(),
+            dateNow,
+            {
                 userName: {
                     login: login,
                     email: email
@@ -26,70 +36,54 @@ export const authService = {
                 passwordSalt,
                 createdAt: new Date().toISOString(),
             },
-            emailConfirmation: {
+            {
                 confirmationCode: randomUUID(),
                 expirationDate: add(new Date(), {
                     hours: 1
                 }),
                 isConfirmed: false
             },
-            resetPasswordCode: null,
-            expirationDatePasswordCode: new Date()
-        }
+            {
+                resetPasswordCode: null,
+                expirationDatePasswordCode: new Date()
+            },
+        )
 
+        const createUserAuth = await this.usersRepository.createUserAccount(userAccount)
 
-        const createUserAuth = await usersRepository.createUserAccount(userAccount)
-
-
-        emailManager.sendEmailconfirmationMessage(userAccount)
+        await this.emailManager.sendEmailconfirmationMessage(userAccount)
 
         return createUserAuth
-    },
+    }
+    async createSession(sessionId: string, ip: string, title: string,deviceId: string, refreshToken: string): Promise<ClassUsersSessionDb> {
 
-    async createSession(sessionId: string, ip: string, title: string,deviceId: string, refreshToken: string): Promise<UsersSessionDb> {
+        const userSession = new ClassUsersSessionDb(
+            sessionId,
+            ip,
+            title,
+            deviceId,
+            new Date().toISOString(),
+            refreshToken,
+            new Date(),
+            new Date(Date.now() + 20000)
+        )
 
-        const userSession: UsersSessionDb = {
-
-            sessionId: sessionId,
-            ip: ip,
-            title: title,
-            deviceId: deviceId,
-            lastActiveDate: new Date().toISOString(),
-            refreshToken: refreshToken,
-            tokenCreationDate: new Date(),
-            tokenExpirationDate: new Date(Date.now() + 20000)
-        }
-
-        let result = await usersRepository.createSessionInDb(userSession)
+        let result = await this.usersRepository.createSessionInDb(userSession)
         return result
-    },
-
+    }
     async changeDataInSession(deviceId: string, refreshToken: string): Promise<boolean> {
 
-        let result = await usersRepository.changeDataInSessionInDb(deviceId,refreshToken)
+        let result = await this.usersRepository.changeDataInSessionInDb(deviceId,refreshToken)
         return result
-    },
-    // async addTokenToBlackList(userForResend: string, token: string): Promise<boolean> {
-    //
-    //     let result = await usersRepository.addTokenInBlackListDb(userForResend,token)
-    //     return result
-    // },
-
-    // async makeTokenIncorrect(deviceId: string,refreshToken: string): Promise<boolean> {
-    //
-    //     let result = await usersRepository.makeTokenIncorrectDb(deviceId,refreshToken)
-    //     return result
-    // },
-
+    }
     async deleteSession(deviceId: string): Promise<boolean> {
 
-        let result = await usersRepository.deleteSessionInDb(deviceId)
+        let result = await this.usersRepository.deleteSessionInDb(deviceId)
         return result
-    },
-
+    }
     async confirmEmail(code: string): Promise<boolean> {
 
-        let user = await usersRepository.findUserByConfirmCode(code)
+        let user = await this.usersRepository.findUserByConfirmCode(code)
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
@@ -97,57 +91,54 @@ export const authService = {
         if (user.emailConfirmation.expirationDate < new Date()) return false
 
 
-            let result = await usersRepository.updateConfirmation(user.id)
-            return result
-        },
-
+        let result = await this.usersRepository.updateConfirmation(user.id)
+        return result
+    }
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash
-    },
-
+    }
     async makeNewPasswordByResendingCode(newPassword: string, recoveryCode: string): Promise<boolean> {
 
-        let user = await usersRepository.findUserByResetPasswordCode(recoveryCode)
+        let user = await this.usersRepository.findUserByResetPasswordCode(recoveryCode)
         if (!user) return false
-        if (user.expirationDatePasswordCode < new Date()) return false
+        if (user.passwordUpdate.expirationDatePasswordCode < new Date()) return false
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
 
-       return  usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
-    },
-
+        return  this.usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
+    }
     async resendingCode(email: string): Promise<boolean | null> {
 
-        let user = await usersRepository.findByAuthLoginEmail(email)
+        let user = await this.usersRepository.findByAuthLoginEmail(email)
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
 
         const confirmationCode = randomUUID()
 
-        await usersRepository.chengConfirmationCode(user.id,confirmationCode)
+        await this.usersRepository.chengConfirmationCode(user.id,confirmationCode)
 
-        await emailManager.resendEmailconfirmationMessage(email, confirmationCode)
+        await this.emailManager.resendEmailconfirmationMessage(email, confirmationCode)
 
         return true
-    },
-
+    }
     async resendingPasswordCode(email: string): Promise<boolean | null> {
 
-        let user = await usersRepository.findByAuthLoginEmail(email)
+        let user = await this.usersRepository.findByAuthLoginEmail(email)
         if (!user) return false
 
         const NewResetPasswordCode = randomUUID()
         const NewExpirationDatePasswordCode = add(new Date(), { hours: 24 });
-        await usersRepository.changeResetPasswordCode(user.id,NewResetPasswordCode,NewExpirationDatePasswordCode)
+        await this.usersRepository.changeResetPasswordCode(user.id,NewResetPasswordCode,NewExpirationDatePasswordCode)
 
-        await emailManager.resendPasswordCodeMessage(email,NewResetPasswordCode)
+        await this.emailManager.resendPasswordCodeMessage(email,NewResetPasswordCode)
 
         return true
-    },
+    }
 }
+
 
 
 

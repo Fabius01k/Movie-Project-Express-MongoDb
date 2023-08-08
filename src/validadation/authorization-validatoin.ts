@@ -45,22 +45,6 @@ export const tokenUserValidator = async (req: Request, res: Response, next: Next
     next()
 }
 
-// export const tokenUserValidator = async (req: Request, res: Response, next: NextFunction) => {
-//
-//     const token = req.cookies.refreshToken
-//
-//     if (typeof token !== 'string') return res.sendStatus(401)
-//
-//     const userInDb = jwtService.getUserIdByToken(token)
-//     const tokenInBlackList = await usersAccountTokenColletion.findOne({userId: userInDb, usedRefreshToken:{$in:[token]}  })
-//
-//     if(tokenInBlackList) return res.sendStatus(401)
-//
-//     const userRefreshTokenInDB = await usersAccountTokenColletion.findOne({refreshToken: token})
-//     if(userInDb !== userRefreshTokenInDB?.userId) return res.sendStatus(401)
-//
-//     next()
-// }
 
 
 
