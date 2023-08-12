@@ -16,3 +16,12 @@ export const commentCreateByPostValidation = [
         .trim()
         .isLength({min:20,max:300}).withMessage('content is not correct'),
 ]
+
+export const LikeInfoStatusValidator = [
+    body('likeStatus')
+        .isString()
+        .notEmpty()
+        .trim()
+        .isIn(['None', 'Like', 'Dislike'])
+        .withMessage('Invalid likeStatus value'),
+]
