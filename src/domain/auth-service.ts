@@ -107,7 +107,7 @@ export class AuthService {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
 
-        return  this.usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
+        return this.usersRepository.changePasswordInDb(user.id,passwordSalt,passwordHash)
     }
     async resendingCode(email: string): Promise<boolean | null> {
 

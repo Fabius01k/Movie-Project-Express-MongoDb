@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import {Schema} from "mongoose";
 
 
 export class ClassCommentDb {
@@ -11,6 +12,22 @@ export class ClassCommentDb {
         userLogin: string
     },
     public createdAt: string,
-    public postId : string
+    public postId : string,
 ) {}
 }
+
+interface LikesInfo {
+    userId: string;
+    commentId: string;
+    likeStatus: string;
+    dateOfLikeDislike: Date;
+}
+export class ClassCommentsLikesInfoDb {
+    constructor(
+    public infoId: string,
+    public likesInfo: LikesInfo[], // исправить
+    public numberOfLikes: number,
+    public numberOfDislikes: number
+    ) {}
+}
+
