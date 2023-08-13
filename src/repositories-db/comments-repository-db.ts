@@ -90,10 +90,19 @@ export class CommentsRepository {
         return deleteComment.deletedCount === 1
     }
 
+    // async findOldLikeOrDislike(userId: string) {
+    //     const result = await commentsLikesInfoModel.findOne({ "likesInfo.userId": userId });
+    //     return result
+    // }
     async findOldLikeOrDislike(userId: string) {
         const result = await commentsLikesInfoModel.findOne({ "likesInfo.userId": userId });
-        return result
+        if (result) {
+            const likeInfo = result.likesInfo.find(info => info.userId === userId);
+            return likeInfo
+        }
+        return null
     }
+
     async deleteOldLikeDislike(userId: string) {
         const result = await commentsLikesInfoModel.updateOne(
             {"likesInfo.userId": userId},
@@ -114,44 +123,73 @@ export class CommentsRepository {
 
         return result.modifiedCount === 1
     }
-    async countLikesOfComment(infoId: string): Promise<number> {
-        {let result = await commentsLikesInfoModel.aggregate([
-                { $match: { infoId: infoId } },
-                { $unwind: "$likesInfo" },
-                { $match: { "likesInfo.likeStatus": "Like" } },
-                { $count: "count" }
-            ]).exec();
+    // async countLikesOfComment(infoId: string): Promise<number> {
+    //     {let result = await commentsLikesInfoModel.aggregate([
+    //             { $match: { infoId: infoId } },
+    //             { $unwind: "$likesInfo" },
+    //             { $match: { "likesInfo.likeStatus": "Like" } },
+    //             { $count: "count" }
+    //         ]).exec();
+    //
+    //         return result[0]?.count || 0;
+    //     }
+    // }
+    // async countDislikesOfComment(infoId: string): Promise<number> {
+    //     {let result = await commentsLikesInfoModel.aggregate([
+    //         { $match: { infoId: infoId } },
+    //         { $unwind: "$likesInfo" },
+    //         { $match: { "likesInfo.likeStatus": "Dislike " } },
+    //         { $count: "count" }
+    //     ]).exec();
+    //
+    //         return result[0]?.count || 0;
+    //     }
+    // }
 
-            return result[0]?.count || 0;
-        }
-    }
-    async countDislikesOfComment(infoId: string): Promise<number> {
-        {let result = await commentsLikesInfoModel.aggregate([
-            { $match: { infoId: infoId } },
-            { $unwind: "$likesInfo" },
-            { $match: { "likesInfo.likeStatus": "Dislike " } },
-            { $count: "count" }
-        ]).exec();
-
-            return result[0]?.count || 0;
-        }
-    }
-
-    async changeNumberOfLikesAndDislikes(infoId: string, sumOfLikes: number,sumOfDislikes: number) {
-        let result = await commentsLikesInfoModel
-            .updateOne({infoId}, {
-                $set: {
-                    "numberOfLikes": sumOfLikes,
-                    "numberOfDislikes": sumOfDislikes,
-                }
-            })
-
-        return result.modifiedCount === 1
-    }
+    // async changeNumberOfLikesAndDislikes(infoId: string, sumOfLikes: number,sumOfDislikes: number): Promise<boolean> {
+    //     let result = await commentsLikesInfoModel
+    //         .updateOne({infoId}, {
+    //             $set: {
+    //                 "numberOfLikes": sumOfLikes,
+    //                 "numberOfDislikes": sumOfDislikes,
+    //             }
+    //         })
+    //
+    //     return result.modifiedCount === 1
+    // }
 
     async findCommentForDb(commentId: string) {
         const comment = await commentsModel.findOne({commentId: commentId})
         return comment
+    }
+
+    async findCommentsLikesInfo(infoId: string) {
+        const info = await commentsLikesInfoModel.findOne({infoId: infoId})
+        return info
+    }
+    async deleteNumberOfLikes(infoId: string): Promise<void> {
+        await commentsLikesInfoModel.findOneAndUpdate(
+            { infoId },
+            { $inc: { numberOfLikes: -1 } }
+        );
+    }
+    async deleteNumberOfDislikes(infoId: string): Promise<void> {
+        await commentsLikesInfoModel.findOneAndUpdate(
+            { infoId },
+            { $inc: { numberOfLikes: -1 } }
+        );
+    }
+    async updateNumberOfLikes(infoId: string): Promise<void> {
+        await commentsLikesInfoModel.findOneAndUpdate(
+            { infoId },
+            { $inc: { numberOfLikes: +1 } }
+        );
+    }
+    async updateNumberOfDislikes(infoId: string): Promise<void> {
+        await commentsLikesInfoModel.findOneAndUpdate(
+            { infoId },
+            { $inc: { numberOfLikes: +1 } }
+        );
     }
 
 }

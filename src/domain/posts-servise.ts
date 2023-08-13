@@ -23,6 +23,9 @@ export class PostsService {
     }
     async findCommentByPostID(sortBy: string,sortDirection: 'asc' | 'desc',
                               pageSize: number,pageNumber: number, postId: string, userId: string) {
+
+
+
         return this.commentsRepository.findCommentByPostID(sortBy,sortDirection,pageSize,pageNumber,
             postId, userId)
     }
@@ -87,15 +90,6 @@ export class PostsService {
         )
 
         await this.commentsRepository.createCollectionOfCommentsLikesInf(newCollectionCommentsLikesInfo)
-
-            //likesInfo: [] ->
-            //likesCount:
-            //dislikesCount:
-            //put: make like status
-            //comment.likesInfo.push({status: 'Like", userId: 2, UserLogin: 'fff', createdAt: data})
-            //comment.likesCount: +1
-            //put: make dislike status
-            //comment.likesInfo.push({status:'Dislike', userId 5, userLogin: 'dre', createdAt:Data})
 
         const createdCommentService = await this.commentsRepository.createCommentByPostId(newComment)
 

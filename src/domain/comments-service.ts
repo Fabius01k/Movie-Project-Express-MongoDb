@@ -12,11 +12,11 @@ export class CommentsService {
 
     async getCommentById(id: string, userId: string): Promise<TcommentView | null> {
 
-        const infoId = id
-        const sumOfLikes = await this.commentsRepository.countLikesOfComment(infoId)
-        const sumOfDislikes = await this.commentsRepository.countDislikesOfComment(infoId)
-
-        await this.commentsRepository.changeNumberOfLikesAndDislikes(infoId, sumOfLikes, sumOfDislikes)
+        // const infoId = id
+        // const sumOfLikes = await this.commentsRepository.countLikesOfComment(infoId)
+        // const sumOfDislikes = await this.commentsRepository.countDislikesOfComment(infoId)
+        //
+        // await this.commentsRepository.changeNumberOfLikesAndDislikes(infoId, sumOfLikes, sumOfDislikes)
 
         return this.commentsRepository.getCommentById(id, userId)
     }
@@ -24,8 +24,29 @@ export class CommentsService {
     async makeLikeDislikesInDb(userId: string, commentId: string,
                                likeStatus: string, dateOfLikeDislike: Date): Promise<boolean> {
         const oldLikeOrDislikeOfUser = await this.commentsRepository.findOldLikeOrDislike(userId)
+        if (oldLikeOrDislikeOfUser) {
 
-        if (oldLikeOrDislikeOfUser) await this.commentsRepository.deleteOldLikeDislike(userId)
+            if (oldLikeOrDislikeOfUser.likeStatus === "Like") {
+                const infoId = commentId
+                await this.commentsRepository.deleteNumberOfLikes(infoId)
+
+            } else if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") {
+                const infoId = commentId
+                await this.commentsRepository.deleteNumberOfDislikes(infoId);
+            }
+            await this.commentsRepository.deleteOldLikeDislike(userId)
+        }
+
+        const userLikeStatus = likeStatus
+
+        if (userLikeStatus === "Like") {
+            const infoId = commentId
+            await this.commentsRepository.updateNumberOfLikes(infoId)
+        }
+        if (userLikeStatus === "Dislike") {
+            const infoId = commentId
+            await this.commentsRepository.updateNumberOfDislikes(infoId)
+        }
 
         let result = await this.commentsRepository.makeLikeOrDislike(userId, commentId, likeStatus, dateOfLikeDislike)
         return result
