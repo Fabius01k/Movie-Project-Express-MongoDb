@@ -18,7 +18,7 @@ export class CommentsController {
     }
     async makeLikeDislikes(req: Request, res: Response) {
         const token = req.cookies.accessToken
-        const userId =  await jwtService.getUserIdByToken(token)
+        const userId = await jwtService.getUserIdByToken(token)
         const comment = await this.commentsService.getCommentById(req.params.commentId,userId)
         if (!comment) return res.sendStatus(404)
 
@@ -27,6 +27,9 @@ export class CommentsController {
         const dateOfLikeDislike = new Date
 
         await this.commentsService.makeLikeDislikesInDb(userId,commentId,likeStatus,dateOfLikeDislike)
+
+        res.sendStatus(204)
+
     }
     async updateComment(req: Request, res: Response) {
         const token = req.cookies.accessToken
