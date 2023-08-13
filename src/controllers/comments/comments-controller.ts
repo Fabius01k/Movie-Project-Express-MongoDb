@@ -26,10 +26,12 @@ export class CommentsController {
         const likeStatus = req.body
         const dateOfLikeDislike = new Date
 
-        await this.commentsService.makeLikeDislikesInDb(userId,commentId,likeStatus,dateOfLikeDislike)
-
-        res.sendStatus(204)
-
+        const result = await this.commentsService.makeLikeDislikesInDb(userId,commentId,likeStatus,dateOfLikeDislike)
+        if (result) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(400)
+        }
     }
     async updateComment(req: Request, res: Response) {
         const token = req.cookies.accessToken
