@@ -19,7 +19,9 @@ export class CommentsController {
     async makeLikeDislikes(req: Request, res: Response) {
         const token = req.cookies.accessToken
         const userId = await jwtService.getUserIdByToken(token)
-        const comment = await this.commentsService.getCommentById(req.params.commentId,userId)
+        const id = req.params.commentId
+        // const comment = await this.commentsService.getCommentById(req.params.commentId,userId)
+        const comment = await this.commentsService.findCommentFor(id)
         if (!comment) return res.sendStatus(404)
 
         const commentId = req.params.commentId

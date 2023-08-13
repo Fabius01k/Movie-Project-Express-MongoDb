@@ -60,8 +60,8 @@ export class CommentsService {
         return await this.commentsRepository.deleteComment(commentId)
     }
 
-    async findCommentFor(commentId: string):Promise< any | null> {
-        return await this.commentsRepository.findCommentForDb(commentId)
+    async findCommentFor(id: string):Promise< any | null> {
+        return await this.commentsRepository.findCommentForDb(id)
     }
 }
 

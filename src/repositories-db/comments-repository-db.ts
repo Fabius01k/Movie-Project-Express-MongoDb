@@ -158,15 +158,15 @@ export class CommentsRepository {
     //     return result.modifiedCount === 1
     // }
 
-    async findCommentForDb(commentId: string) {
-        const comment = await commentsModel.findOne({commentId: commentId})
+    async findCommentForDb(id: string) {
+        const comment = await commentsModel.findOne({id: id})
         return comment
     }
 
-    async findCommentsLikesInfo(infoId: string) {
-        const info = await commentsLikesInfoModel.findOne({infoId: infoId})
-        return info
-    }
+    // async findCommentsLikesInfo(infoId: string) {
+    //     const info = await commentsLikesInfoModel.findOne({infoId: infoId})
+    //     return info
+    // }
     async deleteNumberOfLikes(infoId: string): Promise<void> {
         await commentsLikesInfoModel.findOneAndUpdate(
             { infoId },
