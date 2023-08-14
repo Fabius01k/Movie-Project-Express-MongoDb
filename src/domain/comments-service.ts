@@ -17,13 +17,6 @@ export class CommentsService {
     }
 
     async getCommentById(id: string, userId: string | null): Promise<TcommentView | null> {
-
-        // const infoId = id
-        // const sumOfLikes = await this.commentsRepository.countLikesOfComment(infoId)
-        // const sumOfDislikes = await this.commentsRepository.countDislikesOfComment(infoId)
-        //
-        // await this.commentsRepository.changeNumberOfLikesAndDislikes(infoId, sumOfLikes, sumOfDislikes)
-
         return this.commentsRepository.getCommentById(id, userId)
     }
 
@@ -33,16 +26,11 @@ export class CommentsService {
         console.log('SERVICE:', oldLikeOrDislikeOfUser)
         if (oldLikeOrDislikeOfUser) {
 
-            if (oldLikeOrDislikeOfUser.likeStatus === LikeStatus.like) {
-                const infoId = commentId//use commentId from function params
-                await this.commentsRepository.deleteNumberOfLikes(infoId)
+            if (oldLikeOrDislikeOfUser.likeStatus === "Like") return this.commentsRepository.deleteNumberOfLikes(commentId,userId)
 
-            } else if (oldLikeOrDislikeOfUser.likeStatus === LikeStatus.dislike) {
-                const infoId = commentId
-                await this.commentsRepository.deleteNumberOfDislikes(infoId);
+            if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") return await this.commentsRepository.deleteNumberOfDislikes(commentId,userId)
+
             }
-            await this.commentsRepository.deleteOldLikeDislike(commentId, userId)
-        }
 
         const userLikeStatus = likeStatus;
 
