@@ -41,7 +41,7 @@ export class CommentsService {
                 const infoId = commentId
                 await this.commentsRepository.deleteNumberOfDislikes(infoId);
             }
-            await this.commentsRepository.deleteOldLikeDislike(userId)
+            await this.commentsRepository.deleteOldLikeDislike(commentId, userId)
         }
 
         const userLikeStatus = likeStatus;

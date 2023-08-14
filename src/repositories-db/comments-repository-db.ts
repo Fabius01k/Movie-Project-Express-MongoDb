@@ -106,9 +106,9 @@ export class CommentsRepository {
         return null
     }
 
-    async deleteOldLikeDislike(userId: string) {
+    async deleteOldLikeDislike(infoId: string, userId: string) {
         const result = await commentsLikesInfoModel.updateOne(
-            {"likesInfo.userId": userId},
+            {infoId, "likesInfo.userId": userId},
             {$pull: {likesInfo: {userId: userId}}})
         return result
     }
