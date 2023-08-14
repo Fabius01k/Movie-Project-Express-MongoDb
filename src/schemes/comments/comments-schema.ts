@@ -21,7 +21,7 @@ export const commentsLikesInfoSchema = new mongoose.Schema<WithId<ClassCommentsL
     // likesInfo: { type: [{ type: Schema.Types.Mixed }], default: null },
     likesInfo: //{type: Array, default: null,},
         { type: [
-            new Schema({userId: String, commentId: String,
+            new Schema({userId: String,
             likeStatus: String, dateOfLikeDislike: Date})
             ], default: null },
     numberOfLikes: { type: Number, default: 0 },

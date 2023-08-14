@@ -1,6 +1,6 @@
 import {TcommentView} from "../models/comments/comments-type";
 import {commentsLikesInfoModel, commentsModel, userModel} from "../db/db";
-import {ClassCommentDb, ClassCommentsLikesInfoDb} from "../classes/comments/comments-class";
+import {ClassCommentDb, ClassCommentsLikesInfoDb, LikesInfo} from "../classes/comments/comments-class";
 
 export let comments: ClassCommentDb[] = []
 const mapCommentFromDbToView = async (comment: ClassCommentDb, userId: string | null): Promise<TcommentView> => {
@@ -184,19 +184,20 @@ export class CommentsRepository {
         );
         return;
     }
-    async updateNumberOfLikes(infoId: string): Promise<void> {
-        await commentsLikesInfoModel.updateOne(
+    async updateNumberOfLikes(infoId: string, likeInfo:LikesInfo): Promise<boolean> {
+        const result = await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfLikes: 1 } }
+            { $inc: { numberOfLikes: 1 },
+                     $push: { likesInfo: likeInfo }}
         );
-        return;
+        return result.modifiedCount > 0;
     }
-    async updateNumberOfDislikes(infoId: string): Promise<void> {
-        await commentsLikesInfoModel.updateOne(
+    async updateNumberOfDislikes(infoId: string, likeInfo:LikesInfo): Promise<boolean> {
+        const result = await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfDislikes: 1 } }
+            { $inc: { numberOfDislikes: 1 }, $push: { likesInfo: likeInfo } }
         );
-        return;
+        return result.modifiedCount > 0;
     }
 
 }

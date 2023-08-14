@@ -4,6 +4,12 @@ import {ClassCommentDb} from "../classes/comments/comments-class";
 import {userModel} from "../db/db";
 import {TUserView} from "../models/users/users-type";
 
+export enum LikeStatus{
+    like= 'Like',
+    dislike = 'Dislike',
+    none = 'None'
+}
+
 export let comments: ClassCommentDb[] = []
 export class CommentsService {
     constructor(protected commentsRepository: CommentsRepository
@@ -22,35 +28,35 @@ export class CommentsService {
     }
 
     async makeLikeDislikesInDb(userId: string, commentId: string,
-                               likeStatus: string, dateOfLikeDislike: Date): Promise<boolean> {
+                               likeStatus:LikeStatus, dateOfLikeDislike: Date): Promise<boolean> {
         const oldLikeOrDislikeOfUser = await this.commentsRepository.findOldLikeOrDislike(commentId, userId)
         console.log('SERVICE:', oldLikeOrDislikeOfUser)
         if (oldLikeOrDislikeOfUser) {
 
-            if (oldLikeOrDislikeOfUser.likeStatus === "Like") {
+            if (oldLikeOrDislikeOfUser.likeStatus === LikeStatus.like) {
                 const infoId = commentId//use commentId from function params
                 await this.commentsRepository.deleteNumberOfLikes(infoId)
 
-            } else if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") {
+            } else if (oldLikeOrDislikeOfUser.likeStatus === LikeStatus.dislike) {
                 const infoId = commentId
                 await this.commentsRepository.deleteNumberOfDislikes(infoId);
             }
             await this.commentsRepository.deleteOldLikeDislike(userId)
         }
 
-        const userLikeStatus = likeStatus
+        const userLikeStatus = likeStatus;
 
-        if (userLikeStatus === "Like") {
-            const infoId = commentId
-            await this.commentsRepository.updateNumberOfLikes(infoId)
-        }
-        if (userLikeStatus === "Dislike") {
-            const infoId = commentId
-            await this.commentsRepository.updateNumberOfDislikes(infoId)
+        const likeInfo = {
+            userId: userId,
+            likeStatus: likeStatus,
+            dateOfLikeDislike: dateOfLikeDislike
         }
 
-        let result = await this.commentsRepository.makeLikeOrDislike(userId, commentId, likeStatus, dateOfLikeDislike)
-        return result
+        if (userLikeStatus === "Like") return this.commentsRepository.updateNumberOfLikes(commentId, likeInfo);
+
+        if (userLikeStatus === "Dislike")return this.commentsRepository.updateNumberOfDislikes(commentId, likeInfo);
+       return true;
+
     }
 
     async updateCommentByID(commentId: string, content: string): Promise<boolean> {

@@ -16,9 +16,8 @@ export class ClassCommentDb {
 ) {}
 }
 
-interface LikesInfo {
+export interface LikesInfo {
     userId: string;
-    commentId: string;
     likeStatus: string;
     dateOfLikeDislike: Date;
 }
