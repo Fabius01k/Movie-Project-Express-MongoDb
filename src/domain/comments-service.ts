@@ -23,7 +23,7 @@ export class CommentsService {
 
     async makeLikeDislikesInDb(userId: string, commentId: string,
                                likeStatus: string, dateOfLikeDislike: Date): Promise<boolean> {
-        const oldLikeOrDislikeOfUser = await this.commentsRepository.findOldLikeOrDislike(userId)
+        const oldLikeOrDislikeOfUser = await this.commentsRepository.findOldLikeOrDislike(commentId, userId)
         if (oldLikeOrDislikeOfUser) {
 
             if (oldLikeOrDislikeOfUser.likeStatus === "Like") {
