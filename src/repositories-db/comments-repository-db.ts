@@ -98,7 +98,7 @@ export class CommentsRepository {
     //     return result
     // }
     async findOldLikeOrDislike(infoId: string,userId: string) {
-        const result = await commentsLikesInfoModel.findOne({ infoId ,likesInfo: {$in:[{userId: userId}]}});
+        const result = await commentsLikesInfoModel.findOne({ infoId ,"likesInfo.userId": userId});
         if (result?.likesInfo) {
             const likeInfo = result.likesInfo.find(info => info.userId === userId);
             return likeInfo
