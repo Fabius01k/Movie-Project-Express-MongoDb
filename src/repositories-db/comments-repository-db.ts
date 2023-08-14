@@ -102,6 +102,13 @@ export class CommentsRepository {
         return null
     }
 
+    async deleteOldLikeDislike(infoId: string, userId: string) {
+        const result = await commentsLikesInfoModel.updateOne(
+            {infoId, "likesInfo.userId": userId},
+            {$pull: {likesInfo: {userId: userId}}})
+        return result
+    }
+
     async makeLikeOrDislike(userId: string, commentId: string, likeStatus: string, dateOfLikeDislike: Date): Promise<boolean> {
 
         const likeInfo = {
@@ -120,24 +127,19 @@ export class CommentsRepository {
         const comment = await commentsModel.findOne({id: id})
         return comment
     }
-    async deleteNumberOfLikes(infoId: string,userId: string): Promise<boolean> {
-        const result = await commentsLikesInfoModel.updateOne(
-            { infoId, "likesInfo.userId": userId },
-            {
-                $inc: {numberOfLikes: -1},
-                $pull: {likesInfo: {userId: userId}}
-            }
+    async deleteNumberOfLikes(infoId: string): Promise<void> {
+        await commentsLikesInfoModel.updateOne(
+            { infoId },
+            { $inc: { numberOfLikes: -1 } }
         );
-        return result.modifiedCount === 1;
+        return;
     }
-    async deleteNumberOfDislikes(infoId: string,userId: string): Promise<boolean> {
-        const result = await commentsLikesInfoModel.updateOne(
-            { infoId, "likesInfo.userId": userId },
-            { $inc: { numberOfDislikes: -1 },
-                     $pull: {likesInfo: {userId: userId}}
-            }
+    async deleteNumberOfDislikes(infoId: string): Promise<void> {
+        await commentsLikesInfoModel.updateOne(
+            { infoId },
+            { $inc: { numberOfDislikes: -1 } }
         );
-        return result.modifiedCount === 1;
+        return;
     }
     async updateNumberOfLikes(infoId: string, likeInfo:LikesInfo): Promise<boolean> {
         const result = await commentsLikesInfoModel.updateOne(
@@ -145,22 +147,14 @@ export class CommentsRepository {
             { $inc: { numberOfLikes: 1 },
                      $push: { likesInfo: likeInfo }}
         );
-        return result.modifiedCount === 1
+        return result.modifiedCount > 0;
     }
     async updateNumberOfDislikes(infoId: string, likeInfo:LikesInfo): Promise<boolean> {
         const result = await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfDislikes: 1 },
-                     $push: { likesInfo: likeInfo } }
+            { $inc: { numberOfDislikes: 1 }, $push: { likesInfo: likeInfo } }
         );
-        return result.modifiedCount === 1
+        return result.modifiedCount > 0;
     }
-    //
-    // async deleteOldLikeDislike(infoId: string, userId: string) {
-    //     const result = await commentsLikesInfoModel.updateOne(
-    //         {infoId, "likesInfo.userId": userId},
-    //         {$pull: {likesInfo: {userId: userId}}})
-    //     return result
-    // }
 
 }

@@ -26,11 +26,14 @@ export class CommentsService {
         console.log('SERVICE:', oldLikeOrDislikeOfUser)
         if (oldLikeOrDislikeOfUser) {
 
-            if (oldLikeOrDislikeOfUser.likeStatus === "Like") return this.commentsRepository.deleteNumberOfLikes(commentId,userId)
+            if (oldLikeOrDislikeOfUser.likeStatus === "Like") {
+                await this.commentsRepository.deleteNumberOfLikes(commentId)
 
-            if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") return this.commentsRepository.deleteNumberOfDislikes(commentId,userId)
-
+            } else if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") {
+                await this.commentsRepository.deleteNumberOfDislikes(commentId);
             }
+            await this.commentsRepository.deleteOldLikeDislike(commentId, userId)
+        }
 
         const userLikeStatus = likeStatus;
 
