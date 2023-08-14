@@ -22,7 +22,7 @@ export class PostsService {
         )
     }
     async findCommentByPostID(sortBy: string,sortDirection: 'asc' | 'desc',
-                              pageSize: number,pageNumber: number, postId: string, userId: string) {
+                              pageSize: number,pageNumber: number, postId: string, userId: string | null) {
         return this.commentsRepository.findCommentByPostID(sortBy,sortDirection,pageSize,pageNumber,
             postId, userId)
     }

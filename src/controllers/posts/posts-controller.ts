@@ -45,10 +45,17 @@ export class PostsController {
         }
     }
     async getCommentByPostID(req: Request, res: Response) {
-        const token = req.headers.authorization!.split(' ')[1]
+        // const token = req.headers.authorization!.split(' ')[1]
 
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+              const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
 
-        const userId =  await jwtService.getUserIdByToken(token)
         let sortBy: string = req.query.sortBy as any
         if (!sortBy) {
             sortBy = 'createdAt'

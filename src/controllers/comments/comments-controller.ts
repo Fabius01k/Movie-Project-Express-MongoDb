@@ -6,8 +6,15 @@ export class CommentsController {
     constructor(protected commentsService: CommentsService
     ) {}
     async getCoomentById(req: Request, res: Response) {
-        const token = req.headers.authorization!.split(' ')[1]
-        const userId = await jwtService.getUserIdByToken(token)
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+                const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
+        //const userId = await jwtService.getUserIdByToken(token)
         const comment = await this.commentsService.getCommentById(req.params.id,userId)
 
         if (comment) {

@@ -10,7 +10,7 @@ export class CommentsService {
     ) {
     }
 
-    async getCommentById(id: string, userId: string): Promise<TcommentView | null> {
+    async getCommentById(id: string, userId: string | null): Promise<TcommentView | null> {
 
         // const infoId = id
         // const sumOfLikes = await this.commentsRepository.countLikesOfComment(infoId)

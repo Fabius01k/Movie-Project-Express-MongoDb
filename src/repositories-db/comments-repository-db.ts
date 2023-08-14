@@ -3,7 +3,7 @@ import {commentsLikesInfoModel, commentsModel, userModel} from "../db/db";
 import {ClassCommentDb, ClassCommentsLikesInfoDb} from "../classes/comments/comments-class";
 
 export let comments: ClassCommentDb[] = []
-const mapCommentFromDbToView = async (comment: ClassCommentDb, userId: string): Promise<TcommentView> => {
+const mapCommentFromDbToView = async (comment: ClassCommentDb, userId: string | null): Promise<TcommentView> => {
 
     const CommentsLikesInfo = await commentsLikesInfoModel.findOne({infoId: comment.id})
     const userStatus = CommentsLikesInfo?.likesInfo ? CommentsLikesInfo?.likesInfo.find((info) => info.userId === userId) : {likeStatus:'None'};
@@ -25,7 +25,7 @@ const mapCommentFromDbToView = async (comment: ClassCommentDb, userId: string): 
 }
 
 export class CommentsRepository {
-    async getCommentById(id: string,userId: string): Promise<TcommentView | null> {
+    async getCommentById(id: string,userId: string | null): Promise<TcommentView | null> {
         const comment: ClassCommentDb | null = await commentsModel.findOne({id: id})
         if (!comment) return null
 
@@ -48,7 +48,7 @@ export class CommentsRepository {
 
     async findCommentByPostID(sortBy: string, sortDirection: 'asc' | 'desc',
                               pageSize: number, pageNumber: number, postId: string,
-                              userId: string) {
+                              userId: string | null) {
 
         const comment: ClassCommentDb[] = await commentsModel
             .find({postId: postId})
