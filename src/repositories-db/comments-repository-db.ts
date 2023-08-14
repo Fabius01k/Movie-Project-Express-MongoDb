@@ -6,8 +6,8 @@ export let comments: ClassCommentDb[] = []
 const mapCommentFromDbToView = async (comment: ClassCommentDb, userId: string): Promise<TcommentView> => {
 
     const CommentsLikesInfo = await commentsLikesInfoModel.findOne({infoId: comment.id})
-    const userStatus = CommentsLikesInfo?.likesInfo.find((info) => info.userId === userId);
-    const myStatus = userStatus ? userStatus.likeStatus : "None"
+    const userStatus = CommentsLikesInfo?.likesInfo ? CommentsLikesInfo?.likesInfo.find((info) => info.userId === userId) : {likeStatus:'None'};
+    const myStatus = userStatus ? userStatus.likeStatus : "None"//if(userStatus){return userStatus.likeStatus} else {return 'None'}
     return {
         id: comment.id,
         content: comment.content,
@@ -28,7 +28,6 @@ export class CommentsRepository {
     async getCommentById(id: string,userId: string): Promise<TcommentView | null> {
         const comment: ClassCommentDb | null = await commentsModel.findOne({id: id})
         if (!comment) return null
-
 
         return mapCommentFromDbToView(comment,userId)
     }
@@ -53,13 +52,17 @@ export class CommentsRepository {
 
         const comment: ClassCommentDb[] = await commentsModel
             .find({postId: postId})
+            // .find({"commentatorInfo.postId": postId})
+
             // .sort(sortBy,sortDirection)
-            .sort({sortBy: sortDirection})
+            // .sort({sortBy, sortDirection})
+            // .sort(sortBy)
+            .sort({ [sortBy]: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(+pageSize)
             .lean()
 
-        const items = comment.map(c => mapCommentFromDbToView(c,userId))
+        const items = await Promise.all(comment.map( c => mapCommentFromDbToView(c,userId)))
         const totalCount = await commentsModel.countDocuments({postId: postId})
 
         return {
@@ -96,7 +99,7 @@ export class CommentsRepository {
     // }
     async findOldLikeOrDislike(userId: string) {
         const result = await commentsLikesInfoModel.findOne({ "likesInfo.userId": userId });
-        if (result) {
+        if (result?.likesInfo) {
             const likeInfo = result.likesInfo.find(info => info.userId === userId);
             return likeInfo
         }
@@ -168,28 +171,32 @@ export class CommentsRepository {
     //     return info
     // }
     async deleteNumberOfLikes(infoId: string): Promise<void> {
-        await commentsLikesInfoModel.findOneAndUpdate(
+        await commentsLikesInfoModel.updateOne(
             { infoId },
             { $inc: { numberOfLikes: -1 } }
         );
+        return;
     }
     async deleteNumberOfDislikes(infoId: string): Promise<void> {
-        await commentsLikesInfoModel.findOneAndUpdate(
+        await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfLikes: -1 } }
+            { $inc: { numberOfDislikes: -1 } }
         );
+        return;
     }
     async updateNumberOfLikes(infoId: string): Promise<void> {
-        await commentsLikesInfoModel.findOneAndUpdate(
+        await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfLikes: +1 } }
+            { $inc: { numberOfLikes: 1 } }
         );
+        return;
     }
     async updateNumberOfDislikes(infoId: string): Promise<void> {
-        await commentsLikesInfoModel.findOneAndUpdate(
+        await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfLikes: +1 } }
+            { $inc: { numberOfDislikes: 1 } }
         );
+        return;
     }
 
 }

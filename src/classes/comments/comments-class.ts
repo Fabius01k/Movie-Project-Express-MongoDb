@@ -25,7 +25,7 @@ interface LikesInfo {
 export class ClassCommentsLikesInfoDb {
     constructor(
     public infoId: string,
-    public likesInfo: LikesInfo[], // исправить
+    public likesInfo: LikesInfo[] | null,
     public numberOfLikes: number,
     public numberOfDislikes: number
     ) {}

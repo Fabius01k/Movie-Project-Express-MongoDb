@@ -6,8 +6,8 @@ export class CommentsController {
     constructor(protected commentsService: CommentsService
     ) {}
     async getCoomentById(req: Request, res: Response) {
-        const token = req.cookies.accessToken
-        const userId =  await jwtService.getUserIdByToken(token)
+        const token = req.headers.authorization!.split(' ')[1]
+        const userId = await jwtService.getUserIdByToken(token)
         const comment = await this.commentsService.getCommentById(req.params.id,userId)
 
         if (comment) {
@@ -17,16 +17,20 @@ export class CommentsController {
         }
     }
     async makeLikeDislikes(req: Request, res: Response) {
-        const token = req.cookies.accessToken
+        //todo: access token from headers
+        const token = req.headers.authorization!.split(' ')[1]
+        console.log(token, "token in controller")
+
         const userId = await jwtService.getUserIdByToken(token)
+        console.log(userId, "userId in controller")
         const id = req.params.commentId
         // const comment = await this.commentsService.getCommentById(req.params.commentId,userId)
         const comment = await this.commentsService.findCommentFor(id)
         if (!comment) return res.sendStatus(404)
 
         const commentId = req.params.commentId
-        const likeStatus = req.body
-        const dateOfLikeDislike = new Date
+        const likeStatus = req.body.likeStatus//{likeStatus: 'Like'}
+        const dateOfLikeDislike = new Date()
 
         const result = await this.commentsService.makeLikeDislikesInDb(userId,commentId,likeStatus,dateOfLikeDislike)
         if (result) {
@@ -36,7 +40,7 @@ export class CommentsController {
         }
     }
     async updateComment(req: Request, res: Response) {
-        const token = req.cookies.accessToken
+        const token = req.headers.authorization!.split(' ')[1]
         const userId =  await jwtService.getUserIdByToken(token)
         const commentBeforeUpdating = await this.commentsService.getCommentById(req.params.commentId,userId)
         if (!commentBeforeUpdating) return res.sendStatus(404);
@@ -51,7 +55,7 @@ export class CommentsController {
         res.sendStatus(204)
     }
     async deleteComment(req: Request, res: Response) {
-        const token = req.cookies.accessToken
+        const token = req.headers.authorization!.split(' ')[1]
         const userId =  await jwtService.getUserIdByToken(token)
         const commentBeforeDelete = await this.commentsService.getCommentById(req.params.commentId,userId)
         if (!commentBeforeDelete) return res.sendStatus(404);

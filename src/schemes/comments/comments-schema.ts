@@ -19,8 +19,11 @@ export const commentSchema = new mongoose.Schema<WithId<ClassCommentDb>>({
 export const commentsLikesInfoSchema = new mongoose.Schema<WithId<ClassCommentsLikesInfoDb>>({
     infoId: { type: String, require: true },
     // likesInfo: { type: [{ type: Schema.Types.Mixed }], default: null },
-    likesInfo: { type: [{userId: String, commentId: String,
-            likeStatus: String, dateOfLikeDislike: Date}], default: null },
+    likesInfo: //{type: Array, default: null,},
+        { type: [
+            new Schema({userId: String, commentId: String,
+            likeStatus: String, dateOfLikeDislike: Date})
+            ], default: null },
     numberOfLikes: { type: Number, default: 0 },
     numberOfDislikes: { type: Number, default: 0 }
     })

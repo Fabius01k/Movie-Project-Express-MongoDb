@@ -27,7 +27,7 @@ export class CommentsService {
         if (oldLikeOrDislikeOfUser) {
 
             if (oldLikeOrDislikeOfUser.likeStatus === "Like") {
-                const infoId = commentId
+                const infoId = commentId//use commentId from function params
                 await this.commentsRepository.deleteNumberOfLikes(infoId)
 
             } else if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") {
