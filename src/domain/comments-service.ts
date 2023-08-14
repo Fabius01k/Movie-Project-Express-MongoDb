@@ -28,7 +28,7 @@ export class CommentsService {
 
             if (oldLikeOrDislikeOfUser.likeStatus === "Like") return this.commentsRepository.deleteNumberOfLikes(commentId,userId)
 
-            if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") return await this.commentsRepository.deleteNumberOfDislikes(commentId,userId)
+            if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") return this.commentsRepository.deleteNumberOfDislikes(commentId,userId)
 
             }
 
