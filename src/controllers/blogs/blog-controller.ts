@@ -1,5 +1,6 @@
 import {BlogsService} from "../../domain/blogs-service";
 import {Request, Response} from "express";
+import {jwtService} from "../../application/jwt-service";
 
 
 export class BlogsController {
@@ -47,6 +48,14 @@ export class BlogsController {
         }
     }
     async getPostByBlogID(req: Request, res: Response) {
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+                const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
         let sortBy: string = req.query.sortBy as any
         if (!sortBy) {
             sortBy = 'createdAt'
@@ -77,7 +86,7 @@ export class BlogsController {
             return
         }
 
-        const blogs = await this.blogsService.findPostByBlogID(sortBy, sortDirection, pageSize, pageNumber, result!.id)
+        const blogs = await this.blogsService.findPostByBlogID(sortBy, sortDirection, pageSize, pageNumber, result!.id,userId)
         res.status(200).send(blogs)
     }
     async createBlog(req: Request, res: Response) {
@@ -89,12 +98,21 @@ export class BlogsController {
         res.status(201).send(newBlog)
     }
     async createPostByIdBlog(req: Request, res: Response) {
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+                const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
 
         const newPost = await this.blogsService.createPostByBlogID(
             req.body.title,
             req.body.shortDescription,
             req.body.content,
-            req.params.blogId
+            req.params.blogId,
+        userId
         )
         if (newPost) {
             res.status(201).send(newPost)

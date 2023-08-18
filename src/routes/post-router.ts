@@ -3,7 +3,7 @@ import {postCreateValidators, postUpdateValodators} from "../validadation/post-v
 import {basicAuthGuardMiddleware} from "../validadation/authorization-validatoin";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {commentCreateByPostValidation} from "../validadation/comments-valodation";
+import {commentCreateByPostValidation, LikeInfoStatusValidator} from "../validadation/comments-valodation";
 import {postsController, postsService} from "../composition-root";
 
 
@@ -21,6 +21,9 @@ postsRouter.post('/', basicAuthGuardMiddleware, postCreateValidators, inputValid
 postsRouter.post('/:postId/comments', authMiddleware, commentCreateByPostValidation,
     inputValidationMiddleware,
     postsController.createCommentByIdPost.bind(postsController))
+
+postsRouter.put('/:postId/like-status',authMiddleware,LikeInfoStatusValidator,
+    inputValidationMiddleware,postsController.makeLikeOrDislikes.bind(postsController))
 
 postsRouter.put('/:id', basicAuthGuardMiddleware, postUpdateValodators, inputValidationMiddleware,
     postsController.updatePost.bind(postsController))

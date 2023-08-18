@@ -13,3 +13,19 @@ export class ClassPostDb {
     public createdAt: string
     ) {}
 }
+
+export interface PostsLikesInfo {
+    userId: string
+    login: string
+    likeStatus: string
+    dateOfLikeDislike: Date
+}
+
+export class ClassPostsLikesInfoDb {
+    constructor(
+        public infoId: string,
+        public likesInfo: PostsLikesInfo[] | null,
+        public numberOfLikes: number,
+        public numberOfDislikes: number
+    ) {}
+}

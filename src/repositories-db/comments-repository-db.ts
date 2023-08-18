@@ -1,6 +1,10 @@
 import {TcommentView} from "../models/comments/comments-type";
 import {commentsLikesInfoModel, commentsModel, userModel} from "../db/db";
-import {ClassCommentDb, ClassCommentsLikesInfoDb, LikesInfo} from "../classes/comments/comments-class";
+import {
+    ClassCommentDb,
+    ClassCommentsLikesInfoDb,
+    CommentsLikesInfo
+} from "../classes/comments/comments-class";
 
 export let comments: ClassCommentDb[] = []
 const mapCommentFromDbToView = async (comment: ClassCommentDb, userId: string | null): Promise<TcommentView> => {
@@ -52,11 +56,6 @@ export class CommentsRepository {
 
         const comment: ClassCommentDb[] = await commentsModel
             .find({postId: postId})
-            // .find({"commentatorInfo.postId": postId})
-
-            // .sort(sortBy,sortDirection)
-            // .sort({sortBy, sortDirection})
-            // .sort(sortBy)
             .sort({ [sortBy]: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(+pageSize)
@@ -141,7 +140,7 @@ export class CommentsRepository {
         );
         return;
     }
-    async updateNumberOfLikes(infoId: string, likeInfo:LikesInfo): Promise<boolean> {
+    async updateNumberOfLikes(infoId: string, likeInfo: CommentsLikesInfo): Promise<boolean> {
         const result = await commentsLikesInfoModel.updateOne(
             { infoId },
             { $inc: { numberOfLikes: 1 },
@@ -149,10 +148,11 @@ export class CommentsRepository {
         );
         return result.modifiedCount > 0;
     }
-    async updateNumberOfDislikes(infoId: string, likeInfo:LikesInfo): Promise<boolean> {
+    async updateNumberOfDislikes(infoId: string, likeInfo: CommentsLikesInfo): Promise<boolean> {
         const result = await commentsLikesInfoModel.updateOne(
             { infoId },
-            { $inc: { numberOfDislikes: 1 }, $push: { likesInfo: likeInfo } }
+            { $inc: { numberOfDislikes: 1 },
+                     $push: { likesInfo: likeInfo } }
         );
         return result.modifiedCount > 0;
     }

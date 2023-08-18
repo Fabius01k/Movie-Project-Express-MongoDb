@@ -1,4 +1,3 @@
-import {TUserDb} from "../models/users/users-type";
 import * as jwt from 'jsonwebtoken'
 import {settings} from "./settings";
 import {ObjectId} from "mongodb";

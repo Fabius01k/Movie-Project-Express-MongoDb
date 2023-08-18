@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 import {ObjectId, WithId} from "mongodb";
-import {ClassPostDb} from "../../classes/posts/posts-class";
+import {ClassPostDb, ClassPostsLikesInfoDb} from "../../classes/posts/posts-class";
 
 
 export const postsSchema = new mongoose.Schema<WithId<ClassPostDb>>({
@@ -13,3 +13,21 @@ export const postsSchema = new mongoose.Schema<WithId<ClassPostDb>>({
     blogName: { type: String, require: true},
     createdAt: { type: String, require: true}
 })
+
+export const postsLikesInfoSchema = new mongoose.Schema<WithId<ClassPostsLikesInfoDb>>({
+    infoId: { type: String, require: true },
+    likesInfo:
+        { type: [
+                new Schema({userId: String,login: String,
+                    likeStatus: String, dateOfLikeDislike: Date})
+            ], default: null },
+    numberOfLikes: { type: Number, default: 0 },
+    numberOfDislikes: { type: Number, default: 0 }
+})
+
+
+
+
+
+
+

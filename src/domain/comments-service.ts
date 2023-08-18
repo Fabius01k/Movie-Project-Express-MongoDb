@@ -23,19 +23,20 @@ export class CommentsService {
     async makeLikeDislikesInDb(userId: string, commentId: string,
                                likeStatus:LikeStatus, dateOfLikeDislike: Date): Promise<boolean> {
         const oldLikeOrDislikeOfUser = await this.commentsRepository.findOldLikeOrDislike(commentId, userId)
-        console.log('SERVICE:', oldLikeOrDislikeOfUser)
+
         if (oldLikeOrDislikeOfUser) {
 
             if (oldLikeOrDislikeOfUser.likeStatus === "Like") {
                 await this.commentsRepository.deleteNumberOfLikes(commentId)
 
             } else if (oldLikeOrDislikeOfUser.likeStatus === "Dislike") {
-                await this.commentsRepository.deleteNumberOfDislikes(commentId);
+                await this.commentsRepository.deleteNumberOfDislikes(commentId)
+
             }
             await this.commentsRepository.deleteOldLikeDislike(commentId, userId)
         }
 
-        const userLikeStatus = likeStatus;
+        const userLikeStatus = likeStatus
 
         const likeInfo = {
             userId: userId,
@@ -46,7 +47,8 @@ export class CommentsService {
         if (userLikeStatus === "Like") return this.commentsRepository.updateNumberOfLikes(commentId, likeInfo);
 
         if (userLikeStatus === "Dislike")return this.commentsRepository.updateNumberOfDislikes(commentId, likeInfo);
-       return true;
+
+        return true;
 
     }
 
@@ -58,7 +60,7 @@ export class CommentsService {
         return await this.commentsRepository.deleteComment(commentId)
     }
 
-    async findCommentFor(id: string):Promise< any | null> {
+    async findCommentFor(id: string): Promise< any | null> {
         return await this.commentsRepository.findCommentForDb(id)
     }
 }

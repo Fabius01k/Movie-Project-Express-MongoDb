@@ -1,13 +1,23 @@
 import {PostsService} from "../../domain/posts-servise";
 import {Request, Response} from "express";
 import {jwtService} from "../../application/jwt-service";
+import {UsersService} from "../../domain/users-service";
 
 
 export class PostsController {
     constructor(
-        protected postsService: PostsService
+        protected postsService: PostsService,
+        protected userService: UsersService
     ) {}
     async getAllPosts(req: Request, res: Response) {
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+                const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
         let sortBy: string = req.query.sortBy as any
         if (!sortBy) {
             sortBy = 'createdAt'
@@ -32,11 +42,19 @@ export class PostsController {
             pageNumber = 1
         }
 
-        const posts = await this.postsService.findPosts(sortBy, sortDirection, pageSize, pageNumber)
+        const posts = await this.postsService.findPosts(sortBy, sortDirection, pageSize, pageNumber,userId)
         res.status(200).send(posts)
     }
     async getPostById(req: Request, res: Response) {
-        const post = await this.postsService.getPostById(req.params.id)
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+                const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
+        const post = await this.postsService.getPostById(req.params.id,userId)
 
         if (post) {
             res.status(200).send(post)
@@ -45,8 +63,6 @@ export class PostsController {
         }
     }
     async getCommentByPostID(req: Request, res: Response) {
-        // const token = req.headers.authorization!.split(' ')[1]
-
         const authorizationHeader = req.headers.authorization;
         let userId = null;
         if (authorizationHeader) {
@@ -80,7 +96,7 @@ export class PostsController {
             pageNumber = 1
         }
 
-               const result = await this.postsService.getPostById(req.params.postId)
+               const result = await this.postsService.getPostById(req.params.postId,userId)
         if (!result) {
             res.sendStatus(404);
             return
@@ -90,12 +106,21 @@ export class PostsController {
         res.status(200).send(post)
     }
     async createPost(req: Request, res: Response) {
+        const authorizationHeader = req.headers.authorization;
+        let userId = null;
+        if (authorizationHeader) {
+            const [type, token] = authorizationHeader.split(' ');
+            if (type === 'Bearer' && token) {
+                const accessToken = token;
+                userId =  await jwtService.getUserIdByToken(accessToken)
+            }}
 
         const newPost = await this.postsService.createPost(
             req.body.title,
             req.body.shortDescription,
             req.body.content,
-            req.body.blogId
+            req.body.blogId,
+            userId
         )
 
         if (newPost) {
@@ -142,6 +167,27 @@ export class PostsController {
             res.sendStatus(204)
         } else {
             res.sendStatus(404)
+        }
+    }
+    async makeLikeOrDislikes(req: Request, res: Response) {
+        const token = req.headers.authorization!.split(' ')[1]
+
+        const userId = await jwtService.getUserIdByToken(token)
+        const user = await this.userService.findUserById(userId)
+
+        const postId = req.params.postId
+        const post = await this.postsService.findPostFor(postId)
+        if (!post) return res.sendStatus(404)
+
+        const likeStatus = req.body.likeStatus
+        const dateOfLikeDislike = new Date()
+        const login = user!.login
+
+        const result = await this.postsService.makeLikeDislikesInDb(userId,login,postId,likeStatus,dateOfLikeDislike)
+        if (result) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(400)
         }
     }
 }

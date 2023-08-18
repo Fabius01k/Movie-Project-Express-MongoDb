@@ -5,7 +5,7 @@ import {TPostView} from "../models/posts/posts-type";
 import {PostsRepostory} from "../repositories-db/post-repostory-db";
 import {blogsModel} from "../db/db";
 import {ClassBlogDb} from "../classes/blogs/blogs-class";
-import {ClassPostDb} from "../classes/posts/posts-class";
+import {ClassPostDb, ClassPostsLikesInfoDb} from "../classes/posts/posts-class";
 
 export let blogs: ClassBlogDb[] = []
 export class BlogsService {
@@ -22,8 +22,8 @@ export class BlogsService {
         )
     }
     async findPostByBlogID(sortBy: string,sortDirection: 'asc' | 'desc',
-                           pageSize: number,pageNumber: number,blogId: string) {
-        return this.postsRepository.findPostsByBlogId(sortBy,sortDirection,pageSize,pageNumber,blogId
+                           pageSize: number,pageNumber: number,blogId: string,userId: string | null) {
+        return this.postsRepository.findPostsByBlogId(sortBy,sortDirection,pageSize,pageNumber,blogId,userId
         )
     }
     async createBlog(name: string, description: string, websiteUrl: string): Promise<TBlogView> {
@@ -45,7 +45,7 @@ export class BlogsService {
     }
 
     async createPostByBlogID(title: string, shortDescription: string, content: string,
-                             blogId: string): Promise<TPostView | null> {
+                             blogId: string,userId: string | null): Promise<TPostView | null> {
         const dateNow = new Date().getTime().toString()
         const blog = await blogsModel.findOne({id: blogId})
 
@@ -63,7 +63,17 @@ export class BlogsService {
             new Date().toISOString(),
 
         )
-        const createdPostService = await this.postsRepository.createPostByBlogId(newPost)
+
+        const infoId = newPost.id
+        const newCollectionPostsLikesInfo = new ClassPostsLikesInfoDb(
+            infoId,
+            [],
+            0,
+            0
+        )
+        await this.postsRepository.createCollectionOfPostsLikesInf(newCollectionPostsLikesInfo)
+
+        const createdPostService = await this.postsRepository.createPostByBlogId(newPost,userId)
 
         return createdPostService
 

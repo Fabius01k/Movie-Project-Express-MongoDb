@@ -16,7 +16,7 @@ export class ClassCommentDb {
 ) {}
 }
 
-export interface LikesInfo {
+export interface CommentsLikesInfo {
     userId: string;
     likeStatus: string;
     dateOfLikeDislike: Date;
@@ -24,7 +24,7 @@ export interface LikesInfo {
 export class ClassCommentsLikesInfoDb {
     constructor(
     public infoId: string,
-    public likesInfo: LikesInfo[] | null,
+    public likesInfo: CommentsLikesInfo[] | null,
     public numberOfLikes: number,
     public numberOfDislikes: number
     ) {}

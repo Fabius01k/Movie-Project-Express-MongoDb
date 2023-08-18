@@ -24,19 +24,16 @@ export class CommentsController {
         }
     }
     async makeLikeDislikes(req: Request, res: Response) {
-        //todo: access token from headers
         const token = req.headers.authorization!.split(' ')[1]
-        console.log(token, "token in controller")
 
         const userId = await jwtService.getUserIdByToken(token)
-        console.log(userId, "userId in controller")
-        const id = req.params.commentId
-        // const comment = await this.commentsService.getCommentById(req.params.commentId,userId)
-        const comment = await this.commentsService.findCommentFor(id)
-        if (!comment) return res.sendStatus(404)
 
         const commentId = req.params.commentId
-        const likeStatus = req.body.likeStatus//{likeStatus: 'Like'}
+        const comment = await this.commentsService.findCommentFor(commentId)
+        if (!comment) return res.sendStatus(404)
+
+
+        const likeStatus = req.body.likeStatus
         const dateOfLikeDislike = new Date()
 
         const result = await this.commentsService.makeLikeDislikesInDb(userId,commentId,likeStatus,dateOfLikeDislike)

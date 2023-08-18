@@ -2,14 +2,14 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose';
 import {videosSchema} from "../schemes/videos/videos-schema";
 import {blogsSchema} from "../schemes/blogs/blogs-schema";
-import {postsSchema} from "../schemes/posts/posts-schema";
+import {postsLikesInfoSchema, postsSchema} from "../schemes/posts/posts-schema";
 import {commentSchema, commentsLikesInfoSchema} from "../schemes/comments/comments-schema";
 import {usersSchema} from "../schemes/users/users-schema";
 import {sessionsSchema} from "../schemes/sessions/sessions-schema";
 import {accessingToAppSchema} from "../schemes/accessingToApp/accessingtoapp_schema";
 import {ClassVideoDb} from "../classes/videos/videos-class";
 import {ClassBlogDb} from "../classes/blogs/blogs-class";
-import {ClassPostDb} from "../classes/posts/posts-class";
+import {ClassPostDb, ClassPostsLikesInfoDb} from "../classes/posts/posts-class";
 import {ClassCommentDb, ClassCommentsLikesInfoDb} from "../classes/comments/comments-class";
 import {ClassNewDocumentToAppFromUser, ClassUserAccountDb, ClassUsersSessionDb} from "../classes/users/users-class";
 
@@ -29,12 +29,15 @@ export const accessingToAppModel =
     mongoose.model<ClassNewDocumentToAppFromUser>("accessingToApp",accessingToAppSchema)
 export const commentsLikesInfoModel =
     mongoose.model<ClassCommentsLikesInfoDb>("commentsLikeInfo",commentsLikesInfoSchema)
+export const postsLikesInfoModel =
+    mongoose.model<ClassPostsLikesInfoDb>("postsLikeInfo",postsLikesInfoSchema)
+
 
 
 export const collections = [videosModel,blogsModel,
     postsModel,commentsModel,userModel,
     sessionsModel,accessingToAppModel,
-    commentsLikesInfoModel
+    commentsLikesInfoModel,postsLikesInfoModel
 ]
 
 export async function runDb() {

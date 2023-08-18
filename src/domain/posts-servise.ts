@@ -4,7 +4,7 @@ import {PostsRepostory} from "../repositories-db/post-repostory-db";
 import {CommentsRepository} from "../repositories-db/comments-repository-db";
 import {TcommentView} from "../models/comments/comments-type";
 import {blogsModel, postsModel, userModel} from "../db/db";
-import {ClassPostDb} from "../classes/posts/posts-class";
+import {ClassPostDb, ClassPostsLikesInfoDb} from "../classes/posts/posts-class";
 import {ClassCommentDb, ClassCommentsLikesInfoDb} from "../classes/comments/comments-class";
 
 export let posts: ClassPostDb[] = []
@@ -16,9 +16,9 @@ export class PostsService {
     ) {}
 
     async findPosts(sortBy: string,sortDirection: 'asc' | 'desc',
-                    pageSize: number,pageNumber: number) {
+                    pageSize: number,pageNumber: number,userId: string | null) {
         return this.postsRepository.findPosts(
-            sortBy,sortDirection,pageSize,pageNumber
+            sortBy,sortDirection,pageSize,pageNumber,userId
         )
     }
     async findCommentByPostID(sortBy: string,sortDirection: 'asc' | 'desc',
@@ -27,7 +27,7 @@ export class PostsService {
             postId, userId)
     }
     async createPost(title: string, shortDescription: string, content: string,
-                     blogId: string): Promise<TPostView | null> {
+                     blogId: string,userId: string | null): Promise<TPostView | null> {
 
         const dateNow = new Date().getTime().toString()
         const blog = await blogsModel.findOne({id: blogId})
@@ -47,7 +47,17 @@ export class PostsService {
             new Date().toISOString(),
 
         )
-        const createdPostService = await this.postsRepository.createPost(newPost)
+
+        const infoId = newPost.id
+        const newCollectionPostsLikesInfo = new ClassPostsLikesInfoDb(
+            infoId,
+            [],
+            0,
+            0
+        )
+        await this.postsRepository.createCollectionOfPostsLikesInf(newCollectionPostsLikesInfo)
+
+        const createdPostService = await this.postsRepository.createPost(newPost,userId)
 
         return createdPostService
     }
@@ -92,8 +102,8 @@ export class PostsService {
 
         return createdCommentService
     }
-    async getPostById(id: string): Promise<TPostView | null> {
-        return this.postsRepository.getPostById(id)
+    async getPostById(id: string,userId: string | null): Promise<TPostView | null> {
+        return this.postsRepository.getPostById(id,userId)
     }
     async updatePost(id: string, title: string, shortDescription: string, content: string,
                      blogId: string): Promise<boolean | null> {
@@ -101,5 +111,39 @@ export class PostsService {
     }
     async deletePost(id: string): Promise<boolean> {
         return await this.postsRepository.deletePost(id)
+    }
+    async findPostFor(id: string): Promise< any | null> {
+        return await this.postsRepository.findPostForDb(id)
+    }
+    async makeLikeDislikesInDb(userId: string,login: string,
+                               postId: string,likeStatus: string,dateOfLikeDislike: Date): Promise<boolean> {
+        const oldLikeDislikeOfUser = await this.postsRepository.findOldLikeDislike(postId,userId)
+
+        if (oldLikeDislikeOfUser) {
+
+            if (oldLikeDislikeOfUser.likeStatus === "Like") {
+                await this.postsRepository.deleteNumberOfLikes(postId)
+
+            } else if (oldLikeDislikeOfUser.likeStatus === "Dislike") {
+                await this.postsRepository.deleteNumberOfDislikes(postId)
+
+            }
+            await this.postsRepository.deleteOldLikeDislike(postId, userId)
+        }
+
+        const userLikeStatus = likeStatus
+
+        const likeInfo = {
+            userId: userId,
+            login: login,
+            likeStatus: likeStatus,
+            dateOfLikeDislike: dateOfLikeDislike
+        }
+
+        if (userLikeStatus === "Like") return this.postsRepository.updateNumberOfLikes(postId, likeInfo)
+
+        if (userLikeStatus === "Dislike") return this.postsRepository.updateNumberOfDislikes(postId, likeInfo)
+
+        return true
     }
 }

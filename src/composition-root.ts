@@ -45,7 +45,7 @@ export const securityService = new SecurityService(securityRepository)
 
 export const videosController = new VideosController(videosService)
 export const blogsController = new BlogsController(blogsService)
-export const postsController = new PostsController(postsService)
+export const postsController = new PostsController(postsService,usersService)
 export const commentsController = new CommentsController(commentsService)
 export const usersController = new UsersController(usersService)
 export const authController = new AuthController(usersService,authService)
