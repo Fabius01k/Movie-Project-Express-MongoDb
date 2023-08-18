@@ -15,7 +15,8 @@ export let posts: ClassPostDb[] = []
 
      const newestLikes = PostsLikesInfo?.likesInfo
          ?.filter((info) => info.likeStatus === 'Like')
-         ?.sort((a, b) => a.dateOfLikeDislike.getTime() - b.dateOfLikeDislike.getTime())
+         // ?.sort((a, b) => a.dateOfLikeDislike.getTime() - b.dateOfLikeDislike.getTime())
+         ?.sort((a, b) => new Date(b.dateOfLikeDislike).getTime() - new Date(a.dateOfLikeDislike).getTime())
          ?.slice(0, 3)
          ?.map((info) => ({
              addedAt: info.dateOfLikeDislike,
