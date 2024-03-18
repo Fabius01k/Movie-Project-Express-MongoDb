@@ -1,5 +1,4 @@
 import {Router} from "express";
-import {AuthenticationController} from "../controller/authentication-controller";
 import {authenticationController} from "../../composition-root";
 
 export const authenticationRouter = Router({})
