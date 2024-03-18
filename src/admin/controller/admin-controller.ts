@@ -15,7 +15,6 @@ export class AdminController {
             req.body.email)
         res.status(201).send(newUser)
     }
-
     async getAllUsers(req: Request, res: Response) {
 
         let searchNameTerm: string | null = req.query.searchNameTerm as any
@@ -65,6 +64,34 @@ export class AdminController {
         const users = await this.adminService.findAllUsers(sortBy, sortDirection, +pageSize, +pageNumber,
             searchLoginTerm, searchEmailTerm,searchNameTerm,searchAgeTerm)
         res.status(200).send(users)
+    }
+
+    async deleteUser(req: Request, res: Response) {
+
+        const userDeleted = await this.adminService.deleteUser(req.params.id)
+
+        if (userDeleted) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
+    }
+    async updateUser(req: Request, res: Response) {
+
+        const userUpdated = await this.adminService.updateBlog(
+            req.params.id,
+            req.body.name,
+            req.body.age,
+            req.body.sex,
+            req.body.login,
+            req.body.email,
+        )
+
+        if (userUpdated) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
     }
 
 }

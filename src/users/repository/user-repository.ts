@@ -45,5 +45,26 @@ export class UserRepository {
             items: users
         }
     }
+    async deleteUser(id: string): Promise<boolean> {
+        const deleteUser = await UserModel
+            .deleteOne({id: id})
+
+        return deleteUser.deletedCount === 1
+    }
+
+    async updateUser(id: string, name: string,age: string, sex: string, login: string,email: string): Promise<boolean> {
+        const updateBlog = await UserModel
+            .updateOne({id: id}, {
+            $set: {
+                name: name,
+                age: age,
+                sex: sex,
+                login: login,
+                email: email,
+            },
+        })
+
+        return updateBlog.matchedCount === 1
+    }
 
 }
