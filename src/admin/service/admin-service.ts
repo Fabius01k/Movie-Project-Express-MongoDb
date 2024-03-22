@@ -10,7 +10,7 @@ export class AdminService {
                 protected authenticationService: AuthenticationService) {
     }
 
-    async createUser(name: string, age: string, sex: string, login: string, password: string, email: string): Promise<User | null> {
+    async createUser(name: string, age: string, sex: string, login: string, password: string, email: string): Promise<User> {
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.authenticationService.generateHash(password, passwordSalt)

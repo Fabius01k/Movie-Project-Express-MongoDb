@@ -7,9 +7,8 @@ export class UserRepository {
         return user
     }
     async createUser(newUser: User): Promise<User | null> {
-        const insertedUsers = await UserModel.insertMany([newUser]);
-        const user = insertedUsers[0] as User
-        return user || null
+        const result = await UserModel.insertMany([newUser]);
+        return newUser
     }
     async findAllUsers(sortBy: string, sortDirection: 'asc' | 'desc',
                     pageSize: number, pageNumber: number,
@@ -51,7 +50,6 @@ export class UserRepository {
 
         return deleteUser.deletedCount === 1
     }
-
     async updateUser(id: string, name: string,age: string, sex: string, login: string,email: string): Promise<boolean> {
         const updateBlog = await UserModel
             .updateOne({id: id}, {
@@ -65,6 +63,55 @@ export class UserRepository {
         })
 
         return updateBlog.matchedCount === 1
+    }
+    async findUserByConfirmationCode(emailConfirmationCode: string) {
+
+        const user = await UserModel.findOne({"emailConfirmationData.confirmationCode": emailConfirmationCode})
+        return user
+    }
+    async findUserByLoginOrEmail(loginOrEmail: string) {
+
+        const user = await UserModel.findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
+        return user
+    }
+    async findUserByResetPasswordCode(recoveryCode: string) {
+        const user = await UserModel.findOne({"passwordUpdateData.resetPasswordCode": recoveryCode})
+        return user
+    }
+    async updateConfirmation(id: string) {
+        let result = await UserModel
+            .updateOne({id}, {$set: {'emailConfirmationData.isConfirmed': true}})
+
+        return result.modifiedCount === 1
+    }
+    async changeConfirmationCode(id: string, confirmationCode: string) {
+        let result = await UserModel
+            .updateOne({id}, {$set: {'emailConfirmationData.confirmationCode': confirmationCode}})
+
+        return result.modifiedCount === 1
+    }
+    async changePasswordInDb(id: string, passwordSalt: string, passwordHash: string) {
+        let result = await UserModel
+            .updateOne({id}, {
+                $set: {
+                    'passwordData.passwordSalt': passwordSalt,
+                    'passwordData.passwordHash': passwordHash
+                }
+            })
+
+        return result.modifiedCount === 1
+    }
+    async changeResetPasswordCode(id: string, NewResetPasswordCode: string,
+                                  NewExpirationDatePasswordCode: Date) {
+        let result = await UserModel
+            .updateOne({id}, {
+                $set: {
+                    'passwordUpdateData.resetPasswordCode': NewResetPasswordCode,
+                    'passwordUpdateData.expirationDatePasswordCode': NewExpirationDatePasswordCode
+                }
+            })
+
+        return result.modifiedCount === 1
     }
 
 }

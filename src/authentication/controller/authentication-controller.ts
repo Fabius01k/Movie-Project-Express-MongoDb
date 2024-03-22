@@ -18,6 +18,11 @@ export class AuthenticationController {
                 deviceId: uuidv4(),
             }
             const refreshToken = await jwtService.createRefreshJWT(user.id, refreshTokenPayload)
+            const sessionId = user.id
+            const ip = req.ip
+            const title = req.headers['user-agent'] || 'Unknown'
+
+            await this.authenticationService.createSession(sessionId, ip, title, refreshTokenPayload.deviceId, refreshToken)
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -30,49 +35,41 @@ export class AuthenticationController {
             return res.sendStatus(401)
         }
     }
-    // async genereteNewTokensForUser(req: Request, res: Response) {
-    //
-    //     const token = req.cookies.refreshToken
-    //
-    //     const userForResend = await jwtService.getUserIdByToken(token)
-    //
-    //     const accessToken = await jwtService.createAccessJWT(userForResend)
-    //     const oldDeviceID = await jwtService.getDeviceIdByToken(token)
-    //
-    //     const refreshTokenPayload = {
-    //         deviceId: oldDeviceID,
-    //     }
-    //     const refreshToken = await jwtService.createRefreshJWT(userForResend, refreshTokenPayload)
-    //
-    //     await this.authService.changeDataInSession(oldDeviceID, refreshToken)
-    //
-    //     res.cookie('refreshToken', refreshToken, {
-    //         httpOnly: true,
-    //         secure: true,
-    //         maxAge: 20 * 1000,
-    //     })
-    //
-    //     return res.status(200).send({accessToken})
-    // }
-    // async logoutUser(req: Request, res: Response) {
-    //
-    //     const token = req.cookies.refreshToken
-    //
-    //     const deviceId = await jwtService.getDeviceIdByToken(token)
-    //
-    //     await this.authService.deleteSession(deviceId)
-    //
-    //     res.clearCookie('refreshToken')
-    //     return res.sendStatus(204)
-    // }
-    // async registrationUser(req: Request, res: Response) {
-    //     const user = await this.authService.createUserAuth(req.body.login, req.body.password, req.body.email)
-    //     if (user) {
-    //         res.status(204).send()
-    //     } else {
-    //         res.sendStatus(400)
-    //     }
-    // }
+    async logoutUser(req: Request, res: Response) {
+
+        const token = req.cookies.refreshToken
+
+        const deviceId = await jwtService.getDeviceIdByToken(token)
+
+        await this.authenticationService.deleteSession(deviceId)
+
+        res.clearCookie('refreshToken')
+        return res.sendStatus(204)
+    }
+    async generateNewAccessToken(req: Request, res: Response) {
+
+        const token = req.cookies.refreshToken
+        const userForResend = await jwtService.getUserIdByToken(token)
+        const accessToken = await jwtService.createAccessJWT(userForResend)
+        const oldDeviceID = await jwtService.getDeviceIdByToken(token)
+
+        const refreshTokenPayload = {
+            deviceId: oldDeviceID,
+        }
+        const refreshToken = await jwtService.createRefreshJWT(userForResend, refreshTokenPayload)
+
+        await this.authenticationService.changeDataInSession(oldDeviceID, refreshToken)
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 20 * 1000,
+        })
+
+        return res.status(200).send({accessToken})
+    }
+
+
     // async registrationConfirmationUser(req: Request, res: Response) {
     //
     //     const result = await this.authService.confirmEmail(req.body.code)

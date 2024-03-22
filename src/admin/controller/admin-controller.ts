@@ -13,6 +13,7 @@ export class AdminController {
             req.body.login,
             req.body.password,
             req.body.email)
+
         res.status(201).send(newUser)
     }
     async getAllUsers(req: Request, res: Response) {
