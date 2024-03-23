@@ -7,16 +7,18 @@ import {AuthenticationRepository} from "./authentication/repository/authenticati
 import {RegistrationController} from "./registration/controller/registration-controller";
 import {RegistrationService} from "./registration/service/registration-service";
 import {EmailManager} from "./managers/email-manager";
+import {MovieRepository} from "./movies/repository/movie-repository";
 
 
 export const userRepository = new UserRepository()
+export const movieRepository = new MovieRepository()
 export const emailManager = new EmailManager(userRepository)
 export const authenticationRepository = new AuthenticationRepository()
 export const authenticationService = new AuthenticationService(userRepository,authenticationRepository)
 export const authenticationController = new AuthenticationController(authenticationService)
 
 
-export const adminService = new AdminService(userRepository,authenticationService)
+export const adminService = new AdminService(userRepository,movieRepository,authenticationService,)
 export const adminController = new AdminController(adminService,)
 
 export const registrationService = new RegistrationService(userRepository,authenticationService,emailManager)

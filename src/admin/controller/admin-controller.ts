@@ -16,6 +16,24 @@ export class AdminController {
 
         res.status(201).send(newUser)
     }
+    async createMovie(req: Request, res: Response) {
+        const newUser = await this.adminService.createMovie(
+            req.body.name,
+            req.body.releaseDate,
+            req.body.duration,
+            req.body.ageLimit,
+            req.body.releaseCountry,
+            req.body.categories,
+            req.body.actors,
+            req.body.directors,
+            req.body.shortDescription,
+            req.body.fullDescription,
+        )
+        res.status(201).send(newUser)
+    }
+
+
+
     async getAllUsers(req: Request, res: Response) {
 
         let searchNameTerm: string | null = req.query.searchNameTerm as any
@@ -66,7 +84,6 @@ export class AdminController {
             searchLoginTerm, searchEmailTerm,searchNameTerm,searchAgeTerm)
         res.status(200).send(users)
     }
-
     async deleteUser(req: Request, res: Response) {
 
         const userDeleted = await this.adminService.deleteUser(req.params.id)
@@ -77,9 +94,18 @@ export class AdminController {
             res.sendStatus(404)
         }
     }
-    async updateUser(req: Request, res: Response) {
+    async deleteMovie(req: Request, res: Response) {
 
-        const userUpdated = await this.adminService.updateBlog(
+        const movieDeleted = await this.adminService.deleteMovie(req.params.id)
+
+        if (movieDeleted) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
+    }
+    async updateUser(req: Request, res: Response) {
+        const userUpdated = await this.adminService.updateUser(
             req.params.id,
             req.body.name,
             req.body.age,
@@ -89,6 +115,27 @@ export class AdminController {
         )
 
         if (userUpdated) {
+            res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
+    }
+    async updateMovie(req: Request, res: Response) {
+        const movieUpdated = await this.adminService.updateMovie(
+            req.params.id,
+            req.body.name,
+            req.body.releaseDate,
+            req.body.duration,
+            req.body.ageLimit,
+            req.body.releaseCountry,
+            req.body.categories,
+            req.body.actors,
+            req.body.directors,
+            req.body.shortDescription,
+            req.body.fullDescription,
+        )
+
+        if (movieUpdated) {
             res.sendStatus(204)
         } else {
             res.sendStatus(404)

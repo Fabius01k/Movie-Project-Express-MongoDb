@@ -1,15 +1,16 @@
-import {UserModel} from "../../db/db";
+import {MovieModel, UserModel} from "../../db/db";
 import {User} from "../classes/user-class";
+import {Movie} from "../../movies/classes/movie-class";
 
 export class UserRepository {
     async findUserForCheckCredentials(loginOrEmail: string) {
         const user: User | null = await UserModel.findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
         return user
     }
-    async createUser(newUser: User): Promise<User | null> {
-        const result = await UserModel.insertMany([newUser]);
-        return newUser
-    }
+    async createUser(newUser: User): Promise<User> {
+        await UserModel.insertMany([newUser]);
+        return newUser    }
+
     async findAllUsers(sortBy: string, sortDirection: 'asc' | 'desc',
                     pageSize: number, pageNumber: number,
                     searchLoginTerm: string | null,

@@ -4,9 +4,13 @@ import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
 import {AuthenticationService} from "../../authentication/service/authentication-service";
+import {Movie} from "../../movies/classes/movie-class";
+import {movieRepository} from "../../composition-root";
+import {MovieRepository} from "../../movies/repository/movie-repository";
 
 export class AdminService {
     constructor(protected userRepository: UserRepository,
+                protected movieRepository: MovieRepository,
                 protected authenticationService: AuthenticationService) {
     }
 
@@ -42,9 +46,40 @@ export class AdminService {
                 resetPasswordCode: null,
                 expirationDatePasswordCode: new Date()
             },
+            [],
         )
 
         return await this.userRepository.createUser(newUser)
+    }
+    async createMovie(name: string, releaseDate: string, duration: string,
+                      ageLimit: string, releaseCountry: string, categories: string[],
+                      actors: string[], directors: string[], shortDescription: string,
+                      fullDescription: string): Promise<Movie> {
+
+        const dateNow = new Date().getTime().toString()
+
+        const newMovie = new Movie(
+            dateNow,
+            new Date().toISOString(),
+            {
+                name: name,
+                releaseDate: releaseDate,
+                duration: duration,
+                ageLimit: ageLimit,
+                releaseCountry: releaseCountry,
+                categories: categories,
+            },
+            {
+                actors: actors,
+                directors: directors,
+            },
+            {
+                shortDescription: shortDescription,
+                fullDescription: fullDescription,
+            }
+        )
+
+        return await this.movieRepository.createMovie(newMovie)
     }
 
     async findAllUsers(sortBy: string, sortDirection: 'asc' | 'desc',
@@ -60,8 +95,19 @@ export class AdminService {
     async deleteUser(id: string): Promise<boolean> {
         return await this.userRepository.deleteUser(id)
     }
+    async deleteMovie(id: string): Promise<boolean> {
+        return await this.movieRepository.deleteMovie(id)
+    }
 
-    async updateBlog(id: string, name: string, age: string, sex: string, login: string, email: string): Promise<boolean> {
+    async updateUser(id: string, name: string, age: string, sex: string, login: string, email: string): Promise<boolean> {
         return await this.userRepository.updateUser(id, name, age, sex, login, email)
+    }
+    async updateMovie(id: string, name: string, releaseDate: string, duration: string,
+                      ageLimit: string, releaseCountry: string, categories: string[],
+                      actors: string[], directors: string[], shortDescription: string,
+                      fullDescription: string
+                      ): Promise<boolean> {
+        return await this.movieRepository.updateMovie(id, name, releaseDate, duration, ageLimit, releaseCountry,
+            categories,actors,directors,shortDescription,fullDescription)
     }
 }

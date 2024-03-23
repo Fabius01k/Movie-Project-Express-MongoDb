@@ -25,4 +25,5 @@ export const userSchema = new mongoose.Schema<User>({
         resetPasswordCode: {type: String, default: null},
         expirationDatePasswordCode: {type: Date, default: null},
     },
+    userTags: { type: [String], default: [] },
 })

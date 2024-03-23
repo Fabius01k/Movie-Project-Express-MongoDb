@@ -4,14 +4,30 @@ import {adminController} from "../../composition-root";
 
 export const adminRouter = Router({})
 
+adminRouter.get('/get-all-users',
+    adminController.getAllUsers.bind(adminController))
+
+
+
 adminRouter.post('/create-user',
     adminController.createUser.bind(adminController))
 
-adminRouter.get('/get-all-users',
-    adminController.getAllUsers.bind(adminController))
+adminRouter.post('/create-movie',
+    adminController.createMovie.bind(adminController))
+
+
+
+adminRouter.put('update-user',
+    adminController.updateUser.bind(adminController))
+
+adminRouter.put('update-movie',
+    adminController.updateMovie.bind(adminController))
+
+
 
 adminRouter.delete('delete-user',
     adminController.deleteUser.bind(adminController))
 
-adminRouter.put('update-user',
-    adminController.deleteUser.bind(adminController))
+adminRouter.delete('delete-movie',
+    adminController.deleteMovie.bind(adminController))
+

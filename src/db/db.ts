@@ -4,6 +4,8 @@ import {User} from "../users/classes/user-class";
 import {userSchema} from "../users/mongoSchemes/user-schema";
 import {UserSession} from "../authentication/classes/userSession-class";
 import {sessionSchema} from "../authentication/mongoSchemes/userSession-schema";
+import {Movie} from "../movies/classes/movie-class";
+import {movieSchema} from "../movies/mongoSchemes/movie-schema";
 
 
 dotenv.config()
@@ -14,10 +16,11 @@ const mongoURI = process.env.MONGO_URL || `mongodb://0.0.0.0:27017/${dbName}`
 
 export const UserModel = mongoose.model<User>("users", userSchema)
 export const SessionModel = mongoose.model<UserSession>("sessions", sessionSchema)
+export const MovieModel = mongoose.model<Movie>("movies", movieSchema)
 
 
 
-export const collections = [UserModel, SessionModel]
+export const collections = [UserModel, SessionModel,MovieModel]
 
 export async function runDb() {
     try {
