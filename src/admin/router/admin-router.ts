@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {adminController} from "../../composition-root";
+import {movieRouter} from "../../movies/router/movie-router";
 
 
 export const adminRouter = Router({})
@@ -7,6 +8,7 @@ export const adminRouter = Router({})
 adminRouter.get('/get-all-users',
     adminController.getAllUsers.bind(adminController))
 
+adminRouter.get('/:id', adminController.getUserById.bind(adminController))
 
 
 adminRouter.post('/create-user',

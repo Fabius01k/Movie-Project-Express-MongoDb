@@ -8,6 +8,8 @@ import {RegistrationController} from "./registration/controller/registration-con
 import {RegistrationService} from "./registration/service/registration-service";
 import {EmailManager} from "./managers/email-manager";
 import {MovieRepository} from "./movies/repository/movie-repository";
+import {MovieService} from "./movies/service/movie-service";
+import {MovieController} from "./movies/controller/movie-controller";
 
 
 export const userRepository = new UserRepository()
@@ -23,5 +25,8 @@ export const adminController = new AdminController(adminService,)
 
 export const registrationService = new RegistrationService(userRepository,authenticationService,emailManager)
 export const registrationController = new RegistrationController(registrationService)
+
+export const movieService = new MovieService(movieRepository)
+export const movieController = new MovieController(movieService)
 
 

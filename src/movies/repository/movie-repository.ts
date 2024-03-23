@@ -1,5 +1,6 @@
 import {Movie} from "../classes/movie-class";
-import {MovieModel} from "../../db/db";
+import {MovieModel, UserModel} from "../../db/db";
+import {User} from "../../users/classes/user-class";
 
 export class MovieRepository {
     async createMovie(newMovie: Movie): Promise<Movie> {
@@ -33,6 +34,44 @@ export class MovieRepository {
             .deleteOne({id: id})
 
         return deleteUser.deletedCount === 1
+    }
+    async findAllMovies(sortBy: string, sortDirection: 'asc' | 'desc',
+                       pageSize: number, pageNumber: number,
+                        searchReleaseDateTerm: string | null,
+                        searchDurationTerm: string | null,
+                       searchNameTerm: string | null,
+    ) {
+
+        const filter = {
+            $or: [
+                {'accountData.login': {$regex: searchReleaseDateTerm ?? '', $options: 'i'}},
+                {'accountData.email': {$regex: searchDurationTerm ?? '', $options: 'i'}},
+                {'accountData.name': {$regex: searchNameTerm ?? '', $options: 'i'}},
+            ]
+        }
+
+        const movies: Movie[] = await MovieModel
+            .find(filter)
+            .sort({sortBy: sortDirection})
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .lean()
+
+        const totalCount = await MovieModel.countDocuments(filter)
+
+        return {
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page: +pageNumber,
+            pageSize: +pageSize,
+            totalCount: totalCount,
+            items: movies
+        }
+    }
+    async findMovieById(id: string): Promise<Movie | null> {
+        const movie = await MovieModel.findOne({id: id})
+        if(!movie) return null
+
+        return (movie)
     }
 
 }

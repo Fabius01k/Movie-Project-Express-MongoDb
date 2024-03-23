@@ -84,6 +84,15 @@ export class AdminController {
             searchLoginTerm, searchEmailTerm,searchNameTerm,searchAgeTerm)
         res.status(200).send(users)
     }
+    async getUserById(req: Request, res: Response) {
+        const user = await this.adminService.findUserById(req.params.id)
+
+        if (user) {
+            res.status(200).send(user)
+        } else {
+            res.sendStatus(404)
+        }
+    }
     async deleteUser(req: Request, res: Response) {
 
         const userDeleted = await this.adminService.deleteUser(req.params.id)

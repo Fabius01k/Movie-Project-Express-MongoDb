@@ -91,7 +91,9 @@ export class AdminService {
         return this.userRepository.findAllUsers(sortBy, sortDirection, pageSize, pageNumber,
             searchLoginTerm, searchEmailTerm, searchNameTerm, searchAgeTerm)
     }
-
+    async findUserById(id: string): Promise<User | null> {
+        return this.userRepository.findUserById(id)
+    }
     async deleteUser(id: string): Promise<boolean> {
         return await this.userRepository.deleteUser(id)
     }
