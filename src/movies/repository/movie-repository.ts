@@ -1,6 +1,7 @@
 import {Movie} from "../classes/movie-class";
 import {MovieModel, UserModel} from "../../db/db";
 import {User} from "../../users/classes/user-class";
+import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
 
 export class MovieRepository {
     async createMovie(newMovie: Movie): Promise<Movie> {
@@ -40,7 +41,7 @@ export class MovieRepository {
                         searchReleaseDateTerm: string | null,
                         searchDurationTerm: string | null,
                        searchNameTerm: string | null,
-    ) {
+    ): Promise<allMovieResponse> {
 
         const filter = {
             $or: [

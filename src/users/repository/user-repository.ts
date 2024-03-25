@@ -1,6 +1,7 @@
 import {MovieModel, UserModel} from "../../db/db";
 import {User} from "../classes/user-class";
 import {Movie} from "../../movies/classes/movie-class";
+import {allUserResponse} from "../interfaces/gel-all-users-interface";
 
 export class UserRepository {
     async findUserForCheckCredentials(loginOrEmail: string) {
@@ -9,7 +10,8 @@ export class UserRepository {
     }
     async createUser(newUser: User): Promise<User> {
         await UserModel.insertMany([newUser]);
-        return newUser    }
+        return newUser
+    }
 
     async findAllUsers(sortBy: string, sortDirection: 'asc' | 'desc',
                     pageSize: number, pageNumber: number,
@@ -17,7 +19,7 @@ export class UserRepository {
                     searchEmailTerm: string | null,
                     searchNameTerm: string | null,
                     searchAgeTerm: string | null
-    ) {
+    ): Promise<allUserResponse> {
 
         const filter = {
             $or: [
@@ -73,31 +75,31 @@ export class UserRepository {
     }
     async findUserByConfirmationCode(emailConfirmationCode: string) {
 
-        const user = await UserModel.findOne({"emailConfirmationData.confirmationCode": emailConfirmationCode})
+        const user: User | null = await UserModel.findOne({"emailConfirmationData.confirmationCode": emailConfirmationCode})
         return user
     }
     async findUserByLoginOrEmail(loginOrEmail: string) {
 
-        const user = await UserModel.findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
+        const user: User | null = await UserModel.findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
         return user
     }
     async findUserByResetPasswordCode(recoveryCode: string) {
-        const user = await UserModel.findOne({"passwordUpdateData.resetPasswordCode": recoveryCode})
+        const user: User | null = await UserModel.findOne({"passwordUpdateData.resetPasswordCode": recoveryCode})
         return user
     }
-    async updateConfirmation(id: string) {
+    async updateConfirmation(id: string): Promise<boolean> {
         let result = await UserModel
             .updateOne({id}, {$set: {'emailConfirmationData.isConfirmed': true}})
 
         return result.modifiedCount === 1
     }
-    async changeConfirmationCode(id: string, confirmationCode: string) {
+    async changeConfirmationCode(id: string, confirmationCode: string): Promise<boolean> {
         let result = await UserModel
             .updateOne({id}, {$set: {'emailConfirmationData.confirmationCode': confirmationCode}})
 
         return result.modifiedCount === 1
     }
-    async changePasswordInDb(id: string, passwordSalt: string, passwordHash: string) {
+    async changePasswordInDb(id: string, passwordSalt: string, passwordHash: string): Promise<boolean> {
         let result = await UserModel
             .updateOne({id}, {
                 $set: {
@@ -109,7 +111,7 @@ export class UserRepository {
         return result.modifiedCount === 1
     }
     async changeResetPasswordCode(id: string, NewResetPasswordCode: string,
-                                  NewExpirationDatePasswordCode: Date) {
+                                  NewExpirationDatePasswordCode: Date): Promise<boolean> {
         let result = await UserModel
             .updateOne({id}, {
                 $set: {

@@ -1,13 +1,14 @@
 import {registrationService} from "../../composition-root";
 import {RegistrationService} from "../service/registration-service";
 import {Request, Response} from "express";
+import {User} from "../../users/classes/user-class";
 export class RegistrationController {
     constructor(
         protected registrationService: RegistrationService
     ) {
     }
     async registrationUser(req: Request, res: Response) {
-        const newUser = await this.registrationService.registrationUser(
+        const newUser: User = await this.registrationService.registrationUser(
             req.body.name,
             req.body.age,
             req.body.sex,
@@ -22,7 +23,7 @@ export class RegistrationController {
         }
     }
     async registrationConfirmation(req: Request, res: Response) {
-        const result = await this.registrationService.confirmationEmail(req.body.code)
+        const result: boolean = await this.registrationService.confirmationEmail(req.body.code)
         if (result) {
             res.status(204).send()
         } else {
@@ -30,7 +31,7 @@ export class RegistrationController {
         }
     }
     async resendingRegistrationCode(req: Request, res: Response) {
-        const result = await this.registrationService.resendingCode(req.body.email)
+        const result: boolean = await this.registrationService.resendingCode(req.body.email)
         if (result) {
             res.status(204).send()
         } else {
@@ -38,7 +39,7 @@ export class RegistrationController {
         }
     }
     async recoveryPassword(req: Request, res: Response) {
-        const result = await this.registrationService.makeNewPassword(req.body.newPassword, req.body.recoveryCode)
+        const result: boolean = await this.registrationService.makeNewPassword(req.body.newPassword, req.body.recoveryCode)
         if (result) {
             res.status(204).send()
         } else {

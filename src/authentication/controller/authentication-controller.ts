@@ -68,37 +68,4 @@ export class AuthenticationController {
 
         return res.status(200).send({accessToken})
     }
-
-
-    // async registrationConfirmationUser(req: Request, res: Response) {
-    //
-    //     const result = await this.authService.confirmEmail(req.body.code)
-    //     if (result) {
-    //         res.status(204).send()
-    //     } else {
-    //         res.sendStatus(400)
-    //     }
-    // }
-    // async resendingRegistrationCode(req: Request, res: Response) {
-    //
-    //     const result = await this.authService.resendingCode(req.body.email)
-    //     if (result) {
-    //         res.status(204).send()
-    //     } else {
-    //         res.sendStatus(400)
-    //     }
-    // }
-    // async recoverPasswordForUser(req: Request, res: Response) {
-    //     const result = await this.authService.makeNewPasswordByResendingCode(req.body.newPassword, req.body.recoveryCode)
-    //     if (result) {
-    //         res.status(204).send()
-    //     } else {
-    //         res.sendStatus(400)
-    //     }
-    // }
-    // async sendRecoveryCodeForUser(req: Request, res: Response) {
-    //
-    //     await this.authService.resendingPasswordCode(req.body.email)
-    //     return res.sendStatus(204)
-    // }
 }

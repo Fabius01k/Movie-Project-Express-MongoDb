@@ -7,6 +7,7 @@ import {AuthenticationService} from "../../authentication/service/authentication
 import {Movie} from "../../movies/classes/movie-class";
 import {movieRepository} from "../../composition-root";
 import {MovieRepository} from "../../movies/repository/movie-repository";
+import {allUserResponse} from "../../users/interfaces/gel-all-users-interface";
 
 export class AdminService {
     constructor(protected userRepository: UserRepository,
@@ -87,12 +88,12 @@ export class AdminService {
                        searchLoginTerm: string | null,
                        searchEmailTerm: string | null,
                        searchNameTerm: string | null,
-                       searchAgeTerm: string | null,) {
-        return this.userRepository.findAllUsers(sortBy, sortDirection, pageSize, pageNumber,
+                       searchAgeTerm: string | null): Promise<allUserResponse> {
+        return await this.userRepository.findAllUsers(sortBy, sortDirection, pageSize, pageNumber,
             searchLoginTerm, searchEmailTerm, searchNameTerm, searchAgeTerm)
     }
     async findUserById(id: string): Promise<User | null> {
-        return this.userRepository.findUserById(id)
+        return await this.userRepository.findUserById(id)
     }
     async deleteUser(id: string): Promise<boolean> {
         return await this.userRepository.deleteUser(id)

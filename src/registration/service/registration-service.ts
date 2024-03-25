@@ -12,7 +12,7 @@ export class RegistrationService {
                 protected emailManager: EmailManager) {
     }
 
-    async registrationUser(name: string, age: string, sex: string,login: string, password: string, email: string): Promise<User | null> {
+    async registrationUser(name: string, age: string, sex: string,login: string, password: string, email: string): Promise<User> {
 
         const dateNow = new Date().getTime().toString()
         const passwordSalt = await bcrypt.genSalt(10)
@@ -43,6 +43,7 @@ export class RegistrationService {
                 resetPasswordCode: null,
                 expirationDatePasswordCode: new Date()
             },
+            []
         )
 
         const createdUser = await this.userRepository.createUser(newUser)
@@ -53,7 +54,7 @@ export class RegistrationService {
     }
     async confirmationEmail(code: string): Promise<boolean> {
 
-        const user = await this.userRepository.findUserByConfirmationCode(code)
+        const user: User | null = await this.userRepository.findUserByConfirmationCode(code)
 
         if (!user) return false
         if (user.emailConfirmationData.isConfirmed) return false
@@ -64,7 +65,7 @@ export class RegistrationService {
     }
     async resendingCode(email: string): Promise<boolean> {
 
-        const user = await this.userRepository.findUserByLoginOrEmail(email)
+        const user: User | null = await this.userRepository.findUserByLoginOrEmail(email)
 
         if (!user) return false
         if (user.emailConfirmationData.isConfirmed) return false
@@ -78,7 +79,7 @@ export class RegistrationService {
     }
     async makeNewPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
 
-        const user = await this.userRepository.findUserByResetPasswordCode(recoveryCode)
+        const user: User | null = await this.userRepository.findUserByResetPasswordCode(recoveryCode)
         if (!user) return false
         if (user.passwordUpdateData.expirationDatePasswordCode < new Date()) return false
 
@@ -89,7 +90,7 @@ export class RegistrationService {
     }
     async resendingPasswordCode(email: string): Promise<boolean | null> {
 
-        let user = await this.userRepository.findUserByLoginOrEmail(email)
+        let user: User | null = await this.userRepository.findUserByLoginOrEmail(email)
         if (!user) return false
 
         const NewResetPasswordCode = randomUUID()

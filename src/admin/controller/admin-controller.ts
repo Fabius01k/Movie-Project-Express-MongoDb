@@ -1,39 +1,13 @@
 import {AdminService} from "../service/admin-service";
 import {Request, Response} from "express";
+import {allUserResponse} from "../../users/interfaces/gel-all-users-interface";
+import {User} from "../../users/classes/user-class";
+import {Movie} from "../../movies/classes/movie-class";
 
 export class AdminController {
     constructor(
         protected adminService: AdminService
     ) {}
-    async createUser(req: Request, res: Response) {
-        const newUser = await this.adminService.createUser(
-            req.body.name,
-            req.body.age,
-            req.body.sex,
-            req.body.login,
-            req.body.password,
-            req.body.email)
-
-        res.status(201).send(newUser)
-    }
-    async createMovie(req: Request, res: Response) {
-        const newUser = await this.adminService.createMovie(
-            req.body.name,
-            req.body.releaseDate,
-            req.body.duration,
-            req.body.ageLimit,
-            req.body.releaseCountry,
-            req.body.categories,
-            req.body.actors,
-            req.body.directors,
-            req.body.shortDescription,
-            req.body.fullDescription,
-        )
-        res.status(201).send(newUser)
-    }
-
-
-
     async getAllUsers(req: Request, res: Response) {
 
         let searchNameTerm: string | null = req.query.searchNameTerm as any
@@ -80,12 +54,12 @@ export class AdminController {
             pageNumber = 1
         }
 
-        const users = await this.adminService.findAllUsers(sortBy, sortDirection, +pageSize, +pageNumber,
+        const users: allUserResponse = await this.adminService.findAllUsers(sortBy, sortDirection, +pageSize, +pageNumber,
             searchLoginTerm, searchEmailTerm,searchNameTerm,searchAgeTerm)
         res.status(200).send(users)
     }
     async getUserById(req: Request, res: Response) {
-        const user = await this.adminService.findUserById(req.params.id)
+        const user: User | null = await this.adminService.findUserById(req.params.id)
 
         if (user) {
             res.status(200).send(user)
@@ -93,9 +67,36 @@ export class AdminController {
             res.sendStatus(404)
         }
     }
-    async deleteUser(req: Request, res: Response) {
 
-        const userDeleted = await this.adminService.deleteUser(req.params.id)
+    async createUser(req: Request, res: Response) {
+        const newUser: User = await this.adminService.createUser(
+            req.body.name,
+            req.body.age,
+            req.body.sex,
+            req.body.login,
+            req.body.password,
+            req.body.email)
+
+        res.status(201).send(newUser)
+    }
+    async createMovie(req: Request, res: Response) {
+        const newMovie: Movie = await this.adminService.createMovie(
+            req.body.name,
+            req.body.releaseDate,
+            req.body.duration,
+            req.body.ageLimit,
+            req.body.releaseCountry,
+            req.body.categories,
+            req.body.actors,
+            req.body.directors,
+            req.body.shortDescription,
+            req.body.fullDescription,
+        )
+        res.status(201).send(newMovie)
+    }
+
+    async deleteUser(req: Request, res: Response) {
+        const userDeleted: boolean = await this.adminService.deleteUser(req.params.id)
 
         if (userDeleted) {
             res.sendStatus(204)
@@ -104,8 +105,7 @@ export class AdminController {
         }
     }
     async deleteMovie(req: Request, res: Response) {
-
-        const movieDeleted = await this.adminService.deleteMovie(req.params.id)
+        const movieDeleted: boolean = await this.adminService.deleteMovie(req.params.id)
 
         if (movieDeleted) {
             res.sendStatus(204)
@@ -113,8 +113,9 @@ export class AdminController {
             res.sendStatus(404)
         }
     }
+
     async updateUser(req: Request, res: Response) {
-        const userUpdated = await this.adminService.updateUser(
+        const userUpdated: boolean = await this.adminService.updateUser(
             req.params.id,
             req.body.name,
             req.body.age,
@@ -130,7 +131,7 @@ export class AdminController {
         }
     }
     async updateMovie(req: Request, res: Response) {
-        const movieUpdated = await this.adminService.updateMovie(
+        const movieUpdated: boolean = await this.adminService.updateMovie(
             req.params.id,
             req.body.name,
             req.body.releaseDate,

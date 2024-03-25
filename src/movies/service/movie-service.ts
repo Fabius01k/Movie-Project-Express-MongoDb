@@ -1,5 +1,6 @@
 import {MovieRepository} from "../repository/movie-repository";
 import {Movie} from "../classes/movie-class";
+import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
 
 export class MovieService {
     constructor(protected movieRepository: MovieRepository,) {}
@@ -8,7 +9,7 @@ export class MovieService {
                        pageSize: number, pageNumber: number,
                         searchReleaseDateTerm: string | null,
                         searchDurationTerm: string | null,
-                       searchNameTerm: string | null) {
+                       searchNameTerm: string | null): Promise<allMovieResponse> {
         return this.movieRepository.findAllMovies(sortBy, sortDirection, pageSize, pageNumber,
             searchReleaseDateTerm, searchDurationTerm, searchNameTerm)
     }

@@ -1,6 +1,8 @@
 import {movieService} from "../../composition-root";
 import {MovieService} from "../service/movie-service";
 import {Request, Response} from "express";
+import {Movie} from "../classes/movie-class";
+import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
 
 export class MovieController {
     constructor(
@@ -49,15 +51,15 @@ export class MovieController {
             pageNumber = 1
         }
 
-        const movies = await this.movieService.findAllMovies(sortBy, sortDirection, +pageSize, +pageNumber,
+        const movies: allMovieResponse = await this.movieService.findAllMovies(sortBy, sortDirection, +pageSize, +pageNumber,
             searchReleaseDateTerm, searchDurationTerm,searchNameTerm,)
         res.status(200).send(movies)
     }
     async getMovieById(req: Request, res: Response) {
-        const post = await this.movieService.findMovieById(req.params.id)
+        const movie: Movie | null = await this.movieService.findMovieById(req.params.id)
 
-        if (post) {
-            res.status(200).send(post)
+        if (movie) {
+            res.status(200).send(movie)
         } else {
             res.sendStatus(404)
         }
