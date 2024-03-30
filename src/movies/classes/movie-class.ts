@@ -18,6 +18,5 @@ export class Movie {
             shortDescription: string,
             fullDescription: string,
         },
-    ) {
-    }
+    ) {}
 }

@@ -10,10 +10,14 @@ import {EmailManager} from "./managers/email-manager";
 import {MovieRepository} from "./movies/repository/movie-repository";
 import {MovieService} from "./movies/service/movie-service";
 import {MovieController} from "./movies/controller/movie-controller";
+import {CommentController} from "./comments/controller/comment-controller";
+import {CommentService} from "./comments/service/comment-service";
+import {CommentRepository} from "./comments/repository/comment-repository";
 
 
 export const userRepository = new UserRepository()
 export const movieRepository = new MovieRepository()
+export const commentRepository = new CommentRepository()
 export const emailManager = new EmailManager(userRepository)
 export const authenticationRepository = new AuthenticationRepository()
 export const authenticationService = new AuthenticationService(userRepository,authenticationRepository)
@@ -28,5 +32,8 @@ export const registrationController = new RegistrationController(registrationSer
 
 export const movieService = new MovieService(movieRepository)
 export const movieController = new MovieController(movieService)
+
+export const commentService = new CommentService(movieRepository,userRepository,commentRepository)
+export const commentController = new CommentController(commentService)
 
 

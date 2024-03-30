@@ -1,6 +1,5 @@
 import {Router} from "express";
 import {adminController} from "../../composition-root";
-import {movieRouter} from "../../movies/router/movie-router";
 import {userAdminCreateUpdateValidator } from "../../validation/user-validation";
 import {inputValidationMiddleware} from "../../middlewares/input-validation-middleware";
 import {basicAuthorizationMiddleware} from "../../middlewares/basic-authorization-middleware";
