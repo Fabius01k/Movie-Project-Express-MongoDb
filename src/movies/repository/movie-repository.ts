@@ -1,7 +1,7 @@
 import {Movie} from "../classes/movie-class";
-import {MovieModel, UserModel} from "../../db/db";
-import {User} from "../../users/classes/user-class";
+import {MovieModel, UserReactionModel} from "../../db/db";
 import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
+import {UserReaction} from "../../users/classes/user-reaction-class";
 
 export class MovieRepository {
     async createMovie(newMovie: Movie): Promise<Movie> {
@@ -11,7 +11,7 @@ export class MovieRepository {
     async updateMovie(id: string, name: string, releaseDate: string, duration: string,
                       ageLimit: string, releaseCountry: string, categories: string[],
                       actors: string[], directors: string[], shortDescription: string,
-                      fullDescription: string): Promise<boolean> {
+                      fullDescription: string,mainPhotoUrl: string): Promise<boolean> {
         const updateMovie = await MovieModel
             .updateOne({id: id}, {
                 $set: {
@@ -25,6 +25,7 @@ export class MovieRepository {
                     directors: directors,
                     shortDescription: shortDescription,
                     fullDescription: fullDescription,
+                    mainPhotoUrl: mainPhotoUrl,
                 },
             })
 
@@ -74,5 +75,16 @@ export class MovieRepository {
 
         return (movie)
     }
+    async findCurrentReaction(userId: string, movieId: string): Promise<void> {
+        const currentReaction: UserReaction | null = await UserReactionModel.findOne({userId, movieId})
+        if (currentReaction) {
+            await UserReactionModel.deleteOne({id: currentReaction.id})
+        }
+    }
+    async createUserReaction(newReaction: UserReaction): Promise<boolean> {
+        await UserReactionModel.insertMany([newReaction]);
+        return true
+    }
+
 
 }

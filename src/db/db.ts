@@ -8,6 +8,8 @@ import {Movie} from "../movies/classes/movie-class";
 import {movieSchema} from "../movies/mongoSchemes/movie-schema";
 import {Comment} from "../comments/classes/comment-class";
 import {commentSchema} from "../comments/mongoSchemes/comment-schema";
+import {UserReaction} from "../users/classes/user-reaction-class";
+import {UserReactionSchema} from "../users/mongoSchemes/userReactions-schema";
 
 
 dotenv.config()
@@ -20,10 +22,11 @@ export const UserModel = mongoose.model<User>("users", userSchema)
 export const SessionModel = mongoose.model<UserSession>("sessions", sessionSchema)
 export const MovieModel = mongoose.model<Movie>("movies", movieSchema)
 export const CommentModel = mongoose.model<Comment>("comment",commentSchema)
+export const UserReactionModel = mongoose.model<UserReaction>("userReaction",UserReactionSchema)
 
 
 
-export const collections = [UserModel, SessionModel, MovieModel, CommentModel]
+export const collections = [UserModel, SessionModel, MovieModel, CommentModel, UserReactionModel]
 
 export async function runDb() {
     try {

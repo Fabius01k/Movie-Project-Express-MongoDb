@@ -18,5 +18,6 @@ export class Movie {
             shortDescription: string,
             fullDescription: string,
         },
+        public mainPhotoUrl: string,
     ) {}
 }

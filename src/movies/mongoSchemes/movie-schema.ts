@@ -21,3 +21,4 @@ export const movieSchema = new mongoose.Schema<Movie>({
         fullDescription: { type: String, required: true },
     },
 })
+

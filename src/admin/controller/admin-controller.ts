@@ -91,6 +91,7 @@ export class AdminController {
             req.body.directors,
             req.body.shortDescription,
             req.body.fullDescription,
+            req.body.mainPhotoUrl,
         )
         res.status(201).send(newMovie)
     }
@@ -143,6 +144,7 @@ export class AdminController {
             req.body.directors,
             req.body.shortDescription,
             req.body.fullDescription,
+            req.body.mainPhotoUrl,
         )
 
         if (movieUpdated) {

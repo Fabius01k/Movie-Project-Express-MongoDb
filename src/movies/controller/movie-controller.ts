@@ -3,10 +3,13 @@ import {MovieService} from "../service/movie-service";
 import {Request, Response} from "express";
 import {Movie} from "../classes/movie-class";
 import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
+import {jwtService} from "../../application/jwt-service";
+import {AdminService} from "../../admin/service/admin-service";
 
 export class MovieController {
     constructor(
         protected movieService: MovieService,
+        protected adminService: AdminService
     ) {
     }
 
@@ -64,4 +67,19 @@ export class MovieController {
             res.sendStatus(404)
         }
     }
+
+    async createUserReaction(req: Request, res: Response) {
+
+        const token = req.headers.authorization!.split(' ')[1]
+        const userId = await jwtService.getUserIdByToken(token)
+        const user = await this.adminService.findUserById(userId)
+
+        const movie: Movie | null = await this.movieService.findMovieById(req.params.id)
+        if (!movie) return res.sendStatus(404)
+
+        await this.movieService.createUserReaction(userId,user!.accountData.login,req.params.movieId,req.body.reactionStatus)
+        }
+
+
+
 }

@@ -1,6 +1,7 @@
 import {MovieRepository} from "../repository/movie-repository";
 import {Movie} from "../classes/movie-class";
 import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
+import {UserReaction} from "../../users/classes/user-reaction-class";
 
 export class MovieService {
     constructor(protected movieRepository: MovieRepository,) {}
@@ -15,5 +16,21 @@ export class MovieService {
     }
     async findMovieById(id: string): Promise<Movie | null> {
         return this.movieRepository.findMovieById(id)
+    }
+
+    async createUserReaction(userId: string,userLogin: string,movieId: string,likeStatus: string): Promise<boolean> {
+        await this.movieRepository.findCurrentReaction(userId,movieId)
+        const dateNow = new Date().getTime().toString()
+
+        const newReaction = new UserReaction(
+            dateNow,
+            movieId,
+            userLogin,
+            userId,
+            new Date(),
+            likeStatus
+        )
+        await this.movieRepository.createUserReaction(newReaction)
+        return true
     }
 }

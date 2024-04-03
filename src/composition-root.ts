@@ -31,7 +31,7 @@ export const registrationService = new RegistrationService(userRepository,authen
 export const registrationController = new RegistrationController(registrationService)
 
 export const movieService = new MovieService(movieRepository)
-export const movieController = new MovieController(movieService)
+export const movieController = new MovieController(movieService,adminService)
 
 export const commentService = new CommentService(movieRepository,userRepository,commentRepository)
 export const commentController = new CommentController(commentService)
