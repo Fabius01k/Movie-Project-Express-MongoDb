@@ -2,7 +2,7 @@ import {runDb} from "./db/db";
 import app from "./app";
 
 
-const port = process.env.PORT || 6000
+const port = process.env.PORT || 3300
 
 
 const startApp = async () => {

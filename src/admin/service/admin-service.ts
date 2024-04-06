@@ -1,5 +1,5 @@
 import {UserRepository} from "../../users/repository/user-repository";
-import {User} from "../../users/classes/user-class";
+import {User} from "./../../users/classes/user-class";
 import bcrypt from "bcrypt";
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
