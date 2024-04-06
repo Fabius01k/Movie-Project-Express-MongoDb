@@ -28,7 +28,7 @@ export const collections = [UserModel, SessionModel, MovieModel, CommentModel, U
 
 export async function runDb() {
     try {
-        await mongoose.connect(mongoURI, {dbName: "myApi"})
+        await mongoose.connect(mongoURI, {dbName: "movieApi"})
         console.log('Connected successfully to mongoose server')
     } catch (e) {
         console.log('Can`t connect to db')
