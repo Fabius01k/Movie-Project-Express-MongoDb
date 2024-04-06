@@ -10,12 +10,10 @@ import {Comment} from "../comments/classes/comment-class";
 import {commentSchema} from "../comments/mongoSchemes/comment-schema";
 import {UserReaction} from "../users/classes/user-reaction-class";
 import {UserReactionSchema} from "../users/mongoSchemes/userReactions-schema";
-
-
 dotenv.config()
 
 
-const dbName = "myApi"
+const dbName = "movieApi"
 const mongoURI = process.env.MONGO_URL || `mongodb://0.0.0.0:27017/${dbName}`
 
 export const UserModel = mongoose.model<User>("users", userSchema)

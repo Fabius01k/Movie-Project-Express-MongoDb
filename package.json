@@ -1,5 +1,5 @@
 {
-  "name": "project",
+  "name": "project-movie",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
@@ -32,7 +32,7 @@
     "@types/nodemailer": "^6.4.8",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.2",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.5",
     "jest": "^29.5.0",
     "nodemon": "^2.0.22",
     "supertest": "^6.3.3",

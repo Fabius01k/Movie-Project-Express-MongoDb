@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "project",
+  "name": "project-movie",
   "builds": [
     { "src": "src/index.ts", "use": "@vercel/node" }
   ],
