@@ -80,6 +80,7 @@ export class AdminController {
         res.status(201).send(newUser)
     }
     async createMovie(req: Request, res: Response) {
+        console.log("start")
         const newMovie: Movie = await this.adminService.createMovie(
             req.body.name,
             req.body.releaseDate,

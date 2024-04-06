@@ -56,7 +56,7 @@ export class AdminService {
                       ageLimit: string, releaseCountry: string, categories: string[],
                       actors: string[], directors: string[], shortDescription: string,
                       fullDescription: string,mainPhotoUrl: string): Promise<Movie> {
-
+        console.log("start2")
         const dateNow = new Date().getTime().toString()
 
         const newMovie = new Movie(
@@ -80,7 +80,7 @@ export class AdminService {
             },
             mainPhotoUrl
         )
-
+        console.log("start3")
         return await this.movieRepository.createMovie(newMovie)
     }
 

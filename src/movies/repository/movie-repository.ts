@@ -5,6 +5,7 @@ import {UserReaction} from "../../users/classes/user-reaction-class";
 
 export class MovieRepository {
     async createMovie(newMovie: Movie): Promise<Movie> {
+        console.log("start4")
         await MovieModel.insertMany([newMovie]);
         return newMovie
     }
@@ -46,9 +47,9 @@ export class MovieRepository {
 
         const filter = {
             $or: [
-                {'accountData.login': {$regex: searchReleaseDateTerm ?? '', $options: 'i'}},
-                {'accountData.email': {$regex: searchDurationTerm ?? '', $options: 'i'}},
-                {'accountData.name': {$regex: searchNameTerm ?? '', $options: 'i'}},
+                {'mainData.releaseDate': {$regex: searchReleaseDateTerm ?? '', $options: 'i'}},
+                {'mainData.duration': {$regex: searchDurationTerm ?? '', $options: 'i'}},
+                {'mainData.name': {$regex: searchNameTerm ?? '', $options: 'i'}},
             ]
         }
 
@@ -70,6 +71,7 @@ export class MovieRepository {
         }
     }
     async findMovieById(id: string): Promise<Movie | null> {
+        console.log(id)
         const movie = await MovieModel.findOne({id: id})
         if(!movie) return null
 

@@ -11,11 +11,12 @@ export class MovieService {
                         searchReleaseDateTerm: string | null,
                         searchDurationTerm: string | null,
                        searchNameTerm: string | null): Promise<allMovieResponse> {
-        return this.movieRepository.findAllMovies(sortBy, sortDirection, pageSize, pageNumber,
+        return await this.movieRepository.findAllMovies(sortBy, sortDirection, pageSize, pageNumber,
             searchReleaseDateTerm, searchDurationTerm, searchNameTerm)
     }
     async findMovieById(id: string): Promise<Movie | null> {
-        return this.movieRepository.findMovieById(id)
+        console.log(id)
+        return await this.movieRepository.findMovieById(id)
     }
 
     async createUserReaction(userId: string,userLogin: string,movieId: string,likeStatus: string): Promise<boolean> {

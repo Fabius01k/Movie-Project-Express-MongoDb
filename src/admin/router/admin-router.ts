@@ -18,7 +18,7 @@ adminRouter.post('/create-user',basicAuthorizationMiddleware,userAdminCreateUpda
     inputValidationMiddleware,
     adminController.createUser.bind(adminController))
 
-adminRouter.post('/create-movie',basicAuthorizationMiddleware,
+adminRouter.post('/create-movie',
     adminController.createMovie.bind(adminController))
 
 

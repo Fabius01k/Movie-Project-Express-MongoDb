@@ -1,6 +1,5 @@
-import {MovieModel, UserModel} from "../../db/db";
+import {UserModel} from "../../db/db";
 import {User} from "../classes/user-class";
-import {Movie} from "../../movies/classes/movie-class";
 import {allUserResponse} from "../interfaces/gel-all-users-interface";
 
 export class UserRepository {

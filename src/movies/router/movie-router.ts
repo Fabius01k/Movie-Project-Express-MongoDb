@@ -6,7 +6,7 @@ export const movieRouter = Router({})
 movieRouter.get('/get-all-movies',
     movieController.getAllMovies.bind(movieController))
 
-movieRouter.get('/:movieId', movieController.getMovieById.bind(movieController))
+movieRouter.get('/:id', movieController.getMovieById.bind(movieController))
 
 
 movieRouter.post('/:movieId/reaction', movieController.createUserReaction.bind(movieController))

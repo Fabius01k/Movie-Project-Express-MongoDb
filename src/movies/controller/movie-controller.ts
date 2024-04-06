@@ -14,6 +14,7 @@ export class MovieController {
     }
 
     async getAllMovies(req: Request, res: Response) {
+        console.log("controller start")
 
         let searchNameTerm: string | null = req.query.searchNameTerm as any
         if (!searchNameTerm) {
@@ -59,6 +60,7 @@ export class MovieController {
         res.status(200).send(movies)
     }
     async getMovieById(req: Request, res: Response) {
+        console.log(req.params.id)
         const movie: Movie | null = await this.movieService.findMovieById(req.params.id)
 
         if (movie) {
