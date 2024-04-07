@@ -3,9 +3,11 @@ import {authenticationController} from "../../composition-root";
 import {jwtTokenValidator} from "../../middlewares/jwt-authorization-middleware";
 
 export const authenticationRouter = Router({})
-// authRouter.get('/me', authMiddleware,
-//     authController.getInformationForUser.bind(authController))
-//
+
+authenticationRouter.get('/me', jwtTokenValidator,
+    authenticationController.getAccountDataUser.bind(authenticationController))
+
+
 authenticationRouter.post('/login',
     authenticationController.loginUser.bind(authenticationController))
 

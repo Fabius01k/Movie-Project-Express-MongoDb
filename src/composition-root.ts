@@ -21,11 +21,13 @@ export const commentRepository = new CommentRepository()
 export const emailManager = new EmailManager(userRepository)
 export const authenticationRepository = new AuthenticationRepository()
 export const authenticationService = new AuthenticationService(userRepository,authenticationRepository)
-export const authenticationController = new AuthenticationController(authenticationService)
+
 
 
 export const adminService = new AdminService(userRepository,movieRepository,authenticationService,)
 export const adminController = new AdminController(adminService,)
+
+export const authenticationController = new AuthenticationController(authenticationService,adminService)
 
 export const registrationService = new RegistrationService(userRepository,authenticationService,emailManager)
 export const registrationController = new RegistrationController(registrationService)

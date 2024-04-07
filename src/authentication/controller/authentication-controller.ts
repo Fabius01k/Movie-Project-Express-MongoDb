@@ -3,10 +3,12 @@ import {Request, Response, Router} from "express";
 import {jwtService} from "../../application/jwt-service";
 import {v4 as uuidv4} from "uuid";
 import {AuthenticationService} from "../service/authentication-service";
+import {AdminService} from "../../admin/service/admin-service";
 
 export class AuthenticationController {
     constructor(
         protected authenticationService: AuthenticationService,
+        protected adminService: AdminService,
     ) {}
 
     async loginUser(req: Request, res: Response) {
@@ -69,5 +71,22 @@ export class AuthenticationController {
 
         console.log(refreshToken)
         return res.status(200).send({accessToken})
+    }
+    async getAccountDataUser(req: Request, res: Response) {
+        const token = req.headers.authorization!.split(' ')[1]
+
+        const userId = await jwtService.getUserIdByToken(token)
+        const authUser = await this.adminService.findUserById(userId)
+
+        if (!authUser) return res.sendStatus(401);
+
+        return res.status(200).send({
+            userId: authUser.id,
+            name: authUser.accountData.name,
+            age: authUser.accountData.age,
+            sex: authUser.accountData.sex,
+            login: authUser.accountData.login,
+            email: authUser.accountData.email,
+        });
     }
 }

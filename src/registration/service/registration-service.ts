@@ -47,6 +47,7 @@ export class RegistrationService {
         )
 
         const createdUser = await this.userRepository.createUser(newUser)
+        console.log(createdUser.emailConfirmationData.confirmationCode)
 
         await this.emailManager.sendEmailConfirmationMessage(newUser)
 
