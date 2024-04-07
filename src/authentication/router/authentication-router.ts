@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {authenticationController} from "../../composition-root";
+import {jwtTokenValidator} from "../../middlewares/jwt-authorization-middleware";
 
 export const authenticationRouter = Router({})
 // authRouter.get('/me', authMiddleware,
@@ -8,9 +9,9 @@ export const authenticationRouter = Router({})
 authenticationRouter.post('/login',
     authenticationController.loginUser.bind(authenticationController))
 
-authenticationRouter.post('/logout',
+authenticationRouter.post('/logout',jwtTokenValidator,
     authenticationController.logoutUser.bind(authenticationController))
 
-authenticationRouter.post('/refresh-token',
+authenticationRouter.post('/refresh-token',jwtTokenValidator,
     authenticationController.generateNewAccessToken.bind(authenticationController))
 

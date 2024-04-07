@@ -29,6 +29,7 @@ export class AuthenticationController {
                 secure: true,
                 maxAge: 20 * 1000,
             })
+            console.log(refreshToken)
 
             return res.status(200).send({accessToken});
         } else {
@@ -66,6 +67,7 @@ export class AuthenticationController {
             maxAge: 20 * 1000,
         })
 
+        console.log(refreshToken)
         return res.status(200).send({accessToken})
     }
 }

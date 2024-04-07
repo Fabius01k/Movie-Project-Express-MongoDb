@@ -8,7 +8,7 @@ export const jwtService = {
     },
 
     async createRefreshJWT(userId: string,refreshTokenPayload: any) {
-        const token1 = jwt.sign({ userId, ...refreshTokenPayload }, settings.JWT_SECRET, { expiresIn: '20s' })
+        const token1 = jwt.sign({ userId, ...refreshTokenPayload }, settings.JWT_SECRET, { expiresIn: '1m' })
         return token1
     },
 
