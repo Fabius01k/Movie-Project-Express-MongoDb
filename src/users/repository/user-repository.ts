@@ -1,6 +1,6 @@
 import {UserModel} from "../../db/db";
-import {User} from "../classes/user-class";
 import {allUserResponse} from "../interfaces/gel-all-users-interface";
+import {User} from "../classes/user-class";
 
 export class UserRepository {
     async findUserForCheckCredentials(loginOrEmail: string) {
