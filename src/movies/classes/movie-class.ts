@@ -9,6 +9,7 @@ export class Movie {
             ageLimit: string,
             releaseCountry: string,
             categories: string[],
+            type: string,
         },
         public actorsAndDirectors: {
             actors: string[],

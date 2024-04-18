@@ -14,17 +14,18 @@ export class MovieService {
         return await this.movieRepository.findAllMovies(sortBy, sortDirection, pageSize, pageNumber,
             searchReleaseDateTerm, searchDurationTerm, searchNameTerm)
     }
+    async findMainPageMovies() {
+        return await this.movieRepository.findMainPageMovies()
+    }
     async findMovieById(id: string): Promise<Movie | null> {
-        console.log(id)
         return await this.movieRepository.findMovieById(id)
     }
 
     async createUserReaction(userId: string,userLogin: string,movieId: string,likeStatus: string): Promise<boolean> {
         await this.movieRepository.findCurrentReaction(userId,movieId)
-        const dateNow = new Date().getTime().toString()
 
         const newReaction = new UserReaction(
-            dateNow,
+            new Date().getTime().toString(),
             movieId,
             userLogin,
             userId,
@@ -33,5 +34,12 @@ export class MovieService {
         )
         await this.movieRepository.createUserReaction(newReaction)
         return true
+    }
+
+    async addMovieToWatchList(userId: string, movieId: string): Promise<boolean> {
+        return await this.movieRepository.addMovieToWatchList(userId,movieId)
+    }
+    async removeMovieFromWatchList(userId: string, movieId: string): Promise<boolean> {
+        return await this.movieRepository.removeMovieFromWatchList(userId,movieId)
     }
 }

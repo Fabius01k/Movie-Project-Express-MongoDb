@@ -6,8 +6,11 @@ import bcrypt from "bcrypt";
 import {AuthenticationService} from "../../authentication/service/authentication-service";
 import {EmailManager} from "../../managers/email-manager";
 import {randomUUID} from "crypto";
+import {MovieRepository} from "../../movies/repository/movie-repository";
+import {WatchList} from "../../movies/classes/watch-list-class";
 export class RegistrationService {
     constructor(protected userRepository: UserRepository,
+                protected movieRepository: MovieRepository,
                 protected authenticationService: AuthenticationService,
                 protected emailManager: EmailManager) {
     }
@@ -47,7 +50,6 @@ export class RegistrationService {
         )
 
         const createdUser = await this.userRepository.createUser(newUser)
-        console.log(createdUser.emailConfirmationData.confirmationCode)
 
         await this.emailManager.sendEmailConfirmationMessage(newUser)
 
@@ -61,8 +63,16 @@ export class RegistrationService {
         if (user.emailConfirmationData.isConfirmed) return false
         if (user.emailConfirmationData.confirmationCode !== code) return false
         if (user.emailConfirmationData.expirationDate < new Date()) return false
+        new Date().getTime().toString()
+        const result = await this.userRepository.updateConfirmation(user.id)
 
-        return await this.userRepository.updateConfirmation(user.id)
+        const newWatchList = new WatchList(
+            new Date().getTime().toString(),
+            user.id,
+            []
+        )
+        await this.movieRepository.createWatchList(newWatchList)
+        return result
     }
     async resendingCode(email: string): Promise<boolean> {
 

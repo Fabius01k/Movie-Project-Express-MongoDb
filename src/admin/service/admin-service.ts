@@ -53,10 +53,10 @@ export class AdminService {
         return await this.userRepository.createUser(newUser)
     }
     async createMovie(name: string, releaseDate: string, duration: string,
-                      ageLimit: string, releaseCountry: string, categories: string[],
+                      ageLimit: string, releaseCountry: string, categories: string[],type: string,
                       actors: string[], directors: string[], shortDescription: string,
-                      fullDescription: string,mainPhotoUrl: string): Promise<Movie> {
-        console.log("start2")
+                      fullDescription: string,mainPhotoUrl: string,): Promise<Movie> {
+
         const dateNow = new Date().getTime().toString()
 
         const newMovie = new Movie(
@@ -69,6 +69,7 @@ export class AdminService {
                 ageLimit: ageLimit,
                 releaseCountry: releaseCountry,
                 categories: categories,
+                type: type
             },
             {
                 actors: actors,
@@ -80,7 +81,6 @@ export class AdminService {
             },
             mainPhotoUrl
         )
-        console.log("start3")
         return await this.movieRepository.createMovie(newMovie)
     }
 
@@ -107,11 +107,11 @@ export class AdminService {
         return await this.userRepository.updateUser(id, name, age, sex, login, email)
     }
     async updateMovie(id: string, name: string, releaseDate: string, duration: string,
-                      ageLimit: string, releaseCountry: string, categories: string[],
+                      ageLimit: string, releaseCountry: string, categories: string[],type: string,
                       actors: string[], directors: string[], shortDescription: string,
                       fullDescription: string,mainPhotoUrl: string
                       ): Promise<boolean> {
         return await this.movieRepository.updateMovie(id, name, releaseDate, duration, ageLimit, releaseCountry,
-            categories,actors,directors,shortDescription,fullDescription,mainPhotoUrl)
+            categories,type,actors,directors,shortDescription,fullDescription,mainPhotoUrl)
     }
 }

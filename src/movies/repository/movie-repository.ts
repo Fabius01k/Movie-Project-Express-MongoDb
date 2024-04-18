@@ -1,16 +1,19 @@
 import {Movie} from "../classes/movie-class";
-import {MovieModel, UserReactionModel} from "../../db/db";
+import {MovieModel, UserReactionModel, WatchListModel} from "../../db/db";
 import {allMovieResponse} from "../interfaces/gel-all-movies-interface";
 import {UserReaction} from "../../users/classes/user-reaction-class";
+import {WatchList} from "../classes/watch-list-class";
 
 export class MovieRepository {
     async createMovie(newMovie: Movie): Promise<Movie> {
-        console.log("start4")
         await MovieModel.insertMany([newMovie]);
         return newMovie
     }
+    async createWatchList(newWatchList: WatchList): Promise<void> {
+        await WatchListModel.insertMany([newWatchList]);
+    }
     async updateMovie(id: string, name: string, releaseDate: string, duration: string,
-                      ageLimit: string, releaseCountry: string, categories: string[],
+                      ageLimit: string, releaseCountry: string, categories: string[],type: string,
                       actors: string[], directors: string[], shortDescription: string,
                       fullDescription: string,mainPhotoUrl: string): Promise<boolean> {
         const updateMovie = await MovieModel
@@ -22,6 +25,7 @@ export class MovieRepository {
                     ageLimit: ageLimit,
                     releaseCountry: releaseCountry,
                     categories: categories,
+                    type: type,
                     actors: actors,
                     directors: directors,
                     shortDescription: shortDescription,
@@ -70,6 +74,21 @@ export class MovieRepository {
             items: movies
         }
     }
+    async findMainPageMovies() {
+        const moviesWithLikes = await UserReactionModel.aggregate([
+            { $match: { reactionStatus: 'Like' } },
+            { $group: { _id: '$movieId', totalLikes: { $sum: 1 } } },
+            { $sort: { totalLikes: -1 } }
+        ]);
+
+        const movieIds = moviesWithLikes.map(movie => movie._id);
+        const moviesWithBestRating = await MovieModel.find({ id: { $in: movieIds } });
+
+        const newMovies = await MovieModel.find({ 'mainData.releaseDate': '2024' });
+        const recommendedMovies = await MovieModel.find();
+
+        return(moviesWithBestRating)
+    }
     async findMovieById(id: string): Promise<Movie | null> {
         console.log(id)
         const movie = await MovieModel.findOne({id: id})
@@ -88,5 +107,23 @@ export class MovieRepository {
         return true
     }
 
+    async addMovieToWatchList(userId: string, movieId: string): Promise<boolean> {
+        await WatchListModel.findOneAndUpdate(
+            { userId: userId },
+            { $addToSet: { movieId: movieId } },
+            { new: true, upsert: true }
+        )
 
+        return true
+    }
+
+    async removeMovieFromWatchList(userId: string, movieId: string): Promise<boolean> {
+        await WatchListModel.findOneAndUpdate(
+            { userId },
+            { $pull: { movieId: movieId } },
+            { new: true }
+        );
+
+        return true
+    }
 }

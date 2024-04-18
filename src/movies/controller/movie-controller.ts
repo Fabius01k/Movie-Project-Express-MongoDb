@@ -14,7 +14,6 @@ export class MovieController {
     }
 
     async getAllMovies(req: Request, res: Response) {
-        console.log("controller start")
 
         let searchNameTerm: string | null = req.query.searchNameTerm as any
         if (!searchNameTerm) {
@@ -59,6 +58,10 @@ export class MovieController {
             searchReleaseDateTerm, searchDurationTerm,searchNameTerm,)
         res.status(200).send(movies)
     }
+    async getMainPageMovies(req: Request, res: Response) {
+        const mainPageMovies = await this.movieService.findMainPageMovies()
+        res.status(200).send(mainPageMovies)
+    }
     async getMovieById(req: Request, res: Response) {
         console.log(req.params.id)
         const movie: Movie | null = await this.movieService.findMovieById(req.params.id)
@@ -79,9 +82,20 @@ export class MovieController {
         const movie: Movie | null = await this.movieService.findMovieById(req.params.id)
         if (!movie) return res.sendStatus(404)
 
-        await this.movieService.createUserReaction(userId,user!.accountData.login,req.params.movieId,req.body.reactionStatus)
+        await this.movieService.createUserReaction(userId,user!.accountData.login,req.params.id,req.body.reactionStatus)
         }
 
+    async addMovieToWatchList(req: Request, res: Response) {
+        const token = req.headers.authorization!.split(' ')[1]
+        const userId = await jwtService.getUserIdByToken(token)
 
+        await this.movieService.addMovieToWatchList(userId,req.params.id)
+    }
 
+    async removeMovieFromWatchList(req: Request, res: Response) {
+        const token = req.headers.authorization!.split(' ')[1]
+        const userId = await jwtService.getUserIdByToken(token)
+
+        await this.movieService.removeMovieFromWatchList(userId,req.params.id)
+    }
 }

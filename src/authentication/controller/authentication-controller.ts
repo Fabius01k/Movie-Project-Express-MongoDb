@@ -20,11 +20,10 @@ export class AuthenticationController {
                 deviceId: uuidv4(),
             }
             const refreshToken = await jwtService.createRefreshJWT(user.id, refreshTokenPayload)
-            const sessionId = user.id
             const ip = req.ip
             const title = req.headers['user-agent'] || 'Unknown'
 
-            await this.authenticationService.createSession(sessionId, ip, title, refreshTokenPayload.deviceId, refreshToken)
+            await this.authenticationService.createSession(user.id, ip, title, refreshTokenPayload.deviceId, refreshToken)
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,

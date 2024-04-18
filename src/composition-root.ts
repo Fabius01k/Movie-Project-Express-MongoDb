@@ -29,7 +29,7 @@ export const adminController = new AdminController(adminService,)
 
 export const authenticationController = new AuthenticationController(authenticationService,adminService)
 
-export const registrationService = new RegistrationService(userRepository,authenticationService,emailManager)
+export const registrationService = new RegistrationService(userRepository,movieRepository,authenticationService,emailManager)
 export const registrationController = new RegistrationController(registrationService)
 
 export const movieService = new MovieService(movieRepository)

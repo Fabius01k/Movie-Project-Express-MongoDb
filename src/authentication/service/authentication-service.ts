@@ -22,10 +22,10 @@ export class AuthenticationService {
         const hash = await bcrypt.hash(password, salt)
         return hash
     }
-    async createSession(sessionId: string, ip: string, title: string,deviceId: string, refreshToken: string): Promise<UserSession> {
+    async createSession(userId: string, ip: string, title: string,deviceId: string, refreshToken: string): Promise<UserSession> {
 
         const newSession = new UserSession(
-            sessionId,
+            userId,
             ip,
             title,
             deviceId,

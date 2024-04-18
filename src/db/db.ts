@@ -10,6 +10,8 @@ import {Comment} from "../comments/classes/comment-class";
 import {commentSchema} from "../comments/mongoSchemes/comment-schema";
 import {UserReaction} from "../users/classes/user-reaction-class";
 import {UserReactionSchema} from "../users/mongoSchemes/userReactions-schema";
+import {WatchListSchema} from "../movies/mongoSchemes/watch-list-schema";
+import {WatchList} from "../movies/classes/watch-list-class";
 dotenv.config()
 
 
@@ -21,10 +23,11 @@ export const SessionModel = mongoose.model<UserSession>("sessions", sessionSchem
 export const MovieModel = mongoose.model<Movie>("movies", movieSchema)
 export const CommentModel = mongoose.model<Comment>("comment",commentSchema)
 export const UserReactionModel = mongoose.model<UserReaction>("userReaction",UserReactionSchema)
+export const WatchListModel = mongoose.model<WatchList>("watchList",WatchListSchema)
 
 
 
-export const collections = [UserModel, SessionModel, MovieModel, CommentModel, UserReactionModel]
+export const collections = [UserModel, SessionModel, MovieModel, CommentModel, UserReactionModel,WatchListModel]
 
 export async function runDb() {
     try {

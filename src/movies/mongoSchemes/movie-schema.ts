@@ -11,6 +11,7 @@ export const movieSchema = new mongoose.Schema<Movie>({
         ageLimit: { type: String, required: true },
         releaseCountry: { type: String, required: true },
         categories: { type: [String], required: true },
+        type: { type: String, required: true },
     },
     actorsAndDirectors: {
         actors: { type: [String], required: true },
