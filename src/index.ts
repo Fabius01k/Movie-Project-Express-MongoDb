@@ -2,8 +2,9 @@ import {runDb} from "./db/db";
 import app from "./app";
 
 
-const port = process.env.PORT || 3300
 
+
+const port = process.env.PORT || 3300
 
 const startApp = async () => {
     await runDb()
