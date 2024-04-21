@@ -4,8 +4,8 @@ export class Movie {
         public createdAt: string,
         public mainData: {
             name: string,
-            releaseDate: string,
-            duration: string,
+            releaseDate: Date,
+            duration: number,
             ageLimit: string,
             releaseCountry: string,
             categories: string[],

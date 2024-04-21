@@ -52,7 +52,7 @@ export class AdminService {
 
         return await this.userRepository.createUser(newUser)
     }
-    async createMovie(name: string, releaseDate: string, duration: string,
+    async createMovie(name: string, releaseDate: Date, duration: number,
                       ageLimit: string, releaseCountry: string, categories: string[],type: string,
                       actors: string[], directors: string[], shortDescription: string,
                       fullDescription: string,mainPhotoUrl: string,): Promise<Movie> {

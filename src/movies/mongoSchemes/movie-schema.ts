@@ -6,8 +6,8 @@ export const movieSchema = new mongoose.Schema<Movie>({
     createdAt: { type: String, required: true },
     mainData: {
         name: { type: String, required: true },
-        releaseDate: { type: String, required: true },
-        duration: { type: String, required: true },
+        releaseDate: { type: Date, required: true },
+        duration: { type: Number, required: true },
         ageLimit: { type: String, required: true },
         releaseCountry: { type: String, required: true },
         categories: { type: [String], required: true },
