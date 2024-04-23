@@ -75,7 +75,7 @@ export class AuthenticationController {
         const token = req.headers.authorization!.split(' ')[1]
 
         const userId = await jwtService.getUserIdByToken(token)
-        const authUser = await this.adminService.findUserById(userId)
+        const authUser: User| null = await this.adminService.findUserById(userId)
 
         if (!authUser) return res.sendStatus(401);
 

@@ -18,7 +18,10 @@ const swaggerDefinition = {
 const options = {
     swaggerDefinition,
     // apis: ['src/admin/router/admin-router.ts'],
-    apis: ['src/swagger/user-admin.ts', 'src/swagger/movie-admin.ts'],
+    apis: ['src/swagger/user-admin.ts',
+        'src/swagger/movie-admin.ts',
+        'src/swagger/authentication.ts'
+    ],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
