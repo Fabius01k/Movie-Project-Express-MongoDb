@@ -12,8 +12,9 @@ registrationRouter.post('/registration-confirmation',
 registrationRouter.post('/registration-email-resending',
     registrationController.resendingRegistrationCode.bind(registrationController))
 
+registrationRouter.post('/password-recovery',
+    registrationController.sendRecoveryCode.bind(registrationController))
+
 registrationRouter.post('/new-password',
     registrationController.recoveryPassword.bind(registrationController))
 
-registrationRouter.post('/password-recovery',
-    registrationController.sendRecoveryCode.bind(registrationController))

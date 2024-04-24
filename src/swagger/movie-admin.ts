@@ -167,7 +167,7 @@
 // CREATE MOVIE BY ADMIN RESPONSE
 /**
  * @swagger
- * /admin/movies/create-movie/:
+ * /admin/movies/create-movie:
  *  post:
  *   summary: Create new movie by admin
  *   tags: [Admin]
@@ -206,7 +206,7 @@
 // UPDATE MOVIE BY ID BY ADMIN RESPONSE
 /**
  * @swagger
- * /admin/movies/update-movie/:
+ * /admin/movies/update-movie/{id}:
  *  put:
  *   summary: Update existing movie by id by admin
  *   tags: [Admin]
@@ -250,7 +250,7 @@
 // DELETE USER BY ID BY ADMIN RESPONSE
 /**
  * @swagger
- * /admin/movies/delete-movie/:
+ * /admin/movies/delete-movie/{id}:
  *  delete:
  *   summary: Delete existing movie by id by admin
  *   tags: [Admin]

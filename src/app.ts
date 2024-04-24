@@ -16,6 +16,6 @@ app.use(express.json())
 
 app.use('/authentication', authenticationRouter)
 app.use('/admin', adminRouter)
-app.use('/auth', registrationRouter)
+app.use('/register', registrationRouter)
 app.use('/movie', movieRouter)
 export default app

@@ -253,7 +253,7 @@
 // CREATE USER BY ADMIN
 /**
  * @swagger
- * /admin/users/create-user/:
+ * /admin/users/create-user:
  *  post:
  *   summary: Create new user by admin
  *   tags: [Admin]
@@ -292,7 +292,7 @@
 // UPDATE USER BY ID BY ADMIN RESPONSE
 /**
  * @swagger
- * /admin/users/update-user/:
+ * /admin/users/update-user/{id}:
  *  put:
  *   summary: Update existing user by id by admin
  *   tags: [Admin]
@@ -336,7 +336,7 @@
 // DELETE USER BY ID BY ADMIN RESPONSE
 /**
  * @swagger
- * /admin/users/delete-user/:
+ * /admin/users/delete-user/{id}:
  *  delete:
  *   summary: Delete existing user by id by admin
  *   tags: [Admin]

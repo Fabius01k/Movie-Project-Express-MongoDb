@@ -54,7 +54,7 @@
  password: "123456"
  */
 
-//// ACCESS TOKEN COMPONENTS
+///////////////////////////////////////// ACCESS TOKEN COMPONENTS //////////////////////////////////////////////
 /**
  * @swagger
  * components:
@@ -72,7 +72,7 @@
 
 
 
-// GET INFORMATION ABOUT ME RESPONSE
+///////////////////////////////////////// GET INFORMATION ABOUT ME RESPONSE ////////////////////////////////////
 /**
  * @swagger
  * /authentication/me:
@@ -92,7 +92,7 @@
  *       description: Unauthorized
  */
 
-// LOGIN USER RESPONSE
+//////////////////////////////////////// LOGIN USER RESPONSE //////////////////////////////////////////////////
 /**
  * @swagger
  * /authentication/login:
@@ -134,7 +134,7 @@
  *       description: More than 5 attempts from one IP-address during 10 seconds
  */
 
-// LOGOUT USER RESPONSE
+//////////////////////////////////////// LOGOUT USER RESPONSE ////////////////////////////////////////////////
 /**
  * @swagger
  * /authentication/logout:
@@ -148,7 +148,7 @@
  *       description: If the JWT refreshToken inside cookie is missing, expired or incorrect
  */
 
-// REFRESH TOKEN CREATE RESPONSE
+/////////////////////////////////////// REFRESH TOKEN CREATE RESPONSE ////////////////////////////////////////
 /**
  * @swagger
  * /authentication/refresh-token:
