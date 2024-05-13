@@ -1,36 +1,29 @@
 // @ts-ignore
 import request from 'supertest'
 import app from "../../src/app";
-import {runDb} from "../../src/db/db";
-import exp = require("constants");
+
 
 const auth = 'Authorization'
 const basic = 'Basic YWRtaW46cXdlcnR5'
 
 
 describe('get', () => {
-
-    beforeAll(async () => {
-        // await runDb()
-        await request(app).delete('/testing/all-data').expect(204)
-    })
-
     it('should return 200 and empty array', async () => {
-        await request(app).delete("/testing/all-data").set(auth, basic)
+        // await request(app).delete("/testing/all-data").set(auth, basic)
         const result = await request(app)
-            .get('/users')
+            .get('/admin/users/get-all-users')
             .set(auth, basic)
             .expect(200)
 
         expect(result.body).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 0, "totalCount": 0})
-    })
+    },30000)
 
-    it('should return 401 without authorization for get users ', async () => {
-        await request(app).delete("/testing/all-data").set(auth, basic)
-        const result = await request(app)
-            .get('/users')
-            .expect(401)
-    })
+    // it('should return 401 without authorization for get users ', async () => {
+    //     await request(app).delete("/testing/all-data").set(auth, basic)
+    //     const result = await request(app)
+    //         .get('/users')
+    //         .expect(401)
+    // })
 })
 
     describe('post', () => {

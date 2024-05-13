@@ -2,6 +2,34 @@ import {UserModel} from "../../db/db";
 import {allUserResponse} from "../interfaces/gel-all-users-interface";
 import {User} from "../classes/user-class";
 
+const mapUserForViewModel = (user: User): User => {
+    return {
+         id: user.id,
+         createdAt: user.createdAt,
+         accountData: {
+            name: user.accountData.name,
+            age: user.accountData.age,
+            sex: user.accountData.sex,
+            login: user.accountData.login,
+            email: user.accountData.email
+    },
+ passwordData: {
+        passwordHash: user.passwordData.passwordHash,
+        passwordSalt: user.passwordData.passwordSalt
+    },
+ emailConfirmationData: {
+        confirmationCode: user.emailConfirmationData.confirmationCode,
+        expirationDate: user.emailConfirmationData.expirationDate,
+        isConfirmed: user.emailConfirmationData.isConfirmed
+    },
+ passwordUpdateData: {
+        resetPasswordCode: user.passwordUpdateData.resetPasswordCode,
+        expirationDatePasswordCode: user.passwordUpdateData.expirationDatePasswordCode
+    },
+ userTags: user.userTags,
+    }
+}
+
 export class UserRepository {
     async findUserForCheckCredentials(loginOrEmail: string) {
         const user: User | null = await UserModel.findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]})
@@ -36,6 +64,7 @@ export class UserRepository {
             .limit(pageSize)
             .lean()
 
+        const items = users.map(u => mapUserForViewModel(u))
         const totalCount = await UserModel.countDocuments(filter)
 
         return {
@@ -43,14 +72,14 @@ export class UserRepository {
             page: +pageNumber,
             pageSize: +pageSize,
             totalCount: totalCount,
-            items: users
+            items: items
         }
     }
     async findUserById(id: string): Promise<User | null> {
         const user = await UserModel.findOne({id: id})
         if(!user) return null
 
-        return (user)
+        return mapUserForViewModel(user)
     }
     async deleteUser(id: string): Promise<boolean> {
         const deleteUser = await UserModel
@@ -59,18 +88,18 @@ export class UserRepository {
         return deleteUser.deletedCount === 1
     }
     async updateUser(id: string, name: string,age: string, sex: string, login: string,email: string): Promise<boolean> {
-        const updateBlog = await UserModel
+        const updateUser = await UserModel
             .updateOne({id: id}, {
             $set: {
-                name: name,
-                age: age,
-                sex: sex,
-                login: login,
-                email: email,
+                'accountData.name': name,
+                'accountData.age': age,
+                'accountData.sex': sex,
+                'accountData.login': login,
+                'accountData.email': email,
             },
         })
 
-        return updateBlog.matchedCount === 1
+        return updateUser.matchedCount === 1
     }
     async findUserByConfirmationCode(emailConfirmationCode: string) {
 

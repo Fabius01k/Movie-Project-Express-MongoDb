@@ -26,7 +26,7 @@ adminRouter.post('/movies/create-movie',movieAdminCreateUpdateValidator,inputVal
 
 
 
-adminRouter.put('users/update-user',basicAuthorizationMiddleware,userAdminCreateUpdateValidator,
+adminRouter.put('/users/update-user/:id',basicAuthorizationMiddleware,userAdminCreateUpdateValidator,
     inputValidationMiddleware,
     adminController.updateUser.bind(adminController))
 
@@ -35,7 +35,7 @@ adminRouter.put('/movies/update-movie',basicAuthorizationMiddleware,
 
 
 
-adminRouter.delete('/users/delete-user',basicAuthorizationMiddleware,
+adminRouter.delete('/users/delete-user/:id',basicAuthorizationMiddleware,
     adminController.deleteUser.bind(adminController))
 
 adminRouter.delete('/movies/delete-movie',basicAuthorizationMiddleware,
